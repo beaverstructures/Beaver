@@ -38,7 +38,7 @@ namespace Beaver_v0._1
         {
             pManager.AddNumberParameter("Design Load", "Fved", "Design Load of each dowel [N]", GH_ParamAccess.list);
             pManager.AddNumberParameter("Alpha", "α", "Angle of Load parallel to the fiber [rad]", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Direction", "d", "Direction of the load on XY Plane", GH_ParamAccess.list);
+            pManager.AddVectorParameter("Direction", "d", "Direction of the load on XY Plane", GH_ParamAccess.list);
             pManager.AddNumberParameter("Rotational Stiffness", "Kφ", "Rotational Stiffness of the whole connection (per shear plane) [Nmm/rad]", GH_ParamAccess.list);
         }
 
