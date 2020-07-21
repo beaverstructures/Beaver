@@ -97,7 +97,7 @@ namespace Beaver_v0._1
             double kshape = Math.Min(1 + 0.15 * (h / b), 2);
             Gamm = timber.Ym;
             Fvk = timber.fvk;
-            double Sigt = (Mt / (1.05*b * Math.Pow(h, 3))) * (3 + 1.8 * (h / b)); //https://engineeringlibrary.org/reference/beam-torsion-air-force-stress-manual
+            double Sigt = (100*Mt / (1.05*b * Math.Pow(h, 3))) * (3 + 1.8 * (h / b)); //https://engineeringlibrary.org/reference/beam-torsion-air-force-stress-manual
             double fvd = Kmod * Fvk / Gamm;
             double Div = Sigt /(kshape/ fvd);
             DA.SetData(0, Div);
