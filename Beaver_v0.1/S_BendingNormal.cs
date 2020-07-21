@@ -216,9 +216,6 @@ namespace Beaver_v0._1
                     }
                 }
 
-                //verificação genérica (deve ser verificada não importa o tipo do perfil)
-                divyg = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                divzg = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
 
                 
             }
@@ -245,8 +242,8 @@ namespace Beaver_v0._1
                 }
             }
             
-            DIVY = Math.Max(divyg, divy);
-            DIVZ = Math.Max(divzg, divz);
+            DIVY = divy;
+            DIVZ = divz;
             DA.SetData(0, DIVY);
             DA.SetData(1, DIVZ);
             DA.SetData(2, lamm);
