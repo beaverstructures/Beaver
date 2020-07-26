@@ -40,7 +40,7 @@ namespace Beaver_v0._1
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.Register_DoubleParam("Shear Strenght", "Rcvd", "Connection Design Load Carrying Capacity [N]");
-            pManager.Register_DoubleParam("DIV", "DIV", "Reason between Stress and Strength");
+            pManager.Register_DoubleParam("Util", "Util", "Reason between Stress and Strength");
             pManager.Register_DoubleParam("Effective Number of Fasteners", "Nef", "Effective Number of Fasteners");
         }
 
@@ -111,9 +111,9 @@ namespace Beaver_v0._1
                     Fvd = nef * FCrd * Math.Cos(beta);
                 }
             }
-            double DIV = Vrd / Fvd;
+            double Util = Vrd / Fvd;
             DA.SetData(0, Fvd);
-            DA.SetData(1, DIV);
+            DA.SetData(1, Util);
             DA.SetData(2, nef);
         }
 

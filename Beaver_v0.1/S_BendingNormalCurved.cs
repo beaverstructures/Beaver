@@ -17,7 +17,7 @@ namespace Beaver_v0._1
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public FlexoCompressionC()
-          : base("Bending and Normal - Curved", "Bending & Normal - Curved",
+          : base("Bending and Normal Forces - Curved", "Bending & Normal - Curved",
              "Verifies the cross section of a curved beam subjected to Bending and Normal forces according to Eurocode 5",
               "Beaver", "Sections")
         {
@@ -53,8 +53,8 @@ namespace Beaver_v0._1
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_DoubleParam("DIVY", "DIVY", "Reason between Stress and Strength appliying Km on the Z axis");
-            pManager.Register_DoubleParam("DIVZ", "DIVZ", "Reason between Stress and Strength appliying Km on the Y axis");
+            pManager.Register_DoubleParam("UtilY", "UtilY", "Reason between Stress and Strength appliying Km on the Z axis");
+            pManager.Register_DoubleParam("UtilZ", "UtilZ", "Reason between Stress and Strength appliying Km on the Y axis");
             pManager.Register_DoubleParam("Relative Lambda", "lamm", "For the stability analysis, an element will be considered as a Column if (lamm < 0.75) and a Beam if (lamm > 0.75)");
         }
 
@@ -171,10 +171,10 @@ namespace Beaver_v0._1
             double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2));
             double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
-            double divy = 0;
-            double divz = 0;
-            double divyg = 0;
-            double divzg = 0;
+            double UtilY = 0;
+            double UtilZ = 0;
+            double UtilYg = 0;
+            double UtilZg = 0;
             if (Nd < 0)
             {
                 Nd = Math.Abs(Nd);
@@ -184,15 +184,15 @@ namespace Beaver_v0._1
                 {
                     if (lamyrel <= 0.3 && lamzrel <= 0.3)
                     {
-                        divy = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                        divz = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
+                        UtilY = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
+                        UtilZ = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
 
                     }
                     else
                     {
-                        List<double> divs = new List<double>();
-                        divy = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
-                        divz = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
+                        List<double> Utils = new List<double>();
+                        UtilY = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
+                        UtilZ = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
 
                     }
                 }
@@ -203,22 +203,22 @@ namespace Beaver_v0._1
                     if (lamm >= 0.75 && lamm < 1.4)
                     {
                         double kcrit = 1.56 - 0.75 * lamm;
-                        divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        divz = 0;
+                        UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                        UtilZ = 0;
 
                     }
                     if (lamm >= 1.4)
                     {
                         double kcrit = 1 / Math.Pow(lamm, 2);
-                        divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        divz = 0;
+                        UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                        UtilZ = 0;
 
                     }
                 }
 
                 //verificação genérica (deve ser verificada não importa o tipo do perfil)
-                divyg = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                divzg = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
+                UtilYg = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
+                UtilZg = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
 
 
             }
@@ -227,27 +227,27 @@ namespace Beaver_v0._1
                 if (lamm >= 0.75 && lamm < 1.4)
                 {
                     double kcrit = 1.56 - 0.75 * lamm;
-                    divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
-                    divz = Km * (sigMy / fmd) + (sigN / ft0d) + (sigMz / fmd);
+                    UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
+                    UtilZ = Km * (sigMy / fmd) + (sigN / ft0d) + (sigMz / fmd);
 
                 }
                 if (lamm >= 1.4)
                 {
                     double kcrit = 1 / Math.Pow(lamm, 2);
-                    divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
-                    divz = Km * (sigMy / (kcrit * fmd)) + (sigN / ft0d) + (sigMz / fmd);
+                    UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
+                    UtilZ = Km * (sigMy / (kcrit * fmd)) + (sigN / ft0d) + (sigMz / fmd);
 
                 }
                 else
                 {
-                    divy = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
-                    divz = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    UtilY = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
+                    UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
                 }
             }
-            double DIVY = Math.Max(divyg, divy);
-            double DIVZ = Math.Max(divzg, divz);
-            DA.SetData(0, DIVY);
-            DA.SetData(1, DIVZ);
+            double UtilY = Math.Max(UtilYg, UtilY);
+            double UtilZ = Math.Max(UtilZg, UtilZ);
+            DA.SetData(0, UtilY);
+            DA.SetData(1, UtilZ);
             DA.SetData(2, lamm);
 
         }

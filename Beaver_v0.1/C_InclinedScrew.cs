@@ -18,7 +18,7 @@ namespace Beaver_v0._1
         /// Initializes a new instance of the InclinedScrew class.
         /// </summary>
         public C_InclinedScrew()
-          : base("Inclined Screws Connection", "Inclined Screw",
+          : base("Axially loaded Screws Connection", "Axial Screws",
               "Analysis of axially loaded screw in timber-to-timber or steel-to-timber connections",
               "Beaver", "Connections")
         {

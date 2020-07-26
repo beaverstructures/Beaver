@@ -169,8 +169,8 @@ namespace Beaver_v0._1
                 failureMode = cap.failureMode;
             }
             double faxd = kmod * analysis.variables.Faxrk / Ym;
-            double DIV = 0;
-            DIV = Vrd / fvd;
+            double Util = 0;
+            Util = Vrd / fvd;
             DA.SetData(0, fvd);
             DA.SetData(1, faxd);
             DA.SetData(2, failureMode);

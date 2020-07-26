@@ -49,7 +49,7 @@ namespace Beaver_v0._1
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.Register_DoubleParam("Frad", "Frad", "Resistence [kN]");
-            pManager.Register_DoubleParam("DIV", "DIV", "Reason between Stress and Strength");
+            pManager.Register_DoubleParam("Util", "Util", "Reason between Stress and Strength");
         }
 
         public override void AddedToDocument(GH_Document document)
@@ -161,10 +161,10 @@ namespace Beaver_v0._1
                 //Verificação de compressão perpendicular ou em ângulo
 
                 double acompR = Math.PI * acomp / 180;
-                double DIV = sigc90d * (fc0d * Math.Pow(Math.Sin(acompR), 2) / (kc90 * fc90d) + Math.Pow(Math.Cos(acompR), 2)) / fc0d;
-                double fcad = sigc90d * Aef / DIV;
+                double Util = sigc90d * (fc0d * Math.Pow(Math.Sin(acompR), 2) / (kc90 * fc90d) + Math.Pow(Math.Cos(acompR), 2)) / fc0d;
+                double fcad = sigc90d * Aef / Util;
                 DA.SetData(0, fcad);
-                DA.SetData(1, DIV);
+                DA.SetData(1, Util);
 
 
             }

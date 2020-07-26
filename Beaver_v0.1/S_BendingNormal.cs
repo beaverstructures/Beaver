@@ -53,8 +53,8 @@ namespace Beaver_v0._1
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_DoubleParam("DIVY", "DIVY", "Reason between Stress and Strength appliying Km on the Z axis");
-            pManager.Register_DoubleParam("DIVZ", "DIVZ", "Reason between Stress and Strength appliying Km on the Y axis");
+            pManager.Register_DoubleParam("UtilY", "UtilY", "Reason between Stress and Strength appliying Km on the Z axis");
+            pManager.Register_DoubleParam("UtilZ", "UtilZ", "Reason between Stress and Strength appliying Km on the Y axis");
             pManager.Register_DoubleParam("Relative Lambda", "lamm", "For the stability analysis, an element will be considered as a Column if (lamm < 0.75) and a Beam if (lamm > 0.75)");
         }
 
@@ -161,12 +161,12 @@ namespace Beaver_v0._1
             double sigMy = 100 * Myd / Wy;
             double sigMz = 100 * Mzd / Wz;
             double G05 = E05 / 16;
-            double divy = 0;
-            double divz = 0;
-            double divyg = 0;
-            double divzg = 0;
-            double DIVY = 0;
-            double DIVZ = 0;
+            double UtilY = 0;
+            double UtilZ = 0;
+            double UtilYg = 0;
+            double UtilZg = 0;
+            double UtilY = 0;
+            double UtilZ = 0;
 
             //Definição dos valores de cálculo necessários para verificação em pilares ou vigas (exclui parte em que dizia que lamrely=lamm e lamrelz=sgmcrit)
             double sigMcrit = (0.78*Math.Pow(b,2)/(h*lef))*E05;
@@ -184,15 +184,15 @@ namespace Beaver_v0._1
                 {
                     if (lamyrel <= 0.3 && lamzrel <= 0.3)
                     {
-                        divy = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                        divz = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
+                        UtilY = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
+                        UtilZ = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
 
                     }
                     else
                     {
-                        List<double> divs = new List<double>();
-                        divy = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
-                        divz = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
+                        List<double> Utils = new List<double>();
+                        UtilY = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
+                        UtilZ = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
 
                     }
                 }
@@ -203,15 +203,15 @@ namespace Beaver_v0._1
                     if (lamm >= 0.75 && lamm < 1.4)
                     {
                         double kcrit = 1.56 - 0.75 * lamm;
-                        divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        divz = 0;
+                        UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                        UtilZ = 0;
 
                     }
                     if (lamm >= 1.4)
                     {
                         double kcrit = 1 / Math.Pow(lamm, 2);
-                        divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        divz = 0;
+                        UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                        UtilZ = 0;
 
                     }
                 }
@@ -224,28 +224,28 @@ namespace Beaver_v0._1
                 if (lamm >= 0.75 && lamm < 1.4)
                 {
                     double kcrit = 1.56 - 0.75 * lamm;
-                    divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
-                    divz = Km*(sigMy / fmd) + (sigN / ft0d) + (sigMz / fmd);
+                    UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
+                    UtilZ = Km*(sigMy / fmd) + (sigN / ft0d) + (sigMz / fmd);
 
                 }
                 if (lamm >= 1.4)
                 {
                     double kcrit = 1 / Math.Pow(lamm, 2);
-                    divy = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
-                    divz = Km*(sigMy / (kcrit * fmd)) + (sigN / ft0d) + (sigMz / fmd);
+                    UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
+                    UtilZ = Km*(sigMy / (kcrit * fmd)) + (sigN / ft0d) + (sigMz / fmd);
 
                 }
                 else
                 {
-                    divy = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
-                    divz = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    UtilY = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
+                    UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
                 }
             }
             
-            DIVY = divy;
-            DIVZ = divz;
-            DA.SetData(0, DIVY);
-            DA.SetData(1, DIVZ);
+            UtilY = UtilY;
+            UtilZ = UtilZ;
+            DA.SetData(0, UtilY);
+            DA.SetData(1, UtilZ);
             DA.SetData(2, lamm);
 
 

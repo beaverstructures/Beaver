@@ -30,7 +30,7 @@ namespace Beaver_v0._1
             pManager.AddNumberParameter("Fastener Parallel", "npar", "Parallel number of Screws", GH_ParamAccess.item, 1);
             pManager.AddNumberParameter("Fastener Perpendicullar", "npep", "Perpendicular number of Screws", GH_ParamAccess.item, 1);
             pManager.AddTextParameter("Fastener Type", "F.Type", "Fastener Type (bolt, dowel, screw or nail)", GH_ParamAccess.item, "bolt");
-            pManager.AddBooleanParameter("Individual or Total Action", "Method", "if true the value of Fvsd is considered as" +
+            pManager.AddBooleanParameter("InUtilidual or Total Action", "Method", "if true the value of Fvsd is considered as" +
                 " the shear force acting on a specific fastener (i.e. the maximum force), if false the value is considered as " +
                 "the shear force on the overall connection",GH_ParamAccess.item,false);
             pManager.AddNumberParameter("Parallel Spacing", "a1", " Fastener spacing parallel to the grain [mm]", GH_ParamAccess.item, 100);
@@ -42,7 +42,7 @@ namespace Beaver_v0._1
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.Register_DoubleParam("Shear Strenght", "Rcvd", "Connection Design Load Carrying Capacity [N]");
-            pManager.Register_DoubleParam("DIV", "DIV", "Ratio between Stress and Strength");
+            pManager.Register_DoubleParam("Util", "Util", "Ratio between Stress and Strength");
             pManager.Register_DoubleParam("Effective Number of Fasteners", "Nef", "Effective Number of Fasteners");
         }
 
@@ -75,15 +75,15 @@ namespace Beaver_v0._1
             double n = npar * npep;
             double nef = Nef(d, a1, type, npar, npep);
             double nalfa = (alpha / (Math.PI / 2)) * (n - nef) + nef;
-            double DIV = 0;
+            double Util = 0;
             double FVrd = nalfa * fvrd;
             if (method)
             {
                 FVrd = FVrd / n;
             }
-            DIV = vsd / FVrd;
+            Util = vsd / FVrd;
             DA.SetData(0, FVrd);
-            DA.SetData(1, DIV);
+            DA.SetData(1, Util);
             DA.SetData(2, nalfa);
         }
 

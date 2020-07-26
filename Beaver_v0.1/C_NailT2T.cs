@@ -173,14 +173,14 @@ namespace Beaver_v0._1
                 failureMode = cap.failureMode;
             }
             double faxd = kmod * analysis.variables.Faxrk / 1.3;
-            double DIV = 0;
+            double Util = 0;
             if (fast.smooth == true)
             {
-                DIV = Nrd / faxd + Vrd / fvd;
+                Util = Nrd / faxd + Vrd / fvd;
             }
             else
             {
-                DIV = Math.Pow(Nrd / faxd, 2) + Math.Pow(Vrd / fvd, 2);
+                Util = Math.Pow(Nrd / faxd, 2) + Math.Pow(Vrd / fvd, 2);
             }
             DA.SetData(0, fvd);
             DA.SetData(1, faxd);

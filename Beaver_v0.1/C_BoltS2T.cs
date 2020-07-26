@@ -177,7 +177,7 @@ namespace Beaver_v0._1
 
             //Steel Plate
             double Fsrd = Math.Min(1.2 * a4 * tsteel * 400 / 1.35, 2.4 * fast.d * tsteel * 400 / 1.35);
-            double DIVsteel = Vrd / Fsrd;
+            double Utilsteel = Vrd / Fsrd;
 
             DA.SetData(0, fvd);
             DA.SetData(1, faxd);

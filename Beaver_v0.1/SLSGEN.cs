@@ -133,15 +133,15 @@ namespace Beaver_v0._1
             double wcreep = (1 + kdef(SC))*(wginst+sumQ);
             double winstlim = span / liminst;
             double wcreeplim = span / limcreep;
-            double instDIV = winst / winstlim;
-            double creepDIV = wcreep / wcreeplim;
+            double instUtil = winst / winstlim;
+            double creepUtil = wcreep / wcreeplim;
             List<string> Info = new List<string>();
             Info.Add("wG + w" + Wq[idxmaxComb].type + " + Σ(φᵢ₀wQᵢ)");
             Info.Add("(1 + kdef)(wG + Σ(φᵢ₂wQᵢ)");
             DA.SetData(0, winst);
             DA.SetData(1, wcreep);
-            DA.SetData(2, instDIV);
-            DA.SetData(3, creepDIV);
+            DA.SetData(2, instUtil);
+            DA.SetData(3, creepUtil);
             DA.SetData(4, Info);
         }
     

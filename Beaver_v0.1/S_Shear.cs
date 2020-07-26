@@ -40,7 +40,7 @@ namespace Beaver_v0._1
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.Register_DoubleParam("DIV", "DIV", "Reason between Stress and Strength");
+            pManager.Register_DoubleParam("Util", "Util", "Reason between Stress and Strength");
 
         }
 
@@ -99,8 +99,8 @@ namespace Beaver_v0._1
             double bef = 0.67 * b;
             double Sigv = (3 / 2) * (V / (bef * h));
             double fvd = Kmod * Fvk / Gamm;
-            double Div = Sigv / fvd;
-            DA.SetData(0, Div);
+            double Util = Sigv / fvd;
+            DA.SetData(0, Util);
         }
 
         /// <summary>
