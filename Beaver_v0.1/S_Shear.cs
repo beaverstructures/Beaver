@@ -96,7 +96,12 @@ namespace Beaver_v0._1
             Material timber = new Material(test);
             Fvk = timber.fvk;
             Gamm = timber.Ym;
-            double bef = 0.67 * b;
+            double kcrit = 1;
+            if (timber.name == "GLULAM")
+            {
+                kcrit = 0.67;
+            }
+            double bef = kcrit * b;
             double Sigv = (3 / 2) * (V / (bef * h));
             double fvd = Kmod * Fvk / Gamm;
             double Util = Sigv / fvd;

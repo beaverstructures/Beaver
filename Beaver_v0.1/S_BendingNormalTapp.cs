@@ -35,7 +35,7 @@ namespace Beaver_v0._1
             pManager.AddNumberParameter("Heigth 1", "h1", "Shorter Section Heigth [cm]", GH_ParamAccess.item, 10);
             pManager.AddNumberParameter("Heigth 2", "h2", "Longer Section Heigt [cm]", GH_ParamAccess.item, 10);
             pManager.AddNumberParameter("Heigth 3", "hbend", "Section Heigt where Maximum Bending Force occurs [cm]", GH_ParamAccess.item, 10);
-            pManager.AddNumberParameter("Length", "l", "Element Length [m]", GH_ParamAccess.item, 4);
+            pManager.AddNumberParameter("Length", "l", "Element Length in Y direction [m]", GH_ParamAccess.item, 4);
             pManager.AddNumberParameter("Effective Length as a Ratio of the Span", "kflam", "lef/l", GH_ParamAccess.item, 1);
             pManager.AddNumberParameter("Modification Factor", "Kmod", "Modification Factor for Load Duration and Moisture Content", GH_ParamAccess.item, 0.6);
             pManager.AddIntegerParameter("Tapered Edge Stresses", "t/c", "1 for Tensile Stresses on the Tapered Edge, -1 for Compressive Stresses on the Tapered Edge", GH_ParamAccess.item, 1);
@@ -49,7 +49,6 @@ namespace Beaver_v0._1
         {
             pManager.Register_DoubleParam("UtilY", "UtilY", "Reason between Stress and Strength appliying Km on the Z axis");
             pManager.Register_DoubleParam("UtilZ", "UtilZ", "Reason between Stress and Strength appliying Km on the Y axis");
-            pManager.Register_DoubleParam("Relative Lambda", "lamm", "The element was considered as a Column if (lamm < 0.75) or a Beam if (lamm > 0.75)");
             pManager.Register_DoubleParam("Utilt", "Utilt", "Influence of the Taper on the Bending Stresses parallel to the Tapered Surface");
         }
         public override void AddedToDocument(GH_Document document)
@@ -259,15 +258,11 @@ namespace Beaver_v0._1
 
             DA.SetData(0, UtilY);
             DA.SetData(1, UtilZ);
-            DA.SetData(2, lamm);
 
             //Checagem da seção variável
             double sigmald = 600 * Myd / (b * Math.Pow(h3, 2));
             double UtilYt = sigmald / (kmk * fmd);
-            DA.SetData(3, UtilYt);
-
-            //Outros Outputs
-            DA.SetData(2, lamm);
+            DA.SetData(2, UtilYt);
 
         }
 

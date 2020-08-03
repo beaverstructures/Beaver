@@ -63,7 +63,7 @@ namespace Beaver_v0._1
         {
             Material timber = new Material();
             List<string> names = timber.GetTypesNames();
-            if (Params.Input[8].SourceCount == 0)
+            if (Params.Input[9].SourceCount == 0)
             {
                 // Perform Layout to get actual positionning of the component on the canevas
                 this.Attributes.ExpireLayout();
@@ -81,7 +81,7 @@ namespace Beaver_v0._1
                 }
 
                 document.AddObject(vl, false);
-                Params.Input[8].AddSource(vl);
+                Params.Input[9].AddSource(vl);
                 //get the pivot of the "accent" param
                 PointF currPivot = Params.Input[8].Attributes.Pivot;
                 //set the pivot of the new object
@@ -227,7 +227,6 @@ namespace Beaver_v0._1
                     }
                     else
                     {
-                        List<double> Utils = new List<double>();
                         UtilY = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
                         UtilZ = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
 

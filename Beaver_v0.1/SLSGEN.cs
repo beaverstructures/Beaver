@@ -124,13 +124,44 @@ namespace Beaver_v0._1
             }
             double winst = Wq[idxmaxComb].Sk;
             //CREEP DEFLECTION
-            double sumQ = 0;
+            double wgcreep = 0;
+            for (int i = 0; i < wgk.Count; i++)
+            {
+                wgcreep += wgk[i].Sk*(1+kdef(SC));
+            }
+            List<Action> Wqcrep = new List<Action>();
             for (int i = 0; i < wqk.Count; i++)
             {
-                TypeInfo info = new TypeInfo(wqk[i].type);
-                sumQ += wqk[i].Sk * info.phi2;
+                List<Action> SQa = new List<Action>(wqk);
+                SQa.RemoveAt(i);
+                Action WQMain = wqk[i];
+                double SumWc = 0;
+                for (int j = 0; j < SQa.Count; j++)
+                {
+                    TypeInfo info = new TypeInfo(SQa[j].type);
+                    SumWc += SQa[j].Sk * (info.phi0+kdef(SC)*info.phi2);
+                }
+                TypeInfo maininfo = new TypeInfo(WQMain.type);
+                double wqmaincreep = WQMain.Sk * (1 + kdef(SC) * maininfo.phi2);
+                Wqcrep.Add(new Action(wgcreep + wqmaincreep + SumWc, WQMain.type));
+                foreach (Action a in wwk)
+                {
+                    Wqcrep.Add(new Action(wgcreep + (WQMain.Sk + SumWc + 0.6 * a.Sk), WQMain.type));
+                }
             }
-            double wcreep = (1 + kdef(SC))*(wginst+sumQ);
+            double maxCombcrep = 0;
+            int idxmaxCombcrep = 0;
+            for (int i = 0; i < Wqcrep.Count; i++)
+            {
+                TypeInfo info = new TypeInfo(Wq[i].type);
+                double wcomb = Math.Abs(Wq[i].Sk);
+                if (wcomb > maxComb)
+                {
+                    maxCombcrep = wcomb;
+                    idxmaxCombcrep = i;
+                }
+            }
+            double wcreep = Wqcrep[idxmaxCombcrep].Sk;
             double winstlim = span / liminst;
             double wcreeplim = span / limcreep;
             double instUtil = winst / winstlim;

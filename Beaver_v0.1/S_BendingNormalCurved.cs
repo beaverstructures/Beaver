@@ -28,24 +28,18 @@ namespace Beaver_v0._1
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("Nd", "Nd", "Compression Forces Parralel to the Grain [kN]", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Nd", "Nd", "Normal Forces Parallel to the Grain [kN]", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Myd", "Myd", "Y local axis Bending Forces [kNm]", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Mzd", "Mzd", "Z local axis Bending Forces [kNm]", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Base", "b", "Section Base [cm]", GH_ParamAccess.item, 10);
             pManager.AddNumberParameter("Heigth", "h", "Section Heigth [cm]", GH_ParamAccess.item, 10);
-            pManager.AddNumberParameter("Length", "l", "Element Length [m]", GH_ParamAccess.item, 4);
-            pManager.AddNumberParameter("Effective Length as a Ratio of the Span", "kflam", "lef/l", GH_ParamAccess.item, 1);
+            pManager.AddNumberParameter("Buckling Length Y", "BklLenY", "Effective Bucking Length of Element in local Y direction [m] if > 0", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Buckling Length Z", "BklLenZ", "Effective Bucking Length of Element in local Z direction [m] if > 0", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Effective Length as a Ratio of the Span", "kflam", "lef/l (EC5 Table 6.1)", GH_ParamAccess.item, 1);
             pManager.AddNumberParameter("Modification Factor", "Kmod", "Modification Factor for Load Duration and Moisture Content", GH_ParamAccess.item, 0.6);
             pManager.AddNumberParameter("Arch Curvature", "rin", "Minimum Curvature Radius [cm]", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Lamination Thickness", "t", "Lamination Thickness [cm]", GH_ParamAccess.item, 3);
             pManager.AddTextParameter("Material", "Material", "Section Material", GH_ParamAccess.item, "");
-
-            // pManager.AddNumberParameter("Km da seção", "Km", "Coeficiente determinado pelo tipo de seção (0.7 para retangulares e 1.0 para outras)", GH_ParamAccess.item,0.7);
-            // pManager.AddNumberParameter("Gama m", "Ym", "Coeficiente de redução do material", GH_ParamAccess.item);
-            // pManager.AddNumberParameter("Resistência à Compressão", "fc0k", "Resistência à Compressão paralela à fibra [KN/cm2]", GH_ParamAccess.item);
-            // pManager.AddNumberParameter("Resistência à Flexão", "fmk", "Resistência à Flexão [KN/cm2]", GH_ParamAccess.item);
-            //pManager.AddNumberParameter("Módulo de Elasticidade", "E05", "Módulo de Young do material, que caracteriza sua rigidez à um escoamento de 5% [KN/cm2]", GH_ParamAccess.item);
-            // pManager.AddNumberParameter("Beta c", "Bc", "Coeficiente influente na analise de pilares, 0.1 para MLC e 0.2 para solido", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -62,7 +56,7 @@ namespace Beaver_v0._1
         {
             Material timber = new Material();
             List<string> names = timber.GetTypesNames();
-            if (Params.Input[10].SourceCount == 0)
+            if (Params.Input[11].SourceCount == 0)
             {
                 // Perform Layout to get actual positionning of the component on the canevas
                 this.Attributes.ExpireLayout();
@@ -80,7 +74,7 @@ namespace Beaver_v0._1
                 }
 
                 document.AddObject(vl, false);
-                Params.Input[10].AddSource(vl);
+                Params.Input[11].AddSource(vl);
                 //get the pivot of the "accent" param
                 PointF currPivot = Params.Input[10].Attributes.Pivot;
                 //set the pivot of the new object
@@ -101,14 +95,16 @@ namespace Beaver_v0._1
             double Mzd = 0;
             double b = 0;
             double h = 0;
-            double l = 0;
-            double kflam = 0;
+            double ly = 0;
+            double lz = 0;
             double Kmod = 0;
             double Km = 0.7;
             double Ym = 0;
             double fc0k = 0;
+            double ft0k = 0;
             double fmk = 0;
             double E05 = 0;
+            double kflam = 0;
             double Bc = 0.2;
             double rin = 0;
             double t = 0;
@@ -118,19 +114,28 @@ namespace Beaver_v0._1
             if (!DA.GetData<double>(2, ref Mzd)) { return; }
             if (!DA.GetData<double>(3, ref b)) { return; }
             if (!DA.GetData<double>(4, ref h)) { return; }
-            if (!DA.GetData<double>(5, ref l)) { return; }
-            if (!DA.GetData<double>(6, ref kflam)) { return; }
-            if (!DA.GetData<string>(10, ref test)) { return; }
-            if (!DA.GetData<double>(7, ref Kmod)) { return; }
-            if (!DA.GetData<double>(8, ref rin)) { return; }
-            if (!DA.GetData<double>(9, ref t)) { return; }
+            if (!DA.GetData<double>(5, ref ly)) { return; }
+            if (!DA.GetData<double>(6, ref lz)) { return; }
+            if (!DA.GetData<double>(7, ref kflam)) { return; }
+            if (!DA.GetData<double>(8, ref Kmod)) { return; }
+            if (!DA.GetData<double>(9, ref rin)) { return; }
+            if (!DA.GetData<double>(10, ref t)) { return; }
+            if (!DA.GetData<string>(11, ref test)) { return; }
+
+
+            if (test == "") { test = "GL 24h"; }
             Material timber = new Material(test);
             Ym = timber.Ym;
             fc0k = timber.fc0k;
+            ft0k = timber.ft0k;
             fmk = timber.fmk;
             E05 = timber.E005;
-            double ft0k = timber.ft0k;
-            if (timber.name=="GLULAM") { Bc = 0.1; }
+            if (timber.name == "GLULAM")
+            {
+                Bc = 0.1;
+            }
+            else { Bc = 0.2; }
+
             //Definição de valores geométricos
             double A = h * b;
             double Iy = b * Math.Pow(h, 3) / 12;
@@ -139,9 +144,10 @@ namespace Beaver_v0._1
             double Wz = Iz * (2 / b);
             double ry = Math.Sqrt(Iy / A);
             double rz = Math.Sqrt(Iz / A);
-            double lamy = (100 * l)/ry;
-            double lamz = (100 * l)/rz;
-            double lef = kflam * l * 100;
+            double lamy = (100 * ly) / ry;
+            double lamz = (100 * lz) / rz;
+            double lefy = ly * kflam * 100;
+            double lefz = lz * kflam * 100;
             double Kr = rin / t;
             if (Kr >= 240)
             {
@@ -151,105 +157,162 @@ namespace Beaver_v0._1
             {
                 Kr = 0.76 + 0.001 * (rin / t);
             }
-
-            //Definição de valores do material (ver se os sigmas devem mesmo serem multiplicados por 100)
+            //Definição de valores do material 
             double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
             double fc0d = Kmod * fc0k / Ym;
-            double fmd = Kr * Kmod * fmk / Ym;
-            double ft0d = ft0k * Kmod / Ym;
+            double ft0d = Kmod * ft0k / Ym;
+            double fmd = Kmod * fmk / Ym;
             double lamyrel = lamy * lampi;
             double lamzrel = lamz * lampi;
             double sigN = Nd / A;
-            double sigMy = 100 * Myd / Wy;
+            double sigMy = 100 * Myd / (Wy*Kr);
             double sigMz = 100 * Mzd / Wz;
             double G05 = E05 / 16;
-
-            //Definição dos valores de cálculo necessários para verificação em pilares ou vigas (exclui parte em que dizia que lamrely=lamm e lamrelz=sgmcrit)
-            double sigMcrit = (0.78 * Math.Pow(b, 2) / (h * lef)) * E05;
-            double lamm = Math.Sqrt(fmk / sigMcrit);
-            double ky = 0.5 * (1 + Bc * (lamyrel - 0.3) + Math.Pow(lamyrel, 2));
-            double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2));
-            double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
-            double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
             double UtilY = 0;
             double UtilZ = 0;
             double UtilYg = 0;
             double UtilZg = 0;
+            string info = "";
+
+            //Definição dos valores de cálculo necessários para verificação em pilares ou vigas 
+            double sigMcrity = (0.78 * Math.Pow(b, 2) / (h * lefy)) * E05;
+            double sigMcritz = (0.78 * Math.Pow(h, 2) / (b * lefz)) * E05;
+            double lammy = Math.Sqrt(fmk / sigMcrity);
+            double lammz = Math.Sqrt(fmk / sigMcritz);
+            double ky = 0.5 * (1 + Bc * (lamyrel - 0.3) + Math.Pow(lamyrel, 2));
+            double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2));
+            double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
+            double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
+            
+            string loaddata = "";
+
+            if (Nd > 0)
+            {
+                if (Myd == 0 && Mzd == 0)
+                {
+                    loaddata = "Pure Tension";
+                }
+                else
+                {
+                    loaddata = "Tension + Bending";
+                }
+            }
+            else if (Nd < 0)
+            {
+                if (Myd == 0 && Mzd == 0)
+                {
+                    loaddata = "Pure Compression";
+                }
+                else
+                {
+                    loaddata = "Compression + Bending";
+                }
+            }
+            else if (Nd == 0 && (Myd != 0 || Mzd != 0))
+            {
+                loaddata = "Pure Bending";
+            }
+            string data = string.Format("λy ={0}, λz ={1},λrely ={2}, λrelz ={3}, ky ={4}, kz ={5}, kcy={6}, kcz={7}, σMcrity= {8}, σMcritz= {9}, λmy ={10}, λmz ={11}, kr = {12}",
+                Math.Round(lamy, 3), Math.Round(lamz, 3), Math.Round(lamyrel, 3), Math.Round(lamzrel, 3), Math.Round(ky, 3), Math.Round(kz, 3),
+                Math.Round(kyc, 3), Math.Round(kzc, 3), Math.Round(sigMcrity, 3), Math.Round(sigMcritz, 3), Math.Round(lammy, 3), Math.Round(lammz, 3), Math.Round(Kr, 3));
+
             if (Nd < 0)
             {
                 Nd = Math.Abs(Nd);
                 sigN = Math.Abs(sigN);
                 //Verificação de comportamento de Pilares
-                if (lamm < 0.75)
+                if (Math.Max(lammy, lammz) < 0.75) //checar se é isso mesmo, ou devo considerar apenas lammy
                 {
                     if (lamyrel <= 0.3 && lamzrel <= 0.3)
                     {
                         UtilY = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
                         UtilZ = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
-
+                        info = loaddata + ", No Buckling effect:" + data;
                     }
                     else
                     {
-                        List<double> Utils = new List<double>();
                         UtilY = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
                         UtilZ = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
 
                     }
+
+                    info = loaddata + ", Acts as collumn (λm<0.75): " + data;
                 }
                 //Verificação de comportamento de Vigas
                 else
                 {
 
-                    if (lamm >= 0.75 && lamm < 1.4)
+                    if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                     {
-                        double kcrit = 1.56 - 0.75 * lamm;
-                        UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        UtilZ = 0;
+                        double kcrity = Getkcrit(lammy);
+                        double kcritz = Getkcrit(lammz);
+                        UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                        UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd); ;
+                        info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
 
                     }
-                    if (lamm >= 1.4)
+                    if (Math.Max(lammy, lammz) >= 1.4)
                     {
-                        double kcrit = 1 / Math.Pow(lamm, 2);
-                        UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        UtilZ = 0;
-
+                        double kcrity = Getkcrit(lammy);
+                        double kcritz = Getkcrit(lammz);
+                        UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                        UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd);
+                        info = loaddata + ", Acts as a Beam (λm >= 1.4): " + data;
                     }
+
+
+
                 }
 
-                //verificação genérica (deve ser verificada não importa o tipo do perfil)
-                UtilYg = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                UtilZg = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
 
 
             }
             else if (Nd >= 0)
             {
-                if (lamm >= 0.75 && lamm < 1.4)
+                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                 {
-                    double kcrit = 1.56 - 0.75 * lamm;
-                    UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
-                    UtilZ = Km * (sigMy / fmd) + (sigN / ft0d) + (sigMz / fmd);
-
+                    double kcrity = Getkcrit(lammy);
+                    double kcritz = Getkcrit(lammz);
+                    UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
+                    UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / ft0d) + Km * (sigMy / fmd);
+                    info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
                 }
-                if (lamm >= 1.4)
+                if (Math.Max(lammy, lammz) >= 1.4)
                 {
-                    double kcrit = 1 / Math.Pow(lamm, 2);
-                    UtilY = Math.Pow(sigMy / (kcrit * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
-                    UtilZ = Km * (sigMy / (kcrit * fmd)) + (sigN / ft0d) + (sigMz / fmd);
-
+                    double kcrity = Getkcrit(lammy);
+                    double kcritz = Getkcrit(lammz);
+                    UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
+                    UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (ft0d)) + Km * (sigMy / fmd);
+                    info = loaddata + ", Acts as a Beam (λm >= 1.4): " + data;
                 }
                 else
                 {
                     UtilY = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
                     UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    info = loaddata + ", No Torsional Buckling effects";
                 }
             }
-            UtilY = Math.Max(UtilYg, UtilY);
-            UtilZ = Math.Max(UtilZg, UtilZ);
+
+
+
             DA.SetData(0, UtilY);
             DA.SetData(1, UtilZ);
-            DA.SetData(2, lamm);
+            DA.SetData(2, info); //editar
 
+
+        }
+        double Getkcrit(double lam)
+        {
+            double kcrit = 1;
+            if (lam >= 0.75 && lam < 1.4)
+            {
+                kcrit = 1.56 - 0.75 * lam;
+            }
+            else if (lam >= 1.4)
+            {
+                kcrit = 1 / Math.Pow(lam, 2);
+            }
+            return kcrit;
         }
 
         /// <summary>
