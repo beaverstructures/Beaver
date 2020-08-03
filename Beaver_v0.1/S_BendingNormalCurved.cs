@@ -244,8 +244,8 @@ namespace Beaver_v0._1
                     UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
                 }
             }
-            double UtilY = Math.Max(UtilYg, UtilY);
-            double UtilZ = Math.Max(UtilZg, UtilZ);
+            UtilY = Math.Max(UtilYg, UtilY);
+            UtilZ = Math.Max(UtilZg, UtilZ);
             DA.SetData(0, UtilY);
             DA.SetData(1, UtilZ);
             DA.SetData(2, lamm);

@@ -181,8 +181,6 @@ namespace Beaver_v0._1
             double UtilY = 0;
             double UtilZ = 0;
             double kcrit = 1;
-            double UtilY = 0;
-            double UtilZ = 0;
             double UtilYg = 0;
             double UtilZg = 0;
 

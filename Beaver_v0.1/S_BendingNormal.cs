@@ -56,7 +56,7 @@ namespace Beaver_v0._1
         {
             pManager.Register_DoubleParam("UtilY", "UtilY", "Reason between Stress and Strength appliying Km on the Z axis");
             pManager.Register_DoubleParam("UtilZ", "UtilZ", "Reason between Stress and Strength appliying Km on the Y axis");
-            pManager.Register_DoubleParam("info", "info", "Main calculated parameters");
+            pManager.Register_StringParam("info", "info", "Main calculated parameters");
         }
 
         public override void AddedToDocument(GH_Document document)
@@ -170,8 +170,6 @@ namespace Beaver_v0._1
             double UtilZ = 0;
             double UtilYg = 0;
             double UtilZg = 0;
-            double UtilY = 0;
-            double UtilZ = 0;
             string info = "";
 
             //Definição dos valores de cálculo necessários para verificação em pilares ou vigas 
@@ -183,6 +181,37 @@ namespace Beaver_v0._1
             double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2));
             double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
+            string loaddata = "";
+
+            if (Nd > 0) {
+                if ( Myd==0 && Mzd == 0)
+                {
+                    loaddata = "Pure Tension";
+                }
+                else
+                {
+                    loaddata = "Tension + Bending";
+                }
+            }
+            else if (Nd < 0)
+            {
+                if (Myd == 0 && Mzd == 0)
+                {
+                    loaddata = "Pure Compression";
+                }
+                else
+                {
+                    loaddata = "Compression + Bending";
+                }
+            }
+            else if (Nd==0 && (Myd!=0 || Mzd != 0))
+            {
+                loaddata = "Pure Bending";
+            }
+            string data = string.Format("λy ={0}, λz ={1},λrely ={2}, λrelz ={3}, ky ={4}, kz ={5}, kcy={6}, kcz={7}, σMcrity= {8}, σMcritz= {9}, λmy ={10}, λmz ={11}",
+                Math.Round(lamy,3), Math.Round(lamz,3), Math.Round(lamyrel,3), Math.Round(lamzrel,3), Math.Round(ky,3), Math.Round(kz, 3),
+                Math.Round(kyc,3), Math.Round(kzc, 3), Math.Round(sigMcrity, 3), Math.Round(sigMcritz,3), Math.Round(lammy,3), Math.Round(lammz,3));
+
             if (Nd < 0)
             {
                 Nd = Math.Abs(Nd);
@@ -194,7 +223,7 @@ namespace Beaver_v0._1
                     {
                         UtilY = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
                         UtilZ = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
-
+                        info = loaddata + ", No Buckling effect:" + data;
                     }
                     else
                     {
@@ -204,28 +233,28 @@ namespace Beaver_v0._1
 
                     }
 
-                    info = "Acts as a Column (lamm < 0.75): SigN SigMy SigMz UtilY UtilZ"; //editar
+                    info = loaddata + ", Acts as collumn (λm<0.75): " + data;
                 }
                 //Verificação de comportamento de Vigas
                 else
                 {
 
-                    if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4) //acho que usar max lamm é conservador, não sei se deveríamos separar os ifs pra utily e utilz
+                    if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4) 
                     {
-                        double kcrity = 1.56 - 0.75 * lammy;
-                        double kcritz = 1.56 - 0.75 * lammz;
+                        double kcrity = Getkcrit(lammy);
+                        double kcritz = Getkcrit(lammz);
                         UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
                         UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd); ;
-                        info = "Acts as a Beam (0.75 <= lamm < 1.4): SigN SigMy SigMz kcrit kcy kcz UtilY UtilZ"; //editar
+                        info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
 
                     }
                     if (Math.Max(lammy, lammz) >= 1.4)
                     {
-                        double kcrity = 1 / Math.Pow(lammy, 2);
-                        double kcritz = 1 / Math.Pow(lammz, 2);
+                        double kcrity = Getkcrit(lammy);
+                        double kcritz = Getkcrit(lammz);
                         UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                        UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd); ;
-                        info = "Acts as a Beam (lamm >= 1.4): SigN SigMy SigMz kcrit kcy kcz UtilY UtilZ"; //editar
+                        UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd);
+                        info = loaddata +", Acts as a Beam (λm >= 1.4): " + data;
                     }
 
 
@@ -239,27 +268,27 @@ namespace Beaver_v0._1
             {
                 if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                 {
-                    double kcrity = 1.56 - 0.75 * lammy;
-                    double kcritz = 1.56 - 0.75 * lammz;
+                    double kcrity = Getkcrit(lammy);
+                    double kcritz = Getkcrit(lammz);
                     UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
                     UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / ft0d) + Km * (sigMy / fmd);
+                    info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
                 }
                 if (Math.Max(lammy, lammz) >= 1.4)
                 {
-                    double kcrity = 1 / Math.Pow(lammy, 2);
-                    double kcritz = 1 / Math.Pow(lammz, 2);
+                    double kcrity = Getkcrit(lammy);
+                    double kcritz = Getkcrit(lammz);
                     UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
                     UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (ft0d)) + Km * (sigMy / fmd);
+                    info = loaddata + ", Acts as a Beam (λm >= 1.4): " + data;
                 }
                 else
                 {
                     UtilY = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
                     UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    info = loaddata + ", No Torsional Buckling effects";
                 }
             }
-
-            UtilY = UtilY;
-            UtilZ = UtilZ;
 
             
 
@@ -269,7 +298,19 @@ namespace Beaver_v0._1
 
 
         }
-
+        double Getkcrit(double lam)
+        {
+            double kcrit = 1;
+            if (lam>=0.75 && lam < 1.4)
+            {
+                kcrit = 1.56 - 0.75 * lam;
+            }
+            else if (lam >= 1.4)
+            {
+                kcrit = 1 / Math.Pow(lam, 2);
+            }
+            return kcrit;
+        }
 
         /// <summary>
         /// Provides an Icon for the component.
