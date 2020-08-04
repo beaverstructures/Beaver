@@ -130,13 +130,13 @@ namespace Beaver_v0._1
             }
             double winst = Wq[idxmaxComb].Sk;
            
-            //WNET,FIN DEFLECTION
-            double wgnet = 0;
+            //WFIN DEFLECTION (disconsiders precamber)
+            double wgcreep = 0;
             for (int i = 0; i < wgk.Count; i++)
             {
-                wgnet += wgk[i].Sk*(1+kdef(SC));
+                wgcreep += wgk[i].Sk*(1+kdef(SC));
             }
-            List<Action> Wqnet = new List<Action>();
+            List<Action> Wqfin = new List<Action>();
             for (int i = 0; i < wqk.Count; i++)
             {
                 List<Action> SQa = new List<Action>(wqk);
@@ -150,31 +150,32 @@ namespace Beaver_v0._1
                 }
                 TypeInfo maininfo = new TypeInfo(WQMain.type);
                 double wqmaincreep = WQMain.Sk * (1 + kdef(SC) * maininfo.phi2);
-                Wqnet.Add(new Action(wgnet + wqmaincreep + SumWc, WQMain.type));
+                Wqfin.Add(new Action(wgcreep + wqmaincreep + SumWc, WQMain.type));
                 foreach (Action a in wwk)
                 {
-                    Wqnet.Add(new Action(wgnet + (WQMain.Sk + SumWc + 0.6 * a.Sk), WQMain.type));
+                    Wqfin.Add(new Action(wgcreep + (WQMain.Sk + SumWc + 0.6 * a.Sk), WQMain.type));
                 }
             }
-            double maxCombnet = 0;
-            int idxmaxCombnet = 0;
-            for (int i = 0; i < Wqnet.Count; i++)
+            double maxCombfin = 0;
+            int idxmaxCombfin = 0;
+            for (int i = 0; i < Wqfin.Count; i++)
             {
                 TypeInfo info = new TypeInfo(Wq[i].type);
                 double wcomb = Math.Abs(Wq[i].Sk);
                 if (wcomb > maxComb)
                 {
-                    maxCombnet = wcomb;
-                    idxmaxCombnet = i;
+                    maxCombfin = wcomb;
+                    idxmaxCombfin = i;
                 }
             }
 
-            //WFIN DEFLECTION
-            double wfin = 0;
-            //falta calcular o wfin que é igual ao wnet mas subtraindo o valor da contra flecha wc
 
 
-            double wnet = Wqnet[idxmaxCombnet].Sk;
+            //WNET DEFLECTION (same as wfin mas subtraindo precamber (WC), calculate wnet)
+
+
+
+            double wfin = Wqfin[idxmaxCombfin].Sk;
             double winstlim = span / Winstlim;
             double wnetlim = span / Wnetlim;
             double wfinlim = span / Wfinlim;
