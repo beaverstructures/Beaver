@@ -100,7 +100,7 @@ namespace Beaver_v0._1
             double l = 0;
             double kflam = 0;
             double Kmod = 0;
-            double Km = 0.7;
+            double Km = 1;
             double Ym = 0;
             double fc0k = 0;
             double fmk = 0;
@@ -129,7 +129,13 @@ namespace Beaver_v0._1
             fmk = timber.fmk;
             E05 = timber.E005;
             double ft0k = timber.ft0k;
-            if (timber.name == "GLULAM") { Bc = 0.1; }
+
+            if (timber.name == "GLULAM" || timber.name == "LVL")
+            {
+                Bc = 0.1;
+                Km = 0.7;
+            }
+            else { Bc = 0.2; Km = 1; }
 
             //Definição de valores geométricos
             double A = h1 * b;

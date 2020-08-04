@@ -98,7 +98,7 @@ namespace Beaver_v0._1
             double ly = 0;
             double lz = 0;
             double Kmod = 0;
-            double Km = 0.7;
+            double Km = 1;
             double Ym = 0;
             double fc0k = 0;
             double ft0k = 0;
@@ -130,11 +130,12 @@ namespace Beaver_v0._1
             ft0k = timber.ft0k;
             fmk = timber.fmk;
             E05 = timber.E005;
-            if (timber.name == "GLULAM")
+            if (timber.name == "GLULAM" || timber.name == "LVL")
             {
                 Bc = 0.1;
+                Km = 0.7;
             }
-            else { Bc = 0.2; }
+            else { Bc = 0.2; Km = 1; }
 
             //Definição de valores geométricos
             double A = h * b;
@@ -221,7 +222,7 @@ namespace Beaver_v0._1
                 Nd = Math.Abs(Nd);
                 sigN = Math.Abs(sigN);
                 //Verificação de comportamento de Pilares
-                if (Math.Max(lammy, lammz) < 0.75) //checar se é isso mesmo, ou devo considerar apenas lammy
+                if (Math.Max(lammy, lammz) < 0.75) 
                 {
                     if (lamyrel <= 0.3 && lamzrel <= 0.3)
                     {
@@ -236,7 +237,7 @@ namespace Beaver_v0._1
 
                     }
 
-                    info = loaddata + ", Acts as collumn (λm<0.75): " + data;
+                    info = loaddata + ", Acts as a Column (λm<0.75): " + data;
                 }
                 //Verificação de comportamento de Vigas
                 else
@@ -297,7 +298,7 @@ namespace Beaver_v0._1
 
             DA.SetData(0, UtilY);
             DA.SetData(1, UtilZ);
-            DA.SetData(2, info); //editar
+            DA.SetData(2, info); 
 
 
         }

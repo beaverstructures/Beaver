@@ -26,20 +26,23 @@ namespace Beaver_v0._1
             pManager.AddNumberParameter("Caracteristic Deflectons", "Wk", "Caracteristics deflections for each load case", GH_ParamAccess.list);
             pManager.AddTextParameter("Actions Type", "type", "Action type according to EN1990: AnnexA1 table A1.1. Valid action type names: P (permanent), QA (domestic), QB (office), QC (congregation), QD (shopping), QE (storage), QG (traffic), QH (roof), QS (snow), W (wind)", GH_ParamAccess.list);
             pManager.AddNumberParameter("Span Lenght", "span", "Span analysed", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Instantaneous Span Limit", "instlim", "Ratio between the span lenght(l) and maximum deflection(wnet) according to Table 7.2 in EN1995", GH_ParamAccess.item,350);
-            pManager.AddNumberParameter("Creep Span Limit", "creeplim", "Ratio between the span lenght (l) and maximum deflection(wnet,fin) according to Table 7.2 in EN1995", GH_ParamAccess.item,250);
+            pManager.AddNumberParameter("Instantaneous Deflection Limit", "Winst,lim", "Ratio between the span lenght(l) and maximum instantaneous deflection (Winst) according to Table 7.2 in EN1995", GH_ParamAccess.item,350);
+            pManager.AddNumberParameter("Net Final Deflection Span Limit", "Wnet,lim", "Ratio between the span lenght (l) and maximum net final deflection (Wnet,fin) according to Table 7.2 in EN1995", GH_ParamAccess.item,250);
+            pManager.AddNumberParameter("Final Deflection Limit", "Wfin,lim", "Ratio between the span lenght (l) and maximum final deflection (Wfin) according to Table 7.2 in EN1995", GH_ParamAccess.item, 150);
             pManager.AddIntegerParameter("Service Class", "SC", "Service Class according to EN1995", GH_ParamAccess.item);
         }
 
         /// <summary>
         /// Registers all the output parameters for this component.
         /// </summary>
-        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
+        protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager) //corrigir nomes do outputs
         {
-            pManager.AddNumberParameter("Instantaneous deflection", "winst", "Most relevant instantaneous deflection", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Creep deflection", "wcreep", "Most relevant creep deflection", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Instantaneous ratio", "winst/wnet", "Most relevant instantaneous ratio", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Creep ratio", "wcreep/wnet,fin", "Most relevant creep ratio", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Instantaneous deflection", "Winst", "Most relevant instantaneous deflection", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Net deflection", "Wnet", "Most relevant net final deflection", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Final deflection", "Wfin", "Most relevant final deflection", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Instantaneous Deflection ratio", "Winst/Winst,lim [%]", "Most relevant instantaneous deflection ratio", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Net ratio", "Wnet/Wnet,lim [%]", "Most relevant net deflection ratio", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Final ratio", "Wfin/Wfin,lim [%]", "Most relevant final deflection ratio", GH_ParamAccess.list);
             pManager.AddTextParameter("Combination Info", "Info", "Equation considered in combination", GH_ParamAccess.list);
         }
 
@@ -54,15 +57,17 @@ namespace Beaver_v0._1
             List<double> wk = new List<double>();
             List<string> type = new List<string>();
             double span = 0;
-            double liminst = 0;
-            double limcreep = 0;
+            double Winstlim = 0;
+            double Wnetlim = 0;
+            double Wfinlim = 0;
             int SC = 0;
             DA.GetDataList(0, wk);
             DA.GetDataList(1, type);
             DA.GetData(2, ref span);
-            DA.GetData(3, ref liminst);
-            DA.GetData(4, ref limcreep);
-            DA.GetData(5, ref SC);
+            DA.GetData(3, ref Winstlim);
+            DA.GetData(4, ref Wnetlim);
+            DA.GetData(5, ref Wfinlim);
+            DA.GetData(6, ref SC);
             List<Action> wgk = new List<Action>();
             List<Action> wqk = new List<Action>();
             List<Action> wwk = new List<Action>();
@@ -83,10 +88,11 @@ namespace Beaver_v0._1
                 }
                 else
                 {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Type number x does not match with any existing type (see EN1990)");
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Type name does not match with any existing type (see EN1990)");
                 }
             }
-            //INSTANTANEOUS DEFLECTION
+            
+            //WINST DEFLECTION
             double wginst = 0;
             for (int i = 0; i < wgk.Count; i++)
             {
@@ -123,13 +129,14 @@ namespace Beaver_v0._1
                 }
             }
             double winst = Wq[idxmaxComb].Sk;
-            //CREEP DEFLECTION
-            double wgcreep = 0;
+           
+            //WNET,FIN DEFLECTION
+            double wgnet = 0;
             for (int i = 0; i < wgk.Count; i++)
             {
-                wgcreep += wgk[i].Sk*(1+kdef(SC));
+                wgnet += wgk[i].Sk*(1+kdef(SC));
             }
-            List<Action> Wqcrep = new List<Action>();
+            List<Action> Wqnet = new List<Action>();
             for (int i = 0; i < wqk.Count; i++)
             {
                 List<Action> SQa = new List<Action>(wqk);
@@ -143,37 +150,47 @@ namespace Beaver_v0._1
                 }
                 TypeInfo maininfo = new TypeInfo(WQMain.type);
                 double wqmaincreep = WQMain.Sk * (1 + kdef(SC) * maininfo.phi2);
-                Wqcrep.Add(new Action(wgcreep + wqmaincreep + SumWc, WQMain.type));
+                Wqnet.Add(new Action(wgnet + wqmaincreep + SumWc, WQMain.type));
                 foreach (Action a in wwk)
                 {
-                    Wqcrep.Add(new Action(wgcreep + (WQMain.Sk + SumWc + 0.6 * a.Sk), WQMain.type));
+                    Wqnet.Add(new Action(wgnet + (WQMain.Sk + SumWc + 0.6 * a.Sk), WQMain.type));
                 }
             }
-            double maxCombcrep = 0;
-            int idxmaxCombcrep = 0;
-            for (int i = 0; i < Wqcrep.Count; i++)
+            double maxCombnet = 0;
+            int idxmaxCombnet = 0;
+            for (int i = 0; i < Wqnet.Count; i++)
             {
                 TypeInfo info = new TypeInfo(Wq[i].type);
                 double wcomb = Math.Abs(Wq[i].Sk);
                 if (wcomb > maxComb)
                 {
-                    maxCombcrep = wcomb;
-                    idxmaxCombcrep = i;
+                    maxCombnet = wcomb;
+                    idxmaxCombnet = i;
                 }
             }
-            double wcreep = Wqcrep[idxmaxCombcrep].Sk;
-            double winstlim = span / liminst;
-            double wcreeplim = span / limcreep;
+
+            //WNET,FIN DEFLECTION
+            double wfin = 0;
+            //falta calcular o wfin que é igual ao wnet mas subtraindo o valor da contra flecha wc
+
+
+            double wnet = Wqnet[idxmaxCombnet].Sk;
+            double winstlim = span / Winstlim;
+            double wnetlim = span / Wnetlim;
+            double wfinlim = span / Wfinlim;
             double instUtil = winst / winstlim;
-            double creepUtil = wcreep / wcreeplim;
+            double netUtil = wnet / wnetlim;
+            double finUtil = wfin / wfinlim; 
             List<string> Info = new List<string>();
             Info.Add("wG + w" + Wq[idxmaxComb].type + " + Σ(φᵢ₀wQᵢ)");
             Info.Add("(1 + kdef)(wG + Σ(φᵢ₂wQᵢ)");
             DA.SetData(0, winst);
-            DA.SetData(1, wcreep);
-            DA.SetData(2, instUtil);
-            DA.SetData(3, creepUtil);
-            DA.SetData(4, Info);
+            DA.SetData(1, wnet);
+            DA.SetData(2, wfin);
+            DA.SetData(3, instUtil);
+            DA.SetData(4, netUtil);
+            DA.SetData(5, finUtil);
+            DA.SetData(6, Info);
         }
     
             double kdef(int SC) { 

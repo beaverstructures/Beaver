@@ -41,12 +41,7 @@ namespace Beaver_v0._1
             pManager.AddNumberParameter("Effective Length as a Ratio of the Span", "kflam", "lef/l (EC5 Table 6.1)", GH_ParamAccess.item, 1);
             pManager.AddNumberParameter("Modification Factor", "Kmod", "Modification Factor for Load Duration and Moisture Content", GH_ParamAccess.item, 0.6);
             pManager.AddTextParameter("Material", "Material", "Section Material", GH_ParamAccess.item, "");
-            //pManager.AddNumberParameter("Km", "Km", "Use 0.7 for Rectangular Cross Sections (Glulam and LVL only) and 1.0 for Other", GH_ParamAccess.item,0.7);
-            // pManager.AddNumberParameter("Gama m", "Ym", "Coeficiente de redução do material", GH_ParamAccess.item);
-            // pManager.AddNumberParameter("Resistência à Compressão", "fc0k", "Resistência à Compressão paralela à fibra [KN/cm2]", GH_ParamAccess.item);
-            // pManager.AddNumberParameter("Resistência à Flexão", "fmk", "Resistência à Flexão [KN/cm2]", GH_ParamAccess.item);
-            //pManager.AddNumberParameter("Módulo de Elasticidade", "E05", "Módulo de Young do material, que caracteriza sua rigidez à um escoamento de 5% [KN/cm2]", GH_ParamAccess.item);
-            // pManager.AddNumberParameter("Beta c", "Bc", "Coeficiente influente na analise de pilares, 0.1 para MLC e 0.2 para solido", GH_ParamAccess.item);
+
         }
 
         /// <summary>
@@ -108,7 +103,7 @@ namespace Beaver_v0._1
             double ly = 0;
             double lz = 0;
             double Kmod = 0;
-            double Km = 0.7;
+            double Km = 1;
             double Ym = 0;
             double fc0k = 0;
             double ft0k = 0;
@@ -116,6 +111,7 @@ namespace Beaver_v0._1
             double E05 = 0;
             double kflam = 0;
             double Bc = 0.2;
+            
             string test = "";
             if (!DA.GetData<double>(0, ref Nd)) { return; }
             if (!DA.GetData<double>(1, ref Myd)) { return; }
@@ -136,11 +132,12 @@ namespace Beaver_v0._1
             ft0k = timber.ft0k;
             fmk = timber.fmk;
             E05 = timber.E005;
-            if (timber.name == "GLULAM")
+            if (timber.name == "GLULAM" || timber.name == "LVL")
             {
                 Bc = 0.1;
+                Km = 0.7;
             }
-            else { Bc = 0.2; }
+            else { Bc = 0.2; Km = 1; }
            
             //Definição de valores geométricos
             double A = h * b;
@@ -168,8 +165,6 @@ namespace Beaver_v0._1
             double G05 = E05 / 16;
             double UtilY = 0;
             double UtilZ = 0;
-            double UtilYg = 0;
-            double UtilZg = 0;
             string info = "";
 
             //Definição dos valores de cálculo necessários para verificação em pilares ou vigas 
@@ -232,7 +227,7 @@ namespace Beaver_v0._1
 
                     }
 
-                    info = loaddata + ", Acts as collumn (λm<0.75): " + data;
+                    info = loaddata + ", Acts as a Column (λm<0.75): " + data;
                 }
                 //Verificação de comportamento de Vigas
                 else
@@ -293,7 +288,7 @@ namespace Beaver_v0._1
 
             DA.SetData(0, UtilY);
             DA.SetData(1, UtilZ);
-            DA.SetData(2, info); //editar
+            DA.SetData(2, info); 
 
 
         }
