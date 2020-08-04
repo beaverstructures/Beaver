@@ -169,7 +169,7 @@ namespace Beaver_v0._1
                 }
             }
 
-            //WNET,FIN DEFLECTION
+            //WFIN DEFLECTION
             double wfin = 0;
             //falta calcular o wfin que é igual ao wnet mas subtraindo o valor da contra flecha wc
 
