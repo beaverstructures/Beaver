@@ -29,6 +29,7 @@ namespace Beaver_v0._1
             pManager.AddNumberParameter("Instantaneous Deflection Limit", "Winst,lim", "Ratio between the span lenght(l) and maximum instantaneous deflection (Winst) according to Table 7.2 in EN1995", GH_ParamAccess.item,350);
             pManager.AddNumberParameter("Net Final Deflection Span Limit", "Wnet,lim", "Ratio between the span lenght (l) and maximum net final deflection (Wnet,fin) according to Table 7.2 in EN1995", GH_ParamAccess.item,250);
             pManager.AddNumberParameter("Final Deflection Limit", "Wfin,lim", "Ratio between the span lenght (l) and maximum final deflection (Wfin) according to Table 7.2 in EN1995", GH_ParamAccess.item, 150);
+            pManager.AddNumberParameter("Precamber", "Pc", "Element precamber", GH_ParamAccess.item, 0);
             pManager.AddIntegerParameter("Service Class", "SC", "Service Class according to EN1995", GH_ParamAccess.item);
         }
 
@@ -61,13 +62,15 @@ namespace Beaver_v0._1
             double Wnetlim = 0;
             double Wfinlim = 0;
             int SC = 0;
+            double precam = 0;
             DA.GetDataList(0, wk);
             DA.GetDataList(1, type);
             DA.GetData(2, ref span);
             DA.GetData(3, ref Winstlim);
             DA.GetData(4, ref Wnetlim);
             DA.GetData(5, ref Wfinlim);
-            DA.GetData(6, ref SC);
+            DA.GetData(6, ref precam);
+            DA.GetData(7, ref SC);
             List<Action> wgk = new List<Action>();
             List<Action> wqk = new List<Action>();
             List<Action> wwk = new List<Action>();
@@ -174,8 +177,9 @@ namespace Beaver_v0._1
             //WNET DEFLECTION (same as wfin mas subtraindo precamber (WC), calculate wnet)
 
 
-
+            
             double wfin = Wqfin[idxmaxCombfin].Sk;
+            double wnet = wfin - precam;
             double winstlim = span / Winstlim;
             double wnetlim = span / Wnetlim;
             double wfinlim = span / Wfinlim;

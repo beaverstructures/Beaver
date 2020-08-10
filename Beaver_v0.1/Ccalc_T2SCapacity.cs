@@ -83,18 +83,24 @@ namespace Beaver_v0._1
             return 1;
         }
 
-        public object FvrkSingleShear()
+        public object FvrkSingleShear(bool type)
         {
 
-            double Fvrk;
+            double Fvrk =0;
+            List<double> Fvrks = new List<double>();
+            List<string> failures = new List<string>();
             //Mode a
             double Fvrk1 =  0.4 * variables.fhk * t1 * fastener.d;
             Fvrk = Fvrk1;
             string failureMode = "a";
-
+            Fvrks.Add(Fvrk1);
+            failures.Add("a");
             //Mode b
             double Fyrk2 = (1.15 * Math.Sqrt(2 * variables.Myrk * variables.fhk * fastener.d));
             double Fvrk2 = Math.Min(Fyrk2 + variables.Faxrk / 4, (1 + this.Faxrk_upperLimit) * Fyrk2);
+            Fvrks.Add(Fvrk2);
+            failures.Add("b");
+
             if (Fvrk > Fvrk2)
             {
                 Fvrk = Fvrk2;
@@ -104,6 +110,8 @@ namespace Beaver_v0._1
             //Mode c
             double Fyrk3 = (variables.fhk * t1 * fastener.d * (Math.Sqrt(2 + (4 * variables.Myrk) / (variables.fhk * Math.Pow(t1, 2) * fastener.d)) - 1));
             double Fvrk3 = Math.Min(Fyrk3 + variables.Faxrk / 4, (1 + this.Faxrk_upperLimit) * Fyrk3);
+            Fvrks.Add(Fvrk3);
+            failures.Add("c");
             if (Fvrk > Fvrk3)
             {
                 Fvrk = Fvrk3;
@@ -113,6 +121,8 @@ namespace Beaver_v0._1
             //Mode d
             double Fyrk4 = (2.3 * Math.Sqrt(variables.Myrk * variables.fhk * fastener.d));
             double Fvrk4 =  Math.Min(Fyrk4 + variables.Faxrk / 4, (1 + this.Faxrk_upperLimit) * Fyrk4);
+            Fvrks.Add(Fvrk4);
+            failures.Add("d");
             if (Fvrk > Fvrk4)
             {
                 Fvrk = Fvrk4;
@@ -121,33 +131,52 @@ namespace Beaver_v0._1
 
             //Mode e
             double Fvrk5 = variables.fhk * t1 * fastener.d;
+            Fvrks.Add(Fvrk5);
+            failures.Add("e");
             if (Fvrk > Fvrk5)
             {
                 Fvrk = Fvrk5;
                 failureMode = "e";
             }
-            return new
+            if (type)
             {
-                Fvrk,
-                failureMode
-            };
+                return new
+                {
+                    Fvrk,
+                    failureMode
+                };
+            }
+            else
+            {
+                return new
+                {
+                    Fvrks,
+                    failures
+                };
+            }
+            
         }
 
-        public object FvrkDoubleShear()
+        public object FvrkDoubleShear(bool type)
         {
 
             double Fvrk = 0;
             string failureMode = "";
+            List<double> Fvrks = new List<double>();
+            List<string> failures = new List<string>();
             if (SDt == 1)
             {
                 //Mode f
                 double Fvrk1 = variables.fhk * t1 * fastener.d;
                 Fvrk = Fvrk1;
                 failureMode = "f";
-
+                Fvrks.Add(Fvrk1);
+                failures.Add("f");
                 //Mode g
                 double Fyrk2 = (variables.fhk * t1 * fastener.d * (Math.Sqrt(2 + (4 * variables.Myrk) / (variables.fhk * Math.Pow(t1, 2) * fastener.d)) - 1));
                 double Fvrk2 =Math.Min(Fyrk2 + variables.Faxrk / 4, (1 + this.Faxrk_upperLimit) * Fyrk2);
+                Fvrks.Add(Fvrk2);
+                failures.Add("g");
                 if (Fvrk > Fvrk2)
                 {
                     Fvrk = Fvrk2;
@@ -157,6 +186,8 @@ namespace Beaver_v0._1
                 //Mode h
                 double Fyrk3 = (2.3 * Math.Sqrt(variables.Myrk * variables.fhk * fastener.d));
                 double Fvrk3 = Math.Min(Fyrk3 + variables.Faxrk / 4, (1 + this.Faxrk_upperLimit) * Fyrk3);
+                Fvrks.Add(Fvrk3);
+                failures.Add("h");
                 if (Fvrk > Fvrk3)
                 {
                     Fvrk = Fvrk3;
@@ -170,6 +201,8 @@ namespace Beaver_v0._1
                 double Fvrk4 = 0.5 * variables.fhk * fastener.d * t1;
                 Fvrk = Fvrk4;
                 failureMode = "j/l";
+                Fvrks.Add(Fvrk4);
+                failures.Add("j/l");
 
                 double multi = 0;
                 if (this.t_steel <= 0.5 * this.fastener.d)
@@ -187,6 +220,8 @@ namespace Beaver_v0._1
                 //Mode k/m
                 double Fyrk6 = (multi * Math.Sqrt(variables.Myrk * variables.fhk * fastener.d));
                 double Fvrk6 = Math.Min(Fyrk6 + variables.Faxrk / 4, (1 + this.Faxrk_upperLimit) * Fyrk6);
+                Fvrks.Add(Fvrk6);
+                failures.Add("k/m");
                 if (Fvrk > Fvrk6)
                 {
                     Fvrk = Fvrk6;
@@ -195,11 +230,22 @@ namespace Beaver_v0._1
             }
 
 
-            return new
+            if (type)
             {
-                Fvrk,
-                failureMode
-            };
+                return new
+                {
+                    Fvrk,
+                    failureMode
+                };
+            }
+            else
+            {
+                return new
+                {
+                    Fvrks,
+                    failures
+                };
+            }
         }
 
         

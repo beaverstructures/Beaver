@@ -55,7 +55,7 @@ namespace Beaver_v0._1
         {
             this.Myrk = CalcMyrk(fastener);
             this.fhk = CalcFhk(preDrilled, fastener, pk, alfa, woodType);
-            this.Faxrk = CalcFaxrk(pk, fastener, t1, t_steel, alfafast, t_thread);
+            this.Faxrk = CalcFaxrk(pk, fastener, t1,t1- t_steel, alfafast, t_thread);
         }
 
         public double GetTpen(Ccalc_Fastener fastener, double t1, double t2)
@@ -216,19 +216,18 @@ namespace Beaver_v0._1
         double CalcScrewFaxrk(double d, double pk, double alfa, double tpen, double t_thread)
         {
             
-            double l_ef;
+            double l_ef2;
             if (tpen <= t_thread)
             {
-                l_ef = tpen - d;
+                l_ef2 = tpen - d;
             }
             else
             {
-                l_ef =t_thread - d;
+                l_ef2 =t_thread - d;
             }
-            double f_ax_k = 0.52 * Math.Pow(d, -0.5) * Math.Pow(l_ef, -0.1) * Math.Pow(pk,0.8);
+            double f_ax_k = 0.52 * Math.Pow(d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk,0.8);
             double f_ax_alfa_k = f_ax_k / (Math.Pow(Math.Sin(alfa), 2) + 1.2 * Math.Pow(Math.Cos(alfa), 2));
-            double F_1_ax_alfa_k = d * l_ef * f_ax_alfa_k * Math.Min(d / 8, 1) ;
-
+            double F_1_ax_alfa_k = d * l_ef2 * f_ax_alfa_k * Math.Min(d / 8, 1) ;
             return F_1_ax_alfa_k;
         }
     }

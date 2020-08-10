@@ -84,7 +84,7 @@ namespace Beaver_v0._1
             Util = vsd / FVrd;
             DA.SetData(0, FVrd);
             DA.SetData(1, Util);
-            DA.SetData(2, nalfa);
+            DA.SetData(2, nef);
         }
 
 

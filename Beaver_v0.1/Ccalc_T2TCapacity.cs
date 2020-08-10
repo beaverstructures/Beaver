@@ -70,7 +70,7 @@ namespace Beaver_v0._1
             this.variables = new Ccalc_Variables(Fastener, PreDrilled, Pk1, Pk2, Alfa1, Alfa2, alfafast, WoodType, T1, T2, T_thread);
         }
 
-        public object FvkSingleShear()
+        public object FvkSingleShear(bool type)
         {
             double Mryk = this.variables.Myrk;
             double Fh1k = this.variables.fh1k;
@@ -79,12 +79,14 @@ namespace Beaver_v0._1
             double Faxrk = this.variables.Faxrk;
             double Fvk;
             string failureMode = "";
-
+            List<double> Fvrks = new List<double>();
+            List<string> failures = new List<string>();
             //1º modo (a)
             double Fvk1 =  Fh1k * t1 * this.fastener.d;
             Fvk = Fvk1;
             failureMode = "a";
-
+            Fvrks.Add(Fvk1);
+            failures.Add("a");
             //2º modo (b)
             double Fvk2 =  Fh2k * t2 * this.fastener.d;
             if (Fvk > Fvk2)
@@ -92,12 +94,15 @@ namespace Beaver_v0._1
                 Fvk = Fvk2;
                 failureMode = "b";
             }
-
+            Fvrks.Add(Fvk2);
+            failures.Add("b");
             //3º modo (c)
             double Fvk3 = 0;
             double Fyk3 = ((Fh1k * t1 * this.fastener.d) / (1 + Beta))
                 * (Math.Sqrt(Beta + 2 * Math.Pow(Beta, 2) * (1 + (t2 / t1) + Math.Pow(t2 / t1, 2)) + Math.Pow(Beta, 3) * Math.Pow(t2 / t1, 2)) - Beta * (1 + (t2 / t1)));
             Fvk3 = this.Fvk(Fyk3, Faxrk, 1);
+            Fvrks.Add(Fvk3);
+            failures.Add("c");
             if (Fvk > Fvk3)
             {
                 Fvk = Fvk3;
@@ -109,6 +114,8 @@ namespace Beaver_v0._1
             double Fyk4 = ((1.05 * Fh1k * t1 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d))) - Beta);
             Fvk4 = this.Fvk(Fyk4, Faxrk, 1);
+            Fvrks.Add(Fvk4);
+            failures.Add("d");
             if (Fvk > Fvk4)
             {
                 Fvk = Fvk4;
@@ -120,6 +127,8 @@ namespace Beaver_v0._1
             double Fyk5 = ((1.05 * Fh2k * t2 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh2k * Math.Pow(t2, 2) * this.fastener.d))) - Beta);
             Fvk5 = this.Fvk(Fyk5, Faxrk, 1);
+            Fvrks.Add(Fvk5);
+            failures.Add("e");
             if (Fvk > Fvk5)
             {
                 Fvk = Fvk5;
@@ -131,20 +140,33 @@ namespace Beaver_v0._1
             double Fyk6 = 1.15 * Math.Sqrt((2 * Beta) / (1 + Beta))
                 * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d);
             Fvk6 = this.Fvk(Fyk6, Faxrk, 1);
+            Fvrks.Add(Fvk6);
+            failures.Add("f");
             if (Fvk > Fvk6)
             {
                 Fvk = Fvk6;
                 failureMode = "f";
             }
 
-            return new
+            if (type)
             {
-                Fvrk = Fvk,
-                failureMode
-            };
+                return new
+                {
+                    Fvk,
+                    failureMode
+                };
+            }
+            else
+            {
+                return new
+                {
+                    Fvrks,
+                    failures
+                };
+            }
         }
 
-        public object FvkDoubleShear()
+        public object FvkDoubleShear(bool type)
         {
             double Mryk = this.variables.Myrk;
             double Fh1k = this.variables.fh1k;
@@ -153,14 +175,18 @@ namespace Beaver_v0._1
             double Faxrk = this.variables.Faxrk;
             double Fvk;
             string failureMode = "";
-
+            List<double> Fvrks = new List<double>();
+            List<string> failures = new List<string>();
             // 1º mode (g)
             double Fvk1 =  (Fh1k * t1 * this.fastener.d);
             Fvk = Fvk1;
             failureMode = "g";
-
+            Fvrks.Add(Fvk1);
+            failures.Add("g");
             // 2º mode (h)
             double Fvk2 =  (0.5 * Fh2k * t2 * this.fastener.d);
+            Fvrks.Add(Fvk2);
+            failures.Add("h");
             if (Fvk > Fvk2)
             {
                 Fvk = Fvk2;
@@ -172,6 +198,8 @@ namespace Beaver_v0._1
             double Fyk3 = (1.05 * ((Fh1k * t1 * this.fastener.d) / (2 * Beta)))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d)) - Beta);
             Fvk3 = this.Fvk(Fyk3, Faxrk, 1);
+            Fvrks.Add(Fvk3);
+            failures.Add("j");
             if (Fvk > Fvk3)
             {
                 Fvk = Fvk3;
@@ -182,17 +210,30 @@ namespace Beaver_v0._1
             double Fvk4 = 0;
             double Fyk4 = (1.15 * Math.Sqrt((2 * Beta) / (1 + Beta)) * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d));
             Fvk4 = this.Fvk(Fyk4, Faxrk, 1);
+            Fvrks.Add(Fvk4);
+            failures.Add("k");
             if (Fvk > Fvk4)
             {
                 Fvk = Fvk4;
                 failureMode = "k";
             }
 
-            return new
+            if (type)
             {
-                Fvrk = Fvk,
-                failureMode
-            };
+                return new
+                {
+                    Fvk,
+                    failureMode
+                };
+            }
+            else
+            {
+                return new
+                {
+                    Fvrks,
+                    failures
+                };
+            }
         }
 
         public double Nef()

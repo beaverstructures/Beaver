@@ -47,6 +47,7 @@ namespace Beaver_v0._1
             pManager.AddNumberParameter("Single or Double Shear", "St", "0 for Single Shear, 1 for Double", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Modification Factor", "Kmod", "Modification Factor for Load Duration and Moisture Content", GH_ParamAccess.item, 0.6);
             pManager.AddNumberParameter("Fastener fyk", "fyk", "Characteristic Yield Strength of the Fastener's steel [N/mm²]", GH_ParamAccess.item, 260);
+            pManager.AddBooleanParameter("Output Type", "Out", "true for retrieve the worst failure mode, false to retrieve all failure modes", GH_ParamAccess.item, true);
 
         }
 
@@ -58,6 +59,7 @@ namespace Beaver_v0._1
             pManager.Register_DoubleParam("Caracteristic Shear Strenght", "Fvrd", "Fastener Load Carrying Capacity per Shear Plane");
             pManager.Register_DoubleParam("Caracteristic Withdrawal capacity", "Faxrd", "Fastener Withdrawal Capacity considered");
             pManager.Register_StringParam("Failure Mode", "Fail. Mode", "Failure mode for calculated Load Carrying Capacity");
+            pManager.Register_StringParam("Parameter info", "Info", "Parameters data");
         }
 
         public override void AddedToDocument(GH_Document document)
@@ -142,7 +144,7 @@ namespace Beaver_v0._1
             double Vrd = 0;
             double Ym = 0;
             double fsteel = 0;
-
+            bool output = false;
 
             if (!DA.GetData<double>(0, ref t1)) { return; }
             if (!DA.GetData<double>(1, ref t2)) { return; }
@@ -158,6 +160,7 @@ namespace Beaver_v0._1
             if (!DA.GetData<double>(11, ref sd)) { return; }
             if (!DA.GetData<double>(12, ref kmod)) { return; }
             if (!DA.GetData<double>(13, ref fsteel)) { return; }
+            if (!DA.GetData<bool>(14, ref output)) { return; }
 
 
             Material timber = new Material(wood);
@@ -167,33 +170,61 @@ namespace Beaver_v0._1
             //CALCULO DAS LIGAÇÕESS
             Ccalc_Fastener fast = new Ccalc_Fastener(type, d, dh, l, true, fsteel);
             Ccalc_T2TCapacity analysis = new Ccalc_T2TCapacity(fast, t1, t2, al1, al2, woodtype, "steel", pdrill, pk, pk, dh, woodtype, lt, alfast, npar, npep, a1);
-            double fvd = 0;
-            string failureMode = "";
-            if (sd == 0)
+            if (output)
             {
-                dynamic cap = analysis.FvkSingleShear();
-                fvd = kmod * cap.Fvrk / Ym;
-                failureMode = cap.failureMode;
+                double fvd = 0;
+                string failureMode = "";
+                if (sd == 0)
+                {
+                    dynamic cap = analysis.FvkSingleShear(output);
+                    fvd = kmod * cap.Fvk / Ym;
+                    failureMode = cap.failureMode;
+                }
+                else
+                {
+                    dynamic cap = analysis.FvkDoubleShear(output);
+                    fvd = kmod * cap.Fvk / Ym;
+                    failureMode = cap.failureMode;
+                }
+                DA.SetData(2, failureMode);
+                DA.SetData(0, fvd);
             }
             else
             {
-                dynamic cap = analysis.FvkDoubleShear();
-                fvd = kmod * cap.Fvrk / Ym;
-                failureMode = cap.failureMode;
+                List<double> fvd = new List<double>();
+                List<string> failureMode = new List<string>();
+                if (sd == 0)
+                {
+                    dynamic cap = analysis.FvkSingleShear(output);
+                    fvd = cap.Fvrks;
+                    for (int i = 0; i < fvd.Count; i++)
+                    {
+                        fvd[i] = kmod * fvd[i] / Ym;
+                    }
+                    failureMode = cap.failures;
+                }
+                else
+                {
+                    dynamic cap = analysis.FvkDoubleShear(output);
+                    fvd = cap.Fvrks;
+                    for (int i = 0; i < fvd.Count; i++)
+                    {
+                        fvd[i] = kmod * fvd[i] / Ym;
+                    }
+                    failureMode = cap.failures;
+                }
+                DA.SetDataList(2, failureMode);
+                DA.SetDataList(0, fvd);
             }
+
+
             double faxd = kmod * analysis.variables.Faxrk / Ym;
-            double Util = 0;
-            if (fast.smooth == true)
-            {
-                Util =  Nrd / faxd +  Vrd / fvd;
-            }
-            else
-            {
-                Util = Math.Pow(Nrd / faxd, 2) + Math.Pow(Vrd / fvd, 2);
-            }
-            DA.SetData(0, fvd);
+
+            string info = string.Format("fhk1: {0},fhk2: {1}, Mryk: {2}", Math.Round(analysis.variables.fh1k, 3), Math.Round(analysis.variables.fh2k, 3), Math.Round(analysis.variables.Myrk,3));
+            DA.SetData(3, info);
+
+
             DA.SetData(1, faxd);
-            DA.SetData(2, failureMode);
         }
 
         /// <summary>
