@@ -160,8 +160,8 @@ namespace Beaver_v0._1
             double lamyrel = lamy * lampi;
             double lamzrel = lamz * lampi;
             double sigN = Nd / A;
-            double sigMy = 100 * Myd / Wy;
-            double sigMz = 100 * Mzd / Wz;
+            double sigMy = 100 * Math.Abs(Myd) / Wy;
+            double sigMz = 100 * Math.Abs(Mzd) / Wz;
             double G05 = E05 / 16;
             double UtilY = 0;
             double UtilZ = 0;
@@ -268,7 +268,7 @@ namespace Beaver_v0._1
                     UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / ft0d) + Km * (sigMy / fmd);
                     info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
                 }
-                if (Math.Max(lammy, lammz) >= 1.4)
+                else if (Math.Max(lammy, lammz) >= 1.4)
                 {
                     double kcrity = Getkcrit(lammy);
                     double kcritz = Getkcrit(lammz);
@@ -280,7 +280,7 @@ namespace Beaver_v0._1
                 {
                     UtilY = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
                     UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
-                    info = loaddata + ", No Torsional Buckling effects";
+                    info = loaddata + ", No Torsional Buckling effects, λmy=" + Math.Round(lammy,3) + ", λmyz=" + Math.Round(lammz, 3);
                 }
             }
 

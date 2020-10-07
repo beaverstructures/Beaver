@@ -88,7 +88,27 @@ namespace Beaver_v0._1
         }
 
 
+        public double valfa (double alpha)
+        {
+            double pi90 = Math.PI / 2;
+            double result = 1;
+            if (alpha<=Math.PI/2 && alpha>=0) {
+                result = alpha / pi90;
+            }
+            else if ((alpha >= (3 * Math.PI / 2) && alpha <= 2 * Math.PI)) {
+                result = (alpha - 3 * pi90) / pi90;
+            }
+            else if (alpha >= Math.PI  && alpha<=3*pi90)
+            {
+                result = (alpha - 2 * pi90) / pi90;
+            }
+            else
+            {
+                result = (alpha -  pi90) / pi90;
+            }
 
+            return result;
+        }
         public double Nef(double d, double a1, string type,double npar, double npep )
         {
             double nef = 0;
@@ -114,7 +134,7 @@ namespace Beaver_v0._1
                 }
                 nef = (Math.Pow(npar, kef)) * npep;
             }
-            if (type == "bolt" || (type == "screw" & d > 6))
+            if (type == "bolt" || (type == "screw" & d >= 6))
             {
                 if (npar * npep == 1) { nef = 1; }
                 else
