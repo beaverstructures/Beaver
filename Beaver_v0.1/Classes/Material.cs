@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Beaver_v0._1
 {
-    class Material
+    public class Material
     {
         public string name;
         public string type;

@@ -74,6 +74,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Force.cs" />
+    <Compile Include="Classes\Section.cs" />
     <Compile Include="Classes\Utils.cs" />
     <Compile Include="Classes\CroSec.cs" />
     <Compile Include="Classes\Material.cs" />
@@ -119,6 +121,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
     <None Include="Resources %281%29\Beaver_Icone_Laranja.png" />
   </ItemGroup>
   <ItemGroup>

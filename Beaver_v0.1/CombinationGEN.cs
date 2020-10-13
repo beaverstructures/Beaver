@@ -205,91 +205,9 @@ namespace Beaver_v0._1
             DA.SetDataList(2, Out);
 
         }
-        class Action
-        {
-            public double Sk;
-            public string type;
-            public Action() {}
-            public Action (double sk, string t)
-            {
-                Sk = sk;
-                type = t;
-            }
-        }
-        public double KMOD (int SC,string duration)
-        {
-            double k = 0;
-            if (SC == 1 || SC == 2)
-            {
-                if (duration == "perm")
-                {
-                    k = 0.6;
-                }
-                else if (duration == "long")
-                {
-                    k = 0.7;
-                }
-                else if (duration == "medium")
-                {
-                    k = 0.8;
-                }
-                else if (duration == "short")
-                {
-                    k = 0.9;
-                }
-                else if (duration == "inst")
-                {
-                    k = 1.1;
-                }
-            }
-            else if (SC == 3)
-            {
-                if (duration == "perm")
-                {
-                    k = 0.5;
-                }
-                else if (duration == "long")
-                {
-                    k = 0.55;
-                }
-                else if (duration == "medium")
-                {
-                    k = 0.65;
-                }
-                else if (duration == "short")
-                {
-                    k = 0.7;
-                }
-                else if (duration == "inst")
-                {
-                    k = 0.9;
-                }
-            }
-            else { AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Service Class must be a integer between 1 and 3"); }
-            return k;
-        }
-        class TypeInfo
-        {
-            public double phi0;
-            public double phi1;
-            public double phi2;
-            public string duration;
 
-            public TypeInfo() { }
-            public TypeInfo(string type)
-            {
-                if (type.Contains("A")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
-                if (type.Contains("B")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
-                if (type.Contains("C")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
-                if (type.Contains("D")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
-                if (type.Contains("E")) { phi0 = 1; phi1 = 0.9; phi2 = 0.8; duration = "long"; }
-                if (type.Contains("F")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "short"; }
-                if (type.Contains("G")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "short"; }
-                if (type.Contains("H")) { phi0 = 0; phi1 = 0; phi2 = 0; duration = "short"; }
-                if (type.Contains("S")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.2; duration = "medium"; }
-                if (type.Contains("W")) { phi0 = 0.6; phi1 = 0.2; phi2 = 0; duration = "short"; }
-            }
-        }
+        
+
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
