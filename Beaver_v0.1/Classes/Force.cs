@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Beaver_v0._1.Classes
 {
@@ -15,6 +17,8 @@ namespace Beaver_v0._1.Classes
         {"N",0},{"Vy",0},{"Vz",0},{"Mt",0},{"My",0},{"Mz",0}
         };
         public string type;
+        public string duration;
+        public string combination;
 
         public Force() { }
 
@@ -27,7 +31,7 @@ namespace Beaver_v0._1.Classes
             InternalForces["My"] = my;
             InternalForces["Mz"] = mz;
             this.type = type;
-
+            duration = new TypeInfo(type).duration;
         }
 
         public static Force operator +(Force f1, Force f2)
@@ -75,13 +79,19 @@ namespace Beaver_v0._1.Classes
             }
             return result;
         }
+
+        
     }
 
+    public enum filtertype
+    {
+        ByLoadDuration,
+        ByLoadType,
+        Total
+    }
     public class Combinations
     {
         public Force[] Sd;
-        public double[] kmod = new double[] { };
-        public string[] info = new string[] { };
         public int SC;
         public Combinations() { }
 
@@ -113,9 +123,9 @@ namespace Beaver_v0._1.Classes
                 P += act;
             }
             P.type = "P";
+            P.duration= new TypeInfo(P.type).duration;
+            P.combination = "1.35G";
             Sd.Add(P);
-            kmod.Add(Utils.KMOD(SC, new TypeInfo(P.type).duration));
-            info.Add("1.35G");
 
             //
             //ACIDENTAL LOADING
@@ -134,15 +144,13 @@ namespace Beaver_v0._1.Classes
                 }
                 Force A = 1.35 * P + 1.5 * (Qmain + SumQi);
                 A.type = Qmain.type;
+                A.duration= new TypeInfo(A.type).duration;
+                A.combination = "1.35G + 1.5 " + A.type + " + 1.5Σ(φᵢ₀Qᵢ)";
                 Sd.Add(A);
-                kmod.Add(Utils.KMOD(SC, new TypeInfo(A.type).duration));
-                info.Add("1.35G + 1.5 " + A.type + " + 1.5Σ(φᵢ₀Qᵢ)");
-
                 foreach (Force w in SWk)
                 {
-                    Sd.Add(A + 0.6 * w);
-                    kmod.Add(Utils.KMOD(SC, new TypeInfo(A.type).duration));
-                    info.Add("1.35G + 1.5 " + A.type + " + 1.5(Σ(φᵢ₀Qᵢ)+0.6W)");
+                    Force B = A + 0.6 * w;
+                    B.combination="1.35G + 1.5 " + A.type + " + 1.5(Σ(φᵢ₀Qᵢ)+0.6W)";
                 }
             }
 
@@ -150,7 +158,6 @@ namespace Beaver_v0._1.Classes
             //WIND LOADING
             //
 
-            List<Action> WComb = new List<Action>();
             Force SumQ = new Force();
             foreach (Force Q in SQk)
             {
@@ -159,19 +166,20 @@ namespace Beaver_v0._1.Classes
             }
             foreach (Force W in SWk)
             {
-                kmod.Add(Utils.KMOD(SC, (new TypeInfo(W.type)).duration));
                 Force Wcomb = new Force();
+                string output = "";
                 if (P*W)
                 {
                     if (SumQ * W)
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        info.Add("1.35G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)");
+                       
+                        output="1.35G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
                     }
                     else
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        info.Add("1.35G + 1.5W");
+                         output = "1.35G + 1.5W";
                     }
                 }
                 else
@@ -179,15 +187,17 @@ namespace Beaver_v0._1.Classes
                     if (SumQ * W)
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        info.Add("G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)");
+                        output = "G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
                     }
                     else
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        info.Add("G + 1.5W");
+                        output = "G + 1.5W";
                     }
                 }
                 Wcomb.type = W.type;
+                Wcomb.duration = new TypeInfo(W.type).duration;
+                Wcomb.combination = output;
                 Sd.Add(Wcomb);
             }
 
@@ -196,8 +206,120 @@ namespace Beaver_v0._1.Classes
             //
 
             this.Sd = Sd.ToArray();
-            this.info = info.ToArray();
-            this.kmod = kmod.ToArray();
+        }
+        public List<Force> CriticalForces(List<Force> f)
+        {
+            int[] idxmax = new int[] { 0, 0, 0, 0, 0, 0 };
+            int[] idxmin = new int[] { 0, 0, 0, 0, 0, 0 };
+            Force Max = new Force();
+            Force Min = new Force();
+            int cont = 0;
+            foreach (Force force in f)
+            {
+                int idx = 0;
+                double fkmod = Utils.KMOD(SC, force.duration);
+                foreach (KeyValuePair<string,double> IF in force.InternalForces)
+                {
+                    double minkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
+                    if (IF.Value/fkmod <= Min.InternalForces[IF.Key]/minkmod && IF.Value<0)
+                    {
+                        Min.InternalForces[IF.Key] = IF.Value;
+                        idxmin[idx] = cont;
+                    }
+                    double maxkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
+                    if (IF.Value/ fkmod >= Max.InternalForces[IF.Key] / maxkmod && IF.Value>0)
+                    {
+                        Max.InternalForces[IF.Key] = IF.Value;
+                        idxmax[idx] = cont;
+                    }
+                    idx++;
+                }
+                cont++;
+            }
+            List<int> finalidx = new List<int>();
+            foreach (int idx in idxmax)
+            {
+                if (finalidx.Exists(x => x == idx)==false && f[idx].InternalForces.Values.ToList().Exists(x => x != 0))
+                {
+                    finalidx.Add(idx);
+                }
+            }
+            foreach (int idx in idxmin)
+            {
+                if (finalidx.Exists(x => x == idx) == false && f[idx].InternalForces.Values.ToList().Exists(x => x != 0))
+                {
+                    finalidx.Add(idx);
+                }
+            }
+            List<Force> result = new List<Force>();
+            foreach (int idx in finalidx)
+            {
+                result.Add(f[idx]);
+            }
+            return result;
+        }
+        public void FilterCombinations(int type)
+        {
+            
+            List<Force> Sd = new List<Force>();
+            List<double> kmod = new List<double>();
+            List<string> info = new List<string>();
+            
+            //
+            //BY LOAD DURATION
+            if (type == 0)
+            {
+                List<string> types = new List<string>() { "perm", "long", "medium", "short"};
+                List<List<Force>> Sp = new List<List<Force>>();
+                foreach (string t in types)
+                {
+                    if (this.Sd.Where(x => x.type.Contains(t)).ToList().Count > 0)
+                    {
+                        Sp.Add(this.Sd.Where(x => x.type.Contains(t)).ToList());
+                    }
+                }
+                foreach (List<Force> Lf in Sp)
+                {
+                    List<Force> aux = CriticalForces(Lf);
+                    foreach (Force f in aux)
+                    {
+                        Sd.Add(f);
+                    }
+                }
+                this.Sd = Sd.ToArray();
+            }
+            //
+            //BY LOAD TYPE
+            //
+            if (type == 1)
+            {
+                List<string> types = new List<string>() { "P", "A", "B", "C", "D", "E", "F", "G", "H", "S", "W" };
+                List<List<Force>> Sp = new List<List<Force>>();
+                foreach (string t in types)
+                {
+                    if (this.Sd.Where(x => x.type.Contains(t)).ToList().Count > 0)
+                    {
+                        Sp.Add(this.Sd.Where(x => x.type.Contains(t)).ToList());
+                    }
+                }
+                foreach (List<Force> Lf in Sp)
+                {
+                    List<Force> aux = CriticalForces(Lf);
+                    foreach (Force f in aux)
+                    {
+                        Sd.Add(f);
+                    }
+                }
+                this.Sd = Sd.ToArray();
+            }
+            //
+            //TOTAL
+            //
+            if (type == 2)
+            {
+                Sd = CriticalForces(new List<Force>(this.Sd));
+                this.Sd = Sd.ToArray();
+            }
         }
 
     }
@@ -215,7 +337,8 @@ public class TypeInfo
     {
         if (type.Contains("P"))
         {
-            phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "perm";
+            phi0 = 1; phi1 = 1; phi2 = 1; duration = "perm";
+        }
             if (type.Contains("A")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
             if (type.Contains("B")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
             if (type.Contains("C")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
@@ -226,9 +349,6 @@ public class TypeInfo
             if (type.Contains("H")) { phi0 = 0; phi1 = 0; phi2 = 0; duration = "short"; }
             if (type.Contains("S")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.2; duration = "medium"; }
             if (type.Contains("W")) { phi0 = 0.6; phi1 = 0.2; phi2 = 0; duration = "short"; }
-        }
+        
     }
-
-
-
 }

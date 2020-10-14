@@ -15,7 +15,12 @@ namespace Beaver_v0._1.Classes
         public double Iy;
         public double Iz;
         public double It;
+        public double Wy;
+        public double Wz;
+        public double ry;
+        public double rz;
 
+        public abstract double GetsigMcrit(double lef,double E05);
 
     }
 
@@ -31,6 +36,10 @@ namespace Beaver_v0._1.Classes
             Iy = b * Math.Pow(h, 3) / 12;
             Iz = h * Math.Pow(b, 3) / 12;
             It = GetIt();
+            Wy = Iy * (2 / h);
+            Wz = Iz * (2 / b);
+            ry = Math.Sqrt(Iy / A);
+            rz = Math.Sqrt(Iz / A);
         }
 
         public double GetIt()
@@ -42,6 +51,11 @@ namespace Beaver_v0._1.Classes
             double ratio = Math.Min(this.b / h, h / this.b);
             double beta = Utils.linear(ratio, lratio, lbeta);
             return beta * a * Math.Pow(b, 3);
+        }
+
+        public override double GetsigMcrit(double lef, double E05)
+        {
+            return (0.78 * Math.Pow(b, 2) / (h * lef)) * E05;
         }
     }
 
@@ -56,6 +70,15 @@ namespace Beaver_v0._1.Classes
             Iy = Math.PI * Math.Pow(d, 4) / 64;
             Iz = Iy;
             It = Math.PI * Math.Pow(d, 4) / 32;
+            Wy = Iy * (2 / d);
+            Wz = Iz * (2 / d);
+            ry = Math.Sqrt(Iy / A);
+            rz = Math.Sqrt(Iz / A);
+        }
+
+        public override double GetsigMcrit(double lef, double E05)
+        {
+            return (0.78 * Math.Pow(d, 2) / (d * lef)) * E05;
         }
     }
 }

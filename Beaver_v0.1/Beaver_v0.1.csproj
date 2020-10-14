@@ -75,7 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Force.cs" />
-    <Compile Include="Classes\Section.cs" />
+    <Compile Include="Classes\Elem.cs" />
     <Compile Include="Classes\Utils.cs" />
     <Compile Include="Classes\CroSec.cs" />
     <Compile Include="Classes\Material.cs" />
