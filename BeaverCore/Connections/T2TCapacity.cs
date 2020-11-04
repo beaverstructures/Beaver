@@ -3,20 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Beaver_v0._1
+namespace BeaverCore.Connections
 {
-    class Ccalc_T2TCapacity
+    public class T2TCapacity: SingleFastenerCapacity
     {
-        public Ccalc_Fastener fastener;
-        public double t1;
-        public double t2;
-        public double alfa1;
         public double alfa2;
-        public double alfafast;
-        public string timberMaterial;
-        public string connectorMaterial;
-        public bool preDrilled;
-        public double pk1;
+        public double t2;
         public double pk2;
         public double t_head;
         public double t_thread;
@@ -25,13 +17,13 @@ namespace Beaver_v0._1
         public string woodType;
         public double a1;
 
-        public Ccalc_Variables variables;
+        
 
-        public Ccalc_T2TCapacity() { }
+        public T2TCapacity() { }
 
         //to shear connections
-        public Ccalc_T2TCapacity(
-            Ccalc_Fastener Fastener,
+        public T2TCapacity(
+            Fastener Fastener,
             double T1,
             double T2,
             double Alfa1,
@@ -67,11 +59,12 @@ namespace Beaver_v0._1
             this.npar = Npar;
             this.npep = Npep;
             this.a1 = A1;
-            this.variables = new Ccalc_Variables(Fastener, PreDrilled, Pk1, Pk2, Alfa1, Alfa2, alfafast, WoodType, T1, T2, T_thread);
+            this.variables = new Variables(Fastener, PreDrilled, Pk1, Pk2, Alfa1, Alfa2, alfafast, WoodType, T1, T2, T_thread);
         }
 
-        public object FvkSingleShear(bool type)
+        public override object FvkSingleShear(bool type)
         {
+            double maxFaxrk = FaxrkUpperLimitValue();
             double Mryk = this.variables.Myrk;
             double Fh1k = this.variables.fh1k;
             double Fh2k = this.variables.fh2k;
@@ -97,15 +90,15 @@ namespace Beaver_v0._1
             Fvrks.Add(Fvk2);
             failures.Add("b");
             //3º modo (c)
-            double Fvk3 = 0;
-            double Fyk3 = ((Fh1k * t1 * this.fastener.d) / (1 + Beta))
+            double Fvrk3 = 0;
+            double Fyrk3 = ((Fh1k * t1 * this.fastener.d) / (1 + Beta))
                 * (Math.Sqrt(Beta + 2 * Math.Pow(Beta, 2) * (1 + (t2 / t1) + Math.Pow(t2 / t1, 2)) + Math.Pow(Beta, 3) * Math.Pow(t2 / t1, 2)) - Beta * (1 + (t2 / t1)));
-            Fvk3 = this.Fvk(Fyk3, Faxrk, 1);
-            Fvrks.Add(Fvk3);
+            Fvrk3 = Math.Min(Fyrk3 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyrk3);
+            Fvrks.Add(Fvrk3);
             failures.Add("c");
-            if (Fvk > Fvk3)
+            if (Fvk > Fvrk3)
             {
-                Fvk = Fvk3;
+                Fvk = Fvrk3;
                 failureMode = "c";
             }
 
@@ -113,7 +106,7 @@ namespace Beaver_v0._1
             double Fvk4 = 0;
             double Fyk4 = ((1.05 * Fh1k * t1 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d))) - Beta);
-            Fvk4 = this.Fvk(Fyk4, Faxrk, 1);
+            Fvk4 = Math.Min(Fyk4 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk4);
             Fvrks.Add(Fvk4);
             failures.Add("d");
             if (Fvk > Fvk4)
@@ -126,7 +119,7 @@ namespace Beaver_v0._1
             double Fvk5 = 0;
             double Fyk5 = ((1.05 * Fh2k * t2 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh2k * Math.Pow(t2, 2) * this.fastener.d))) - Beta);
-            Fvk5 = this.Fvk(Fyk5, Faxrk, 1);
+            Fvk5 = Math.Min(Fyk5 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk5);
             Fvrks.Add(Fvk5);
             failures.Add("e");
             if (Fvk > Fvk5)
@@ -139,7 +132,7 @@ namespace Beaver_v0._1
             double Fvk6 = 0;
             double Fyk6 = 1.15 * Math.Sqrt((2 * Beta) / (1 + Beta))
                 * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d);
-            Fvk6 = this.Fvk(Fyk6, Faxrk, 1);
+            Fvk6 = Math.Min(Fyk6 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk6);
             Fvrks.Add(Fvk6);
             failures.Add("f");
             if (Fvk > Fvk6)
@@ -166,8 +159,9 @@ namespace Beaver_v0._1
             }
         }
 
-        public object FvkDoubleShear(bool type)
+        public override object FvkDoubleShear(bool type)
         {
+            double maxFaxrk = FaxrkUpperLimitValue();
             double Mryk = this.variables.Myrk;
             double Fh1k = this.variables.fh1k;
             double Fh2k = this.variables.fh2k;
@@ -197,7 +191,7 @@ namespace Beaver_v0._1
             double Fvk3 = 0;
             double Fyk3 = (1.05 * ((Fh1k * t1 * this.fastener.d) / (2 * Beta)))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d)) - Beta);
-            Fvk3 = this.Fvk(Fyk3, Faxrk, 1);
+            Fvk3 = Math.Min(Fyk3 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk3);
             Fvrks.Add(Fvk3);
             failures.Add("j");
             if (Fvk > Fvk3)
@@ -209,7 +203,7 @@ namespace Beaver_v0._1
             // 4º mode (k)
             double Fvk4 = 0;
             double Fyk4 = (1.15 * Math.Sqrt((2 * Beta) / (1 + Beta)) * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d));
-            Fvk4 = this.Fvk(Fyk4, Faxrk, 1);
+            Fvk4 = Math.Min(Fyk4 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk4);
             Fvrks.Add(Fvk4);
             failures.Add("k");
             if (Fvk > Fvk4)
@@ -268,35 +262,6 @@ namespace Beaver_v0._1
             return nef;
         }
 
-        public double Fvk(double fyk, double faxrk, double nalfacrit)
-        {
-            double fvk = 0;
-            if (this.fastener.type == "screw")
-            {
-                if (fyk < faxrk / 4)
-                {
-                    faxrk = 4 * fyk;
-                }
-                fvk = nalfacrit * (fyk + faxrk / 4);
 
-            }
-            if (this.fastener.type == "nail")
-            {
-                if (fyk < faxrk / 4)
-                {
-                    faxrk = 4 * 0.15 * fyk;
-                }
-                fvk = nalfacrit * (fyk + faxrk / 4);
-            }
-            if (this.fastener.type == "bolt")
-            {
-                if (fyk < faxrk / 4)
-                {
-                    faxrk = 4 * 0.25 * fyk;
-                }
-                fvk = nalfacrit * (fyk + faxrk / 4);
-            }
-            return fvk;
-        }
     }
 }

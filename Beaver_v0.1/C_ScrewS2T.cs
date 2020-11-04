@@ -6,7 +6,8 @@ using Grasshopper.Kernel.Special;
 using Rhino.Geometry;
 using System.IO;
 using System.Drawing;
-
+using BeaverCore.Connections;
+using BeaverCore.Materials;
 namespace Beaver_v0._1
 {
     public class C_ScrewS2T : GH_Component
@@ -152,21 +153,21 @@ namespace Beaver_v0._1
             string woodtype = timber.name;
             Ym = 1.3;
             //CALCULO DAS LIGAÇÕESS
-            Ccalc_Fastener fast = new Ccalc_Fastener(type, d, dh, l, true, fsteel);
-            var analysis = new Ccalc_T2SCapacity(fast, pdrill, pk, al, alfast, woodtype, t, tsteel, lt, npar, npep, sd, 500);
+            Fastener fast = new Fastener(type, d, dh, l, true, fsteel);
+            var analysis = new T2SCapacity(fast, pdrill, pk, al, alfast, timber, t, tsteel, lt, npar, npep, sd, 500);
             if (output)
             {
                 double fvd = 0;
                 string failureMode = "";
                 if (sd == 0)
                 {
-                    dynamic cap = analysis.FvrkSingleShear(output);
+                    dynamic cap = analysis.FvkSingleShear(output);
                     fvd = kmod * cap.Fvrk / Ym;
                     failureMode = cap.failureMode;
                 }
                 else
                 {
-                    dynamic cap = analysis.FvrkDoubleShear(output);
+                    dynamic cap = analysis.FvkDoubleShear(output);
                     fvd = kmod * cap.Fvrk / Ym;
                     failureMode = cap.failureMode;
                 }
@@ -179,7 +180,7 @@ namespace Beaver_v0._1
                 List<string> failureMode = new List<string>();
                 if (sd == 0)
                 {
-                    dynamic cap = analysis.FvrkSingleShear(output);
+                    dynamic cap = analysis.FvkSingleShear(output);
                     fvd = cap.Fvrks;
                     for (int i = 0; i < fvd.Count; i++)
                     {
@@ -189,7 +190,7 @@ namespace Beaver_v0._1
                 }
                 else
                 {
-                    dynamic cap = analysis.FvrkDoubleShear(output);
+                    dynamic cap = analysis.FvkDoubleShear(output);
                     fvd = cap.Fvrks;
                     for (int i = 0; i < fvd.Count; i++)
                     {

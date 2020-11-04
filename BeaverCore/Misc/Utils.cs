@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Beaver_v0._1.Classes
+namespace BeaverCore.Misc
 {
 
     class Utils

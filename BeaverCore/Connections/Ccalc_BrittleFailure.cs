@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Beaver_v0._1
+namespace BeaverCore.Connections
 {
     class Ccalc_BrittleFailure
     {
@@ -16,7 +16,7 @@ namespace Beaver_v0._1
         public double a4t;
         public double a4c;
 
-        public Ccalc_BrittleFailure(Ccalc_Fastener fastener, double pk, double alfa, bool preDrilled)
+        public Ccalc_BrittleFailure(Fastener fastener, double pk, double alfa, bool preDrilled)
         {
             if (fastener.type == "nail" || (fastener.type == "screw" && fastener.d <= 6))
             {

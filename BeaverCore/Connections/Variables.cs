@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Drawing;
-namespace Beaver_v0._1
+namespace BeaverCore.Connections
 {
-    class Ccalc_Variables
+    public class Variables
     {
         public double Myrk;
         public double fhk;
@@ -15,12 +15,12 @@ namespace Beaver_v0._1
         public double beta;
         public double Faxrk;
         public double tpen;
-        public string error;
+        public string error = null;
 
-        public Ccalc_Variables() { }
+        public Variables() { }
 
-        public Ccalc_Variables( //For shear timber to timber cases
-            Ccalc_Fastener fastener,
+        public Variables( //For shear timber to timber cases
+            Fastener fastener,
             bool preDrilled,
             double pk1,
             double pk2,
@@ -41,8 +41,8 @@ namespace Beaver_v0._1
             this.Faxrk = CalcFaxrk(pk1, fastener, t1, this.tpen, alfafast, t_thread);
         }
 
-        public Ccalc_Variables( //For timber to steel cases
-            Ccalc_Fastener fastener,
+        public Variables( //For timber to steel cases
+            Fastener fastener,
             bool preDrilled,
             double pk,
             double alfa,
@@ -58,7 +58,7 @@ namespace Beaver_v0._1
             this.Faxrk = CalcFaxrk(pk, fastener, t1,t1- t_steel, alfafast, t_thread);
         }
 
-        public double GetTpen(Ccalc_Fastener fastener, double t1, double t2)
+        public double GetTpen(Fastener fastener, double t1, double t2)
         {
             double tpoint = fastener.l - t1;
             if (t2 - tpoint <= 4 * fastener.d)
@@ -72,7 +72,7 @@ namespace Beaver_v0._1
             return tpoint;
         }
 
-        public double CalcMyrk(Ccalc_Fastener fastener)
+        public double CalcMyrk(Fastener fastener)
         {
             double value = 0;
             if (fastener.type == "nail" && fastener.smooth == true)
@@ -91,7 +91,7 @@ namespace Beaver_v0._1
             return value;
         }
 
-        double CalcFhk(bool preDrilled, Ccalc_Fastener fastener, double pk, double alfa, string woodType)
+        double CalcFhk(bool preDrilled, Fastener fastener, double pk, double alfa, string woodType)
         {
             double fhk = 0;
             if ((fastener.type == "nail" && fastener.d <= 8) || (fastener.type == "screw" && fastener.d <= 6))
@@ -145,7 +145,7 @@ namespace Beaver_v0._1
             return k90;
         }
 
-        double CalcFaxrk(double pk, Ccalc_Fastener fastener, double t1, double tpen, double alfa, double t_thread)
+        double CalcFaxrk(double pk, Fastener fastener, double t1, double tpen, double alfa, double t_thread)
         {
             double value = 0;
             if (fastener.type == "nail")

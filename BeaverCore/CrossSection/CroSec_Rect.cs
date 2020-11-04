@@ -1,29 +1,10 @@
-﻿using Rhino.Render;
+﻿using BeaverCore.Misc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Beaver_v0._1.Classes
+namespace BeaverCore.CrossSection
 {
-    public abstract class CroSec
-    {
-
-        public double A;
-        public double Iy;
-        public double Iz;
-        public double It;
-        public double Wy;
-        public double Wz;
-        public double ry;
-        public double rz;
-
-        public abstract double GetsigMcrit(double lef,double E05);
-
-    }
-
     public class CroSec_Rect : CroSec
     {
         public double b;
@@ -56,29 +37,6 @@ namespace Beaver_v0._1.Classes
         public override double GetsigMcrit(double lef, double E05)
         {
             return (0.78 * Math.Pow(b, 2) / (h * lef)) * E05;
-        }
-    }
-
-    public class CroSec_Circ : CroSec
-    {
-        public double d;
-
-        public CroSec_Circ(double diam)
-        {
-            d = diam;
-            A = Math.PI * Math.Pow(d, 2) / 4;
-            Iy = Math.PI * Math.Pow(d, 4) / 64;
-            Iz = Iy;
-            It = Math.PI * Math.Pow(d, 4) / 32;
-            Wy = Iy * (2 / d);
-            Wz = Iz * (2 / d);
-            ry = Math.Sqrt(Iy / A);
-            rz = Math.Sqrt(Iz / A);
-        }
-
-        public override double GetsigMcrit(double lef, double E05)
-        {
-            return (0.78 * Math.Pow(d, 2) / (d * lef)) * E05;
         }
     }
 }

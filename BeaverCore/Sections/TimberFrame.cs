@@ -1,37 +1,68 @@
-﻿using System;
+﻿using BeaverCore.Actions;
+using BeaverCore.CrossSection;
+using BeaverCore.Misc;
+using BeaverCore.Materials;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Beaver_v0._1.Classes
+namespace BeaverCore.Frame
 {
-    public class Elem
+    public class TimberFrame
     {
-        public Combinations IForces;
+        public List<Force> Forces;
+        public List<Displacement> Disp;
+        public ULSCombinations IForces;
         public CroSec CS;
-        public Material Mat;
         public double ly;
         public double lz;
         public double lsp;
         public string parameters;
 
-        public Elem() { }
-        public Elem(Combinations act, CroSec cs, Material m)
+        public TimberFrame() { }
+        public TimberFrame(ULSCombinations act, CroSec cs,double ly, double lz, double lsp)
         {
             IForces = act;
             CS = cs;
-            Mat = m;
+            this.ly = ly;
+            this.lz = lz;
+            this.lsp = lsp;
         }
-        public List<double[]> BendingNormalUtil()
-        {
 
+        public TimberFrame(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lsp)
+        {
+            Forces = forces;
+            Disp = disp;
+            IForces = new ULSCombinations(forces, sc);
+            CS = cs;
+            this.ly = ly;
+            this.lz = lz;
+            this.lsp = lsp;
+        }
+
+        private double Getkcrit(double lam)
+        {
+            double kcrit = 1;
+            if (lam >= 0.75 && lam < 1.4)
+            {
+                kcrit = 1.56 - 0.75 * lam;
+            }
+            else if (lam >= 1.4)
+            {
+                kcrit = 1 / Math.Pow(lam, 2);
+            }
+            return kcrit;
+        }
+        public List<double[]> BendingNormalUtil(int sc)
+        {
             double Km = 1;
-            double Ym = Mat.Ym;
-            double fc0k = Mat.fc0k;
-            double ft0k = Mat.ft0k;
-            double fmk = Mat.fmk;
-            double E05 = Mat.E005;
+            double Ym = CS.Mat.Ym;
+            double fc0k = CS.Mat.fc0k;
+            double ft0k = CS.Mat.ft0k;
+            double fmk = CS.Mat.fmk;
+            double E05 = CS.Mat.E005;
             double kflam = 0.9;
             double Bc = 0.2;
 
@@ -199,27 +230,15 @@ namespace Beaver_v0._1.Classes
             }
             return result;
 
+            
         }
-        double Getkcrit(double lam)
-        {
-            double kcrit = 1;
-            if (lam >= 0.75 && lam < 1.4)
-            {
-                kcrit = 1.56 - 0.75 * lam;
-            }
-            else if (lam >= 1.4)
-            {
-                kcrit = 1 / Math.Pow(lam, 2);
-            }
-            return kcrit;
-        }
-        public List<double[]> ShearUtil()
+        public List<double[]> ShearUtil(int sc)
         {
             List<double[]> result = new List<double[]>();
 
 
-            double Ym = Mat.Ym;
-            double Fvk = Mat.fvk;
+            double Ym = CS.Mat.Ym;
+            double Fvk = CS.Mat.fvk;
 
 
             double kcrit = 0.67;
@@ -240,7 +259,7 @@ namespace Beaver_v0._1.Classes
             }
             return result;
         }
-        public List<double> TorsionUtil()
+        public List<double> TorsionUtil(int sc)
         {
             List<double> result = new List<double>();
 
@@ -250,8 +269,8 @@ namespace Beaver_v0._1.Classes
                 CroSec_Rect cs = (CroSec_Rect)CS;
                 kshape = Math.Min(1 + 0.15 * (cs.h / cs.b), 2);
             }
-            double Ym = Mat.Ym;
-            double Fvk = Mat.fvk;
+            double Ym = CS.Mat.Ym;
+            double Fvk = CS.Mat.fvk;
             foreach (Force f in IForces.Sd) {
                 double Mt = 0;
                 double Kmod = Utils.KMOD(IForces.SC,f.duration);

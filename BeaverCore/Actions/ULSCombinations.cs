@@ -1,101 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Linq;
+using BeaverCore.Misc;
 
-namespace Beaver_v0._1.Classes
+namespace BeaverCore.Actions
 {
-    using IF = Dictionary<string, double>;
-
-    public class Force
-    {
-        public IF InternalForces = new IF() {
-        {"N",0},{"Vy",0},{"Vz",0},{"Mt",0},{"My",0},{"Mz",0}
-        };
-        public string type;
-        public string duration;
-        public string combination;
-
-        public Force() { }
-
-        public Force(double n, double my, double mz, double vy, double vz, double mt, string type)
-        {
-            InternalForces["N"] = n;
-            InternalForces["Vy"] = vy;
-            InternalForces["Vz"] = vz;
-            InternalForces["Mt"] = mt;
-            InternalForces["My"] = my;
-            InternalForces["Mz"] = mz;
-            this.type = type;
-            duration = new TypeInfo(type).duration;
-        }
-
-        public static Force operator +(Force f1, Force f2)
-        {
-            Force result = new Force();
-            foreach (KeyValuePair<string, double> f in f1.InternalForces)
-            {
-                result.InternalForces[f.Key] = f.Value + f2.InternalForces[f.Key];
-            }
-            result.type = f1.type;
-            return result;
-        }
-
-        public static Force operator *(double s, Force f1)
-        {
-            Force result = new Force();
-            foreach (KeyValuePair<string, double> f in f1.InternalForces)
-            {
-                result.InternalForces[f.Key] = s * f.Value;
-            }
-            result.type = f1.type;
-            return result;
-        }
-
-        public static Force operator *(Force f1, double s)
-        {
-            Force result = new Force();
-            foreach (KeyValuePair<string, double> f in f1.InternalForces)
-            {
-                result.InternalForces[f.Key] = s * f.Value;
-            }
-            result.type = f1.type;
-            return result;
-        }
-
-        public static bool operator *(Force f1, Force f2)
-        {
-            bool result = true;
-            foreach (string key in f1.InternalForces.Keys)
-            {
-                if (f1.InternalForces[key] * f2.InternalForces[key] < 0)
-                {
-                    result = false;
-                }
-            }
-            return result;
-        }
-
-        
-    }
-
-    public enum filtertype
+    public enum FilterType
     {
         ByLoadDuration,
         ByLoadType,
         Total
     }
-    public class Combinations
+
+    public class ULSCombinations
     {
         public Force[] Sd;
         public int SC;
-        public Combinations() { }
+        public ULSCombinations() { }
 
-        public Combinations(List<Force> Sk, int sc)
+        public ULSCombinations(List<Force> Sk, int sc)
         {
             SC = sc;
             DesignAction(Sk);
@@ -123,7 +47,7 @@ namespace Beaver_v0._1.Classes
                 P += act;
             }
             P.type = "P";
-            P.duration= new TypeInfo(P.type).duration;
+            P.duration = new TypeInfo(P.type).duration;
             P.combination = "1.35G";
             Sd.Add(P);
 
@@ -144,13 +68,13 @@ namespace Beaver_v0._1.Classes
                 }
                 Force A = 1.35 * P + 1.5 * (Qmain + SumQi);
                 A.type = Qmain.type;
-                A.duration= new TypeInfo(A.type).duration;
+                A.duration = new TypeInfo(A.type).duration;
                 A.combination = "1.35G + 1.5 " + A.type + " + 1.5Σ(φᵢ₀Qᵢ)";
                 Sd.Add(A);
                 foreach (Force w in SWk)
                 {
                     Force B = A + 0.6 * w;
-                    B.combination="1.35G + 1.5 " + A.type + " + 1.5(Σ(φᵢ₀Qᵢ)+0.6W)";
+                    B.combination = "1.35G + 1.5 " + A.type + " + 1.5(Σ(φᵢ₀Qᵢ)+0.6W)";
                 }
             }
 
@@ -168,18 +92,18 @@ namespace Beaver_v0._1.Classes
             {
                 Force Wcomb = new Force();
                 string output = "";
-                if (P*W)
+                if (P * W)
                 {
                     if (SumQ * W)
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                       
-                        output="1.35G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
+
+                        output = "1.35G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
                     }
                     else
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                         output = "1.35G + 1.5W";
+                        output = "1.35G + 1.5W";
                     }
                 }
                 else
@@ -218,16 +142,16 @@ namespace Beaver_v0._1.Classes
             {
                 int idx = 0;
                 double fkmod = Utils.KMOD(SC, force.duration);
-                foreach (KeyValuePair<string,double> IF in force.InternalForces)
+                foreach (KeyValuePair<string, double> IF in force.InternalForces)
                 {
                     double minkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
-                    if (IF.Value/fkmod <= Min.InternalForces[IF.Key]/minkmod && IF.Value<0)
+                    if (IF.Value / fkmod <= Min.InternalForces[IF.Key] / minkmod && IF.Value < 0)
                     {
                         Min.InternalForces[IF.Key] = IF.Value;
                         idxmin[idx] = cont;
                     }
                     double maxkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
-                    if (IF.Value/ fkmod >= Max.InternalForces[IF.Key] / maxkmod && IF.Value>0)
+                    if (IF.Value / fkmod >= Max.InternalForces[IF.Key] / maxkmod && IF.Value > 0)
                     {
                         Max.InternalForces[IF.Key] = IF.Value;
                         idxmax[idx] = cont;
@@ -239,7 +163,7 @@ namespace Beaver_v0._1.Classes
             List<int> finalidx = new List<int>();
             foreach (int idx in idxmax)
             {
-                if (finalidx.Exists(x => x == idx)==false && f[idx].InternalForces.Values.ToList().Exists(x => x != 0))
+                if (finalidx.Exists(x => x == idx) == false && f[idx].InternalForces.Values.ToList().Exists(x => x != 0))
                 {
                     finalidx.Add(idx);
                 }
@@ -260,16 +184,16 @@ namespace Beaver_v0._1.Classes
         }
         public void FilterCombinations(int type)
         {
-            
+
             List<Force> Sd = new List<Force>();
             List<double> kmod = new List<double>();
             List<string> info = new List<string>();
-            
+
             //
             //BY LOAD DURATION
             if (type == 0)
             {
-                List<string> types = new List<string>() { "perm", "long", "medium", "short"};
+                List<string> types = new List<string>() { "perm", "long", "medium", "short" };
                 List<List<Force>> Sp = new List<List<Force>>();
                 foreach (string t in types)
                 {
@@ -325,30 +249,3 @@ namespace Beaver_v0._1.Classes
     }
 }
 
-public class TypeInfo
-{
-    public double phi0;
-    public double phi1;
-    public double phi2;
-    public string duration;
-
-    public TypeInfo() { }
-    public TypeInfo(string type)
-    {
-        if (type.Contains("P"))
-        {
-            phi0 = 1; phi1 = 1; phi2 = 1; duration = "perm";
-        }
-            if (type.Contains("A")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
-            if (type.Contains("B")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
-            if (type.Contains("C")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
-            if (type.Contains("D")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
-            if (type.Contains("E")) { phi0 = 1; phi1 = 0.9; phi2 = 0.8; duration = "long"; }
-            if (type.Contains("F")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "short"; }
-            if (type.Contains("G")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "short"; }
-            if (type.Contains("H")) { phi0 = 0; phi1 = 0; phi2 = 0; duration = "short"; }
-            if (type.Contains("S")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.2; duration = "medium"; }
-            if (type.Contains("W")) { phi0 = 0.6; phi1 = 0.2; phi2 = 0; duration = "short"; }
-        
-    }
-}

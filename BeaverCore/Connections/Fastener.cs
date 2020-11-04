@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Beaver_v0._1
+namespace BeaverCore.Connections
 {
-    public struct Ccalc_Fastener
+    public class Fastener
     {
         public double d;
         public double dh;
@@ -15,7 +15,7 @@ namespace Beaver_v0._1
         public string type;
         public bool smooth;
 
-        public Ccalc_Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
+        public Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
         {
             d = D;
             dh = Dh;

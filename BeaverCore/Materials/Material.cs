@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Beaver_v0._1
+namespace BeaverCore.Materials
 {
     public class Material
     {
