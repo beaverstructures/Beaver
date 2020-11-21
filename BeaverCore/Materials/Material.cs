@@ -28,6 +28,8 @@ namespace BeaverCore.Materials
         public double pk;
         public double Ym;
 
+        public double kdef;
+
         public Material() { }
 
         public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E005, double _Gmean, double _G05)
@@ -96,5 +98,34 @@ namespace BeaverCore.Materials
             return names;
         }
 
+        public void Setkdef(int SC)
+        {
+            // Eurocode 5 Table 3.2
+            switch (name) 
+            {
+                case "Solid Timber":
+                    switch (SC){
+                        case 1: kdef = 0.60; break;
+                        case 2: kdef = 0.80; break;
+                        case 3: kdef = 2.00; break;
+                    }
+                    break;
+                case "Glulam":
+                    switch (SC){
+                        case 1: kdef = 0.60; break;
+                        case 2: kdef = 0.80; break;
+                        case 3: kdef = 2.00; break;
+                    }
+                    break;
+                case "LVL":
+                    switch (SC)
+                    {
+                        case 1: kdef = 0.60; break;
+                        case 2: kdef = 0.80; break;
+                        case 3: kdef = 2.00; break;
+                    }
+                    break;
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Beaver_v0._1
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddNumberParameter("Caracteristic Deflectons", "Wk", "Caracteristics deflections for each load case", GH_ParamAccess.list);
-            pManager.AddTextParameter("Actions Type", "type", "Action type according to EN1990: AnnexA1 table A1.1. Valid action type names: P (permanent), QA (domestic), QB (office), QC (congregation), QD (shopping), QE (storage), QG (traffic), QH (roof), QS (snow), W (wind)", GH_ParamAccess.list);
+            pManager.AddTextParameter("Actions Type", "type", "Action type according to EN1990: AnnexA1 table A1.1. Valid action type names: P (permanent), QA (domestic), QB (office), QC (congregation), QD (shopping), QE (storage), QG (traffic), QH (roof), S (snow), W (wind)", GH_ParamAccess.list);
             pManager.AddNumberParameter("Span Lenght", "span", "Span analysed", GH_ParamAccess.item);
             pManager.AddNumberParameter("Instantaneous Deflection Limit", "Winst,lim", "Ratio between the span lenght(l) and maximum instantaneous deflection (Winst) according to Table 7.2 in EN1995", GH_ParamAccess.item,350);
             pManager.AddNumberParameter("Net Final Deflection Span Limit", "Wnet,lim", "Ratio between the span lenght (l) and maximum net final deflection (Wnet,fin) according to Table 7.2 in EN1995", GH_ParamAccess.item,250);
@@ -174,7 +174,7 @@ namespace Beaver_v0._1
 
 
 
-            //WNET DEFLECTION (same as wfin mas subtraindo precamber (WC), calculate wnet)
+            //WNET DEFLECTION (same as wfin but subtracting precamber (WC), calculate wnet)
 
 
             

@@ -36,6 +36,7 @@ namespace BeaverCore.Actions
             Force result = new Force();
             foreach (KeyValuePair<string, double> f in f1.InternalForces)
             {
+                // $$$ soma os strings?
                 result.InternalForces[f.Key] = f.Value + f2.InternalForces[f.Key];
             }
             result.type = f1.type;
@@ -66,6 +67,7 @@ namespace BeaverCore.Actions
 
         public static bool operator *(Force f1, Force f2)
         {
+            // Tests if Internal Forces have same direction
             bool result = true;
             foreach (string key in f1.InternalForces.Keys)
             {
@@ -77,37 +79,6 @@ namespace BeaverCore.Actions
             return result;
         }
 
-
-    }
-
-
-
-
-    public class TypeInfo
-    {
-        public double phi0;
-        public double phi1;
-        public double phi2;
-        public string duration;
-
-        public TypeInfo() { }
-        public TypeInfo(string type)
-        {
-            if (type.Contains("P"))
-            {
-                phi0 = 1; phi1 = 1; phi2 = 1; duration = "perm";
-            }
-            if (type.Contains("A")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
-            if (type.Contains("B")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "medium"; }
-            if (type.Contains("C")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
-            if (type.Contains("D")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "medium"; }
-            if (type.Contains("E")) { phi0 = 1; phi1 = 0.9; phi2 = 0.8; duration = "long"; }
-            if (type.Contains("F")) { phi0 = 0.7; phi1 = 0.7; phi2 = 0.6; duration = "short"; }
-            if (type.Contains("G")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.3; duration = "short"; }
-            if (type.Contains("H")) { phi0 = 0; phi1 = 0; phi2 = 0; duration = "short"; }
-            if (type.Contains("S")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.2; duration = "medium"; }
-            if (type.Contains("W")) { phi0 = 0.6; phi1 = 0.2; phi2 = 0; duration = "short"; }
-
-        }
+        // Moved TypeInfo class to Action.cs
     }
 }

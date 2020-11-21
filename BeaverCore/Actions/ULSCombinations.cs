@@ -15,8 +15,8 @@ namespace BeaverCore.Actions
 
     public class ULSCombinations
     {
-        public Force[] Sd;
-        public int SC;
+        public Force[] Sd;                          // List of design forces
+        public int SC;                              // Service Class 
         public ULSCombinations() { }
 
         public ULSCombinations(List<Force> Sk, int sc)
@@ -129,7 +129,7 @@ namespace BeaverCore.Actions
             //INSTANTIATE CLASS
             //
 
-            this.Sd = Sd.ToArray();
+            this.Sd = Sd.ToArray();                             // $$$ evitar usar nome de variável com nome de field pq confunde a leitura
         }
         public List<Force> CriticalForces(List<Force> f)
         {
