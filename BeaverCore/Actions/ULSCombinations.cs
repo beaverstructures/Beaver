@@ -94,7 +94,7 @@ namespace BeaverCore.Actions
                 string output = "";
                 if (P * W)
                 {
-                    if (SumQ * W)
+                    if (SumQ * W) // $$$ essa notação não é intuitiva
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
 
