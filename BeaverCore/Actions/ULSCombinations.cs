@@ -53,6 +53,7 @@ namespace BeaverCore.Actions
 
             //
             //ACIDENTAL LOADING
+            // $$$ Shouldnt it be named IMPOSED or VARIABLE loading instead of ACCIDENTAL?
             //
 
             for (int i = 0; i < SQk.Count; i++)
@@ -66,6 +67,7 @@ namespace BeaverCore.Actions
                     TypeInfo t = new TypeInfo(SQa[j].type);
                     SumQi += SQa[j] * t.phi0;
                 }
+                // $$$ doubt: Should we consider the possibility of combining oposite direction variable loads?
                 Force A = 1.35 * P + 1.5 * (Qmain + SumQi);
                 A.type = Qmain.type;
                 A.duration = new TypeInfo(A.type).duration;
@@ -92,7 +94,7 @@ namespace BeaverCore.Actions
             {
                 Force Wcomb = new Force();
                 string output = "";
-                if (P * W)
+                if (P * W) // $$$ doubt, what does that * means?
                 {
                     if (SumQ * W) // $$$ essa notação não é intuitiva
                     {
@@ -106,7 +108,8 @@ namespace BeaverCore.Actions
                         output = "1.35G + 1.5W";
                     }
                 }
-                else
+                else // $$$ Wcomb and output equations here are not matching, Wcomb should contain 1.0*P and not 1.35*P.
+                    // $$$ Also, I believe that SumQ may be disconsidered in this combination when they are favorable to the analysis such as Permanent loads 
                 {
                     if (SumQ * W)
                     {
