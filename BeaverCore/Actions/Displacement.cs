@@ -6,9 +6,9 @@ namespace BeaverCore.Actions
 {
     public class Displacement : Action
     {
-        public double dx;    // Global X deflection
-        public double dy;    // Global Y deflection
-        public double dz;    // Global Z deflection
+        public double dx = 0;    // Global X deflection
+        public double dy = 0;    // Global Y deflection
+        public double dz = 0;    // Global Z deflection
 
         // INSTANTIATE CLASS
         public Displacement() { }
@@ -53,6 +53,15 @@ namespace BeaverCore.Actions
                                                     w1.dz * s,
                                                     w1.type);
             return result;
+        }
+
+        public void Sum_SLS_char(IEnumerable<Displacement> inputs)
+        {
+            // Calculates Σ(φ₀Qkᵢ)
+        }
+        public void Sum_SLS_QP(IEnumerable<Displacement> inputs, double kdef)
+        {
+            // Calculates Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
         }
     }
 }

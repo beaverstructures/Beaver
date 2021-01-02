@@ -84,5 +84,25 @@ namespace BeaverCore.Misc
             else {throw new ArgumentException( "Service Class must be a integer between 1 and 3"); }
             return k;
         }
+
+        // taken from http://www.interact-sw.co.uk/iangblog/2010/08/01/linq-cartesian-3
+        // performs the n-ary cartesian product of many sets
+        public static IEnumerable<IEnumerable<T>> CartesianProduct<T>(IEnumerable<IEnumerable<T>> inputs)
+        {
+            return inputs.Aggregate(
+                (IEnumerable<IEnumerable<T>>)new T[][] { new T[0] },
+                (soFar, input) =>
+                    from prevProductItem in soFar
+                    from item in input
+                    select prevProductItem.Concat(new T[] { item }));
+        }
+
+        // Enable variable argument list.
+        public static IEnumerable<IEnumerable<T>> CartesianProduct<T>(
+            params IEnumerable<T>[] inputs)
+        {
+            IEnumerable<IEnumerable<T>> e = inputs;
+            return CartesianProduct(e);
+        }
     }
 }

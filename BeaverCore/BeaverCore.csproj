@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Combinatorics" Version="1.1.0.19" />
+  </ItemGroup>
+
 </Project>
