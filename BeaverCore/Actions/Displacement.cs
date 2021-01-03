@@ -39,29 +39,25 @@ namespace BeaverCore.Actions
 
         public static Displacement operator +(Displacement w1, Displacement w2)
         {
-            Displacement result = new Displacement( w1.dx + w2.dx,
-                                                    w1.dy + w2.dy, 
+            Displacement result = new Displacement(w1.dx + w2.dx,
+                                                    w1.dy + w2.dy,
                                                     w1.dz + w2.dz,
-                                                    w1.type);
+                                                    w2.type);
             return result;
         }
 
         public static Displacement operator *(Displacement w1, double s)
         {
-            Displacement result = new Displacement( w1.dx * s,
+            Displacement result = new Displacement(w1.dx * s,
                                                     w1.dy * s,
                                                     w1.dz * s,
                                                     w1.type);
             return result;
         }
 
-        public void Sum_SLS_char(IEnumerable<Displacement> inputs)
+        public double Absolute()
         {
-            // Calculates Σ(φ₀Qkᵢ)
-        }
-        public void Sum_SLS_QP(IEnumerable<Displacement> inputs, double kdef)
-        {
-            // Calculates Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
+            return Math.Pow(dx*dx + dy*dy + dz*dz,1/3);
         }
     }
 }

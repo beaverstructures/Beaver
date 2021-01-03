@@ -43,6 +43,7 @@ namespace BeaverCore.Actions
             if (type.Contains("S")) { phi0 = 0.7; phi1 = 0.5; phi2 = 0.2; duration = "medium"; }    // Snow Load
             if (type.Contains("W")) { phi0 = 0.6; phi1 = 0.2; phi2 = 0; duration = "short"; }       // Wind load
 
+            if (type.Contains("X")) { phi0 = 1; phi1 = 1; phi2 = 1; duration = "medium"; }          // Already calculated phis
         }
     }
 }

@@ -23,7 +23,7 @@ namespace BeaverCore.Actions
             CalcDeflectionCombinations(_wk,_mat);
         }
 
-        public void CalcDeflectionCombinations(List<Displacement> wk, Material mat)
+        public Displacement CalcDeflectionCombinations(List<Displacement> wk, Material mat)
         {
             // Linear Analysis Formulation according to EC5 Section 2.2.3
             // Possible combinations:
@@ -52,37 +52,21 @@ namespace BeaverCore.Actions
                                     "S",
                                     "W"};
 
-            List<List<Displacement>> Sorted_disps = new List<List<Displacement>>();
-
-            Sorted_disps.Add(wk.Where(x => x.type.Contains("P")).ToList());
-
-            // Creates all possible combinations between IMPOSED LOADS: [Qa , Qh , Qa + Qh]
-            List<Displacement> list = wk.Where(x => x.type.Contains("Q")).ToList();
-            var result = Enumerable.Range(1, (1 << list.Count) - 1).Select(index => list.Where((item, idx) => ((1 << idx) & index) != 0).ToList());
-            list = new List<Displacement>();
-            foreach (var combo in result)
+            List<List<Displacement>> Sorted_disps = new List<List<Displacement>>
             {
-                Displacement sum = new Displacement();
-                sum.type = "Q";
-                // $$$ Error: does not consider phi0 or phi2 in the sum
-                foreach (var load in combo)
-                {
-                    sum += load;
-                }
-                list.Add(sum);
-            }
+                wk.Where(x => x.type.Contains("P")).ToList()
+            };
 
-            Sorted_disps.Add(list);
+            Sorted_disps.Add(wk.Where(x => x.type.Contains("Q")).ToList());
             Sorted_disps.Add(wk.Where(x => x.type.Contains("S")).ToList());
             Sorted_disps.Add(wk.Where(x => x.type.Contains("W")).ToList());
 
             // generates 0 displacement for the cartesian product
-            Sorted_disps[1].Add(new Displacement());
-            Sorted_disps[2].Add(new Displacement());
-            Sorted_disps[3].Add(new Displacement());
+            Sorted_disps[1].Insert(0, new Displacement());
+            Sorted_disps[2].Insert(0, new Displacement());
+            Sorted_disps[3].Insert(0, new Displacement());
 
             List<Displacement> displacements = new List<Displacement>();
-            Displacement displacement_sum = new Displacement();
             Displacement wG = new Displacement();
 
             // CHARACTERISTIC-RARE COMBINATION
@@ -97,31 +81,68 @@ namespace BeaverCore.Actions
             // ΣG
             wG.combination = "SLS-Characteristic";
             wG.type = "P";
-            displacement_sum += wG;
-            displacements.Add(displacement_sum);
-            
-            for(int primaryload = 1; primaryload < 4; primaryload++)
+            displacements.Add(wG);
+
+            for (int primaryload = 1; primaryload < 4; primaryload++)
             {
+                List<int> loadtypes = new List<int>{ 1, 2, 3 };
+                loadtypes.Remove(primaryload);
                 for (int i = 1; i < Sorted_disps[primaryload].Count; i++)
                 {
+                    // i=1 to skip 0 displacement case
                     // ΣG + Qk1
-                    Displacement disp1 = Sorted_disps[primaryload][i];
-                    displacements.Add(wG + disp1);
+                    List<Displacement> disp1 = new List<Displacement> { Sorted_disps[primaryload][i] };
+                    var cartesianproduct = Utils.CartesianProduct(new List<Displacement> { new Displacement() });
 
-                    // Remaining Loads
-                    Sorted_disps.RemoveAt(0);
-                    Sorted_disps[primaryload].RemoveAt(i);
 
-                    // Generates the CARTESIAN PRODUCT of secondary loads
-                    var cartesianproduct = Utils.CartesianProduct(Sorted_disps[1], Sorted_disps[2], Sorted_disps[3]);
+                    if (primaryload == 1)
+                    {
+                        // Creates all possible combinations between IMPOSED LOADS: [Qa , Qh , Qa + Qh]
+                        List<Displacement> list = Sorted_disps.ElementAt(primaryload);
+                        list.RemoveAt(0); //removes 0 displacement case
+                        list.RemoveAt(i); //removes primary displacement case
+                        var result = Enumerable.Range(1, (1 << list.Count) - 1).Select(index => list.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
+                        list = new List<Displacement>();
+                        foreach (var combo in result)
+                        {
+                            Displacement sum = new Displacement();
+                            foreach (var load in combo)
+                            {
+                                sum += load * load.typeinfo.phi0;
+                                sum.type = "QX";
+                                // $$$ Accepting suggestions on how to improve this
+                                // QX is set so that the phi0 is not accounted twice
+                            }
+                            list.Add(sum);
+                        }
+                        list.Insert(0, new Displacement());
+
+                        // Generates the CARTESIAN PRODUCT of secondary loads including other Imposed combinations
+                        cartesianproduct = Utils.CartesianProduct(disp1,
+                                                                        list,
+                                                                        Sorted_disps[loadtypes[0]],
+                                                                        Sorted_disps[loadtypes[1]]);
+                    }
+                    else
+                    {
+                        // Generates the CARTESIAN PRODUCT of secondary loads
+                        cartesianproduct = Utils.CartesianProduct(disp1,
+                                                                        Sorted_disps[loadtypes[0]],
+                                                                        Sorted_disps[loadtypes[1]]);
+                    }
+
 
                     // Sum displacements inside cartesian products
                     Displacement disp2 = new Displacement();
                     foreach (var product in cartesianproduct)
                     {
                         // ΣG + Qk1 + Σ(φ₀Qkᵢ)
-                        disp2.Sum_SLS_char(product); // Sum_SLS_char() method to be implemented in displacement class
-                        displacements.Add(wG + disp1 + disp2);
+                        foreach (var item in product)
+                        {
+                            // calculates Σ(φ₀Qkᵢ)
+                            disp2 += item * item.typeinfo.phi0;
+                        }
+                        displacements.Add(wG + disp1[0] + disp2);
                     }
                 }
             }
@@ -131,38 +152,40 @@ namespace BeaverCore.Actions
             
             // ΣG∙(1+kdef)
             wG.combination = "SLS-QuasiPermanent";
-            displacement_sum = wG * (1 + mat.kdef);
-            displacements.Add(displacement_sum);                                            
+            displacements.Add(wG * (1 + mat.kdef));
 
             for (int primaryload = 1; primaryload < 4; primaryload++)
             {
+                List<int> loadtypes = new List<int> { 1, 2, 3 };
+                loadtypes.Remove(primaryload);
                 for (int i = 1; i < Sorted_disps[primaryload].Count; i++)
                 {
                     // ΣG∙(1+kdef) + Qk1∙φ₁∙(1+kdef∙φᵢ₂)
-                    Displacement disp1 = Sorted_disps[primaryload][i];
-                    displacements.Add(wG*(1 + mat.kdef) + disp1*disp1.typeinfo.phi1*(1+mat.kdef*disp1.typeinfo.phi2));
+                    List<Displacement> disp1 = new List<Displacement> { Sorted_disps[primaryload][i] };
 
-                    // Remaining Loads
-                    Sorted_disps.RemoveAt(0);
-                    Sorted_disps[primaryload].RemoveAt(i);
-
-                    // Cartesian product of secondary loads
-                    var cartesianproduct = Utils.CartesianProduct(Sorted_disps[1], Sorted_disps[2], Sorted_disps[3]);
+                    // Generates the CARTESIAN PRODUCT of secondary loads
+                    var cartesianproduct = Utils.CartesianProduct(disp1,
+                                                                    Sorted_disps[loadtypes[0]],
+                                                                    Sorted_disps[loadtypes[1]]);
 
                     // Sum displacements inside cartesian products
                     Displacement disp2 = new Displacement();
                     foreach (var product in cartesianproduct)
                     {
                         // ΣG∙(1+kdef) + Qk1∙φ₁∙(1+kdef∙φᵢ₂) + Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
-                        disp2.Sum_SLS_QP(product, mat.kdef); // Sum_SLS_QP() method to be implemented in displacement class
-                        displacements.Add(  wG * (1 + mat.kdef) 
-                                        + disp1 * disp1.typeinfo.phi1 * (1 + mat.kdef * disp1.typeinfo.phi2)
-                                        + disp2);
+                        foreach(var item in product)
+                        {
+                            // calculates Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
+                            disp2 += item * item.typeinfo.phi2 *(item.typeinfo.phi0 + mat.kdef);
+                        }
+                        displacements.Add(  wG * (1 + mat.kdef)
+                                            + disp1[0] * disp1[0].typeinfo.phi1 * (1 + mat.kdef * disp1[0].typeinfo.phi2)
+                                            + disp2);
                     }
                 }
             }
 
-            Displacement Result = displacements.Max();
+            return displacements.Max();
         }
     }    
 }

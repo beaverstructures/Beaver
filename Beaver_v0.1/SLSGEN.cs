@@ -185,10 +185,12 @@ namespace Beaver_v0._1
             double wfinlim = span / Wfinlim;
             double instUtil = winst / winstlim;
             double netUtil = wnet / wnetlim;
-            double finUtil = wfin / wfinlim; 
-            List<string> Info = new List<string>();
-            Info.Add("wG + w" + Wq[idxmaxComb].type + " + Σ(φᵢ₀wQᵢ)");
-            Info.Add("(1 + kdef)(wG + Σ(φᵢ₂wQᵢ)");
+            double finUtil = wfin / wfinlim;
+            List<string> Info = new List<string>
+            {
+                "wG + w" + Wq[idxmaxComb].type + " + Σ(φᵢ₀wQᵢ)",
+                "(1 + kdef)(wG + Σ(φᵢ₂wQᵢ)"
+            };
             DA.SetData(0, winst);
             DA.SetData(1, wnet);
             DA.SetData(2, wfin);
