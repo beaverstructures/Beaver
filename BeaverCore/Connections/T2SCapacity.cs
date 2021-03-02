@@ -10,7 +10,7 @@ namespace BeaverCore.Connections
     public class T2SCapacity : SingleFastenerCapacity
     {
         public double t_steel;
-        public int SDt;
+        public int sheartype;
 
         public T2SCapacity() { }
 
@@ -34,13 +34,17 @@ namespace BeaverCore.Connections
             this.tMat1 = tMat;
             this.t1 = T1;
             this.t_steel = T_steel;
-            this.SDt = SD;
+            this.sheartype = SD;
             this.variables = new Variables(Fastener, PreDrilled, Pk, Alfa, Alfafast, tMat1.type, T1, T_steel, T_thread);
             this.alfafast=Alfafast;
         }
 
         
-
+        public override void GetFvk(bool type)
+        {
+            if (base.sheartype == 0) capacity = FvkSingleShear(type);
+            else capacity = FvkDoubleShear(type);
+        }
         public override object FvkSingleShear(bool type)
         {
 
@@ -124,7 +128,7 @@ namespace BeaverCore.Connections
             string failureMode = "";
             List<double> Fvrks = new List<double>();
             List<string> failures = new List<string>();
-            if (SDt == 1) //Double Shear Steel Out
+            if (sheartype == 1) //Double Shear Steel Out
             {
                 //Mode f
                 double Fvrk1 = variables.fhk * t1 * fastener.d;
@@ -155,7 +159,7 @@ namespace BeaverCore.Connections
                 }
             }
 
-            else if (SDt == 2) //Double Shear Steel In
+            else if (sheartype == 2) //Double Shear Steel In
             {
                 //Mode j/l
                 double Fvrk4 = 0.5 * variables.fhk * fastener.d * t1;

@@ -20,7 +20,7 @@ namespace Beaver_v0._1
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public S_BendingNormal()
-          : base("Bending and Normal Forces - General", "Bending & Normal",
+          : base("Bending and Normal Forces", "Bending & Normal",
              "Verifies the cross section of a beam subjected to Bending and Normal forces according to Eurocode 5",
               "Beaver", "Sections")
         {

@@ -20,6 +20,7 @@ namespace BeaverCore.Frame
         public double lz;
         public double lsp;
         public string parameters;
+        public int sc;
 
         public TimberFrame() { }
         public TimberFrame(ULSCombinations act, CroSec cs,double ly, double lz, double lsp)
@@ -35,6 +36,7 @@ namespace BeaverCore.Frame
         {
             Forces = forces;
             Disp = disp;
+            this.sc = sc;
             IForces = new ULSCombinations(forces, sc);
             CS = cs;
             this.ly = ly;
@@ -55,7 +57,7 @@ namespace BeaverCore.Frame
             }
             return kcrit;
         }
-        public List<double[]> BendingNormalUtil(int sc)
+        public List<double[]> BendingNormalUtil()
         {
             double Km = 1;
             double Ym = CS.Mat.Ym;
@@ -232,7 +234,7 @@ namespace BeaverCore.Frame
 
             
         }
-        public List<double[]> ShearUtil(int sc)
+        public List<double[]> ShearUtil()
         {
             List<double[]> result = new List<double[]>();
 
@@ -259,7 +261,7 @@ namespace BeaverCore.Frame
             }
             return result;
         }
-        public List<double> TorsionUtil(int sc)
+        public List<double> TorsionUtil()
         {
             List<double> result = new List<double>();
 

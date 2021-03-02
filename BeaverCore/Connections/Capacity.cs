@@ -19,8 +19,11 @@ namespace BeaverCore.Connections
         public string connectorMaterial;
         public bool preDrilled;
         public double pk1;
+        public int sheartype;
+        public dynamic capacity;
 
 
+        public abstract void GetFvk(bool type);
 
         public abstract object FvkSingleShear(bool type);
 

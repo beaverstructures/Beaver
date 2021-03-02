@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Connections
 {
-    class Ccalc_BrittleFailure
+    class Spacing
     {
         public double a1;
         public double a1_n;
@@ -16,7 +16,7 @@ namespace BeaverCore.Connections
         public double a4t;
         public double a4c;
 
-        public Ccalc_BrittleFailure(Fastener fastener, double pk, double alfa, bool preDrilled)
+        public Spacing(Fastener fastener, double pk, double alfa, bool preDrilled)
         {
             if (fastener.type == "nail" || (fastener.type == "screw" && fastener.d <= 6))
             {

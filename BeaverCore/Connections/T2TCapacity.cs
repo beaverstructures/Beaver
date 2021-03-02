@@ -12,12 +12,7 @@ namespace BeaverCore.Connections
         public double pk2;
         public double t_head;
         public double t_thread;
-        public double npar;
-        public double npep;
         public string woodType;
-        public double a1;
-
-        
 
         public T2TCapacity() { }
 
@@ -39,7 +34,8 @@ namespace BeaverCore.Connections
             double Alfafast,
             double Npar,
             double Npep,
-            double A1
+            double A1,
+            bool type
         )
         {
             this.t1 = T1;
@@ -56,10 +52,14 @@ namespace BeaverCore.Connections
             this.t_head = T_head;
             this.t_thread = T_thread;
             this.alfafast = Alfafast;
-            this.npar = Npar;
-            this.npep = Npep;
-            this.a1 = A1;
             this.variables = new Variables(Fastener, PreDrilled, Pk1, Pk2, Alfa1, Alfa2, alfafast, WoodType, T1, T2, T_thread);
+  
+        }
+
+        public override void GetFvk(bool type)
+        {
+            if (sheartype == 0) capacity = FvkSingleShear(type);
+            else capacity = FvkDoubleShear(type);
         }
 
         public override object FvkSingleShear(bool type)
@@ -230,7 +230,7 @@ namespace BeaverCore.Connections
             }
         }
 
-        public double Nef()
+        /*public double Nef()
         {
             double d = this.fastener.d;
             double nef = 0;
@@ -260,7 +260,7 @@ namespace BeaverCore.Connections
                 nef = Math.Min(npar, Math.Pow(npar, 0.9) * Math.Pow(a1 / (13 * d), 0.25)) * npep;
             }
             return nef;
-        }
+        }*/
 
 
     }
