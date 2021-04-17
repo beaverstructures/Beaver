@@ -230,37 +230,7 @@ namespace BeaverCore.Connections
             }
         }
 
-        /*public double Nef()
-        {
-            double d = this.fastener.d;
-            double nef = 0;
-            if (this.fastener.type == "nail" || (this.fastener.type == "screw" & this.fastener.d < 6))
-            {
-                double kef = 0;
-                if (this.a1 >= 4 * d & this.a1 < 7 * d)
-                {
-                    kef = 0.5 - (0.5 - 0.7) * (4 * d - a1) / (4 * d - 7 * d);
-                }
-                if (this.a1 >= 7 * d & this.a1 < 10 * d)
-                {
-                    kef = 0.7 - (0.7 - 0.85) * (7 * d - a1) / (7 * d - 10 * d);
-                }
-                if (this.a1 >= 10 * d & this.a1 < 14 * d)
-                {
-                    kef = 0.85 - (0.85 - 1) * (10 * d - a1) / (10 * d - 14 * d);
-                }
-                if (this.a1 >= 14 * d)
-                {
-                    kef = 1;
-                }
-                nef = (Math.Pow(npar, kef)) * npep;
-            }
-            if (this.fastener.type == "bolt" || (this.fastener.type == "screw" & this.fastener.d > 6))
-            {
-                nef = Math.Min(npar, Math.Pow(npar, 0.9) * Math.Pow(a1 / (13 * d), 0.25)) * npep;
-            }
-            return nef;
-        }*/
+    
 
 
     }

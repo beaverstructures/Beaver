@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Connections
 {
-    class Spacing
+    public class Spacing
     {
         public double a1;
-        public double a1_n;
         public double a2;
         public double a3t;
         public double a3c;
         public double a4t;
         public double a4c;
+        public int npar;
+        public int npep;
 
         public Spacing(Fastener fastener, double pk, double alfa, bool preDrilled)
         {
@@ -38,7 +39,6 @@ namespace BeaverCore.Connections
             double inRad = alfa;
             double cosAlfa = Math.Cos(inRad);
             double sinAlfa = Math.Sin(inRad);
-            this.a1_n = 14 * d;
             if (pk <= 420 && d <= 6)
             {
                 if (d < 5)

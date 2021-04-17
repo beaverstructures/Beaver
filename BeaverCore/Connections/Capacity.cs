@@ -29,6 +29,8 @@ namespace BeaverCore.Connections
 
         public abstract object FvkDoubleShear(bool type);
 
+        public abstract object Faxrk(bool type);
+
         public double FaxrkUpperLimitValue()
         {
             string type = fastener.type;

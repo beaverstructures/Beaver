@@ -34,9 +34,9 @@ namespace BeaverCore.CrossSection
             return beta * a * Math.Pow(b, 3);
         }
 
-        public override double GetsigMcrit(double lef, double E05)
+        public override double GetsigMcrit(double lef, double E05, double G05)
         {
-            return (0.78 * Math.Pow(b, 2) / (h * lef)) * E05;
+            return (Math.PI) * Math.Sqrt(E05 * Iz * G05 * It);
         }
     }
 }

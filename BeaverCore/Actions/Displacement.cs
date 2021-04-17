@@ -5,6 +5,10 @@ using System.Text;
 namespace BeaverCore.Actions
 {
     public class Displacement : Action
+    /// <summary>
+    /// Displacement class for SLS calculations.
+    /// Defines x, y and z displacements as well as load types.
+    /// </summary>
     {
         public double dx = 0;    // Global X deflection
         public double dy = 0;    // Global Y deflection
@@ -42,7 +46,7 @@ namespace BeaverCore.Actions
             Displacement result = new Displacement(w1.dx + w2.dx,
                                                     w1.dy + w2.dy,
                                                     w1.dz + w2.dz,
-                                                    w2.type);
+                                                    w1.type + w2.type);
             return result;
         }
 

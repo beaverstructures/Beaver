@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -10,7 +11,11 @@ namespace BeaverCore.Actions
 {
     public class SLSCombinations
     {
-        // variables
+        /// <summary>
+        /// Given list of displacements sorts and calculates total displacements based on the Linear Analysis Formulation according to EC5 Section 2.2.3
+        /// </summary>
+        public List<Displacement> winst;
+        public List<Displacement> wfin;
         public int SC; // service class
 
 
@@ -20,10 +25,10 @@ namespace BeaverCore.Actions
         {
             SC = _sc;
             _mat.Setkdef(SC);
-            CalcDeflectionCombinations(_wk,_mat);
+            (winst, wfin) = CalcDeflectionCombinations(_wk,_mat);
         }
 
-        public Displacement CalcDeflectionCombinations(List<Displacement> wk, Material mat)
+        public (List<Displacement> winst, List<Displacement> wfin) CalcDeflectionCombinations(List<Displacement> wk, Material mat)
         {
             // Linear Analysis Formulation according to EC5 Section 2.2.3
             // Possible combinations:
@@ -38,7 +43,7 @@ namespace BeaverCore.Actions
             // $$$ separate loadcases. Isn't it easier to just sum everything from the same load ?
             // $$$ DOES NOT CONSIDER PRECAMBER
 
-            // CALCULATES DEFLECTION ACCORDING TO LOAD TYPE //
+            // Sorts loads according to loadtype //
             List<string> loadList = new List<string>()
                                     {"P",
                                     "QA",
@@ -147,9 +152,12 @@ namespace BeaverCore.Actions
                 }
             }
 
+            winst = displacements;
+            List<Displacement> displacements = new List<Displacement>();
+
             // QUASI-PERMANENT COMBINATION
             // ΣG∙(1+kdef) + P + Qk1∙φ₁∙(1+kdef∙φᵢ₂) + Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
-            
+
             // ΣG∙(1+kdef)
             wG.combination = "SLS-QuasiPermanent";
             displacements.Add(wG * (1 + mat.kdef));
@@ -185,7 +193,8 @@ namespace BeaverCore.Actions
                 }
             }
 
-            return displacements.Max();
+            wfin = displacements;
+            return (winst, wfin);
         }
     }    
 }

@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Actions
 {
-
+    /// <summary>
+    /// Class for individual Force
+    /// </summary>
     public class Force: Action
     {
         public double N;
@@ -33,71 +35,77 @@ namespace BeaverCore.Actions
             duration = new TypeInfo(type).duration;
         }
 
-        private Force(Dictionary<string, double> InternalForces)
+        private Force(List<double> InternalForces)
         {
-            N =InternalForces["N"];
-            Vy =InternalForces["Vy"];
-            Vz =InternalForces["Vz"];
-            Mt = InternalForces["Mt"];
-            My = InternalForces["My"];
-            Mz = InternalForces["Mz"];
+            N =InternalForces[0];
+            Vy =InternalForces[1];
+            Vz =InternalForces[2];
+            Mt = InternalForces[3];
+            My = InternalForces[4];
+            Mz = InternalForces[5];
         }
 
-        private Dictionary<string, double> toDictionary()
+        public List<double> ToList()
         {
-            Dictionary<string, double> InternalForces = new Dictionary<string, double>();
-            InternalForces["N"] = N;
-            InternalForces["Vy"] = Vy;
-            InternalForces["Vz"] = Vz;
-            InternalForces["Mt"] = Mt;
-            InternalForces["My"] = My;
-            InternalForces["Mz"] = Mz;
+            List<double> InternalForces = new List<double>() { 
+                N,
+                Vy,
+                Vz,
+                Mt,
+                My,
+                Mz
+            };
             return InternalForces;
         }
 
         public static Force operator +(Force f1, Force f2)
         {
-            Force result = new Force();
-            Dictionary<string, double>  f1Dict = f1.toDictionary();
-            Dictionary<string, double>  f2Dict = f2.toDictionary();
-            foreach (KeyValuePair<string, double> f in f1Dict)
+            List<double> f1List = f1.ToList();
+            List<double> f2List = f2.ToList();
+            List<double> result = new List<double>();
+            foreach (var f in f1List.Zip(f2List, Tuple.Create))
             {
-                f1Dict[f.Key] += f2Dict[f.Key];
+                result.Add(f.Item1 + f.Item2);
             }
-            return new Force(f1Dict);
+            return new Force(result);
         }
 
         public static Force operator *(double s, Force f1)
         {
-            Force result = new Force();
-            Dictionary<string, double> f1Dict = f1.toDictionary();
-            foreach (KeyValuePair<string, double> f in f1Dict)
+            List<double> result = new List<double>();
+            List<double> f1List = f1.ToList();
+            foreach (var f in f1List)
             {
-                f1Dict[f.Key] *= s;
+                result.Add(s * f);
             }
-            return new Force(f1Dict);
+            return new Force(result);
         }
 
         public static Force operator *(Force f1, double s)
         {
-            Force result = new Force();
-            Dictionary<string, double> f1Dict = f1.toDictionary();
-            foreach (KeyValuePair<string, double> f in f1Dict)
+            List<double> result = new List<double>();
+            List<double> f1List = f1.ToList();
+            foreach (var f in f1List)
             {
-                f1Dict[f.Key] *= s;
+                result.Add(s * f);
             }
-            return new Force(f1Dict);
+            return new Force(result);
         }
 
-        public static bool operator *(Force f1, Force f2)
+        /// <summary>
+        /// Tests if Internal Forces have same direction
+        /// </summary>
+        /// <param name="f1"></param>
+        /// <param name="f2"></param>
+        /// <returns></returns>
+        public static bool IsSameDirection(Force f1, Force f2)
         {
-            // Tests if Internal Forces have same direction
             bool result = true;
-            Dictionary<string, double> f1Dict = f1.toDictionary();
-            Dictionary<string, double> f2Dict = f2.toDictionary();
-            foreach (string key in f1Dict.Keys)
+            List<double> f1List = f1.ToList();
+            List<double> f2List = f2.ToList();
+            foreach (var f in f1List.Zip(f2List, Tuple.Create))
             {
-                if (f1Dict[key] * f2Dict[key] < 0)
+                if (f.Item1 * f.Item2 < 0)
                 {
                     result = false;
                 }
@@ -105,6 +113,5 @@ namespace BeaverCore.Actions
             return result;
         }
 
-        // Moved TypeInfo class to Action.cs
     }
 }

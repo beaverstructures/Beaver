@@ -21,7 +21,7 @@ namespace BeaverCore.CrossSection
         public double rz;
         public Material Mat;
 
-        public abstract double GetsigMcrit(double lef,double E05);
+        public abstract double GetsigMcrit(double lef,double E05,double G05);
 
     }
 

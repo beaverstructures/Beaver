@@ -1,37 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace BeaverCore.Connections
 {
     public class MultipleFastenerCapacity
     {
-        SingleFastenerCapacity fastener_Cap;
-        double npar;
-        double npep;
-        double a1;
-        double a2;
-        double a3c;
-        double a3t;
-        double a4c;
-        double a4t;
-        bool type; //0 for overall connection capacity, 1 for single fastener capacity
+        List<SingleFastenerCapacity> fastener_Cap;
+        Spacing spacing;
 
-        public MultipleFastenerCapacity(SingleFastenerCapacity fastener_Cap, double npar, double npep, double a1, double a2, double a3c, double a3t, double a4c, double a4t)
+        public MultipleFastenerCapacity(SingleFastenerCapacity fastener_Cap, Spacing spacing)
         {
             this.fastener_Cap = fastener_Cap;
-            this.npar = npar;
-            this.npep = npep;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3c = a3c;
-            this.a3t = a3t;
-            this.a4c = a4c;
-            this.a4t = a4t;
+            this.spacing = spacing;
         }
 
-        public double OverallResistance() {
+        public double OverallShearResistance() {
 
             double alpha = fastener_Cap.alfa1;
             if (fastener_Cap is T2TCapacity)
@@ -39,6 +25,8 @@ namespace BeaverCore.Connections
                 T2TCapacity t2tfast = (T2TCapacity)fastener_Cap;
                 alpha = Math.Min(alpha, t2tfast.alfa2);
             }
+            int npar = spacing.npar;
+            int npep = spacing.npep;
             double d = fastener_Cap.fastener.d;
             double result = 0;
             double n = npar * npep;
@@ -51,6 +39,7 @@ namespace BeaverCore.Connections
         
         }
 
+        //What the fuck
         public double IndividualResistance() {
             List<double> result = new List<double>();
 
@@ -61,6 +50,10 @@ namespace BeaverCore.Connections
             string type = fastener_Cap.fastener.type;
             double d = fastener_Cap.fastener.d;
             double nef = 0;
+            double a1 = spacing.a1;
+            double npar = spacing.npar;
+            double npep = spacing.npep;
+
             if (type == "nail" || (type == "screw" & d < 6))
             {
 

@@ -9,21 +9,37 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BeaverCore.Frame
+
 {
     public class TimberFrame
+    {
+        //$$$Add docstring urgent!!
+        public Dictionary<double,TimberFramePoint> TimberPointsMap;
+
+        public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
+        {
+            TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
+        }
+
+    }
+
+    public class TimberFramePoint
     {
         public List<Force> Forces;
         public List<Displacement> Disp;
         public ULSCombinations IForces;
+        public SLSCombinations SLSComb;
         public CroSec CS;
         public double ly;
         public double lz;
         public double lsp;
+        public string id;
+        public string guid;
         public string parameters;
         public int sc;
 
-        public TimberFrame() { }
-        public TimberFrame(ULSCombinations act, CroSec cs,double ly, double lz, double lsp)
+        public TimberFramePoint() { }
+        public TimberFramePoint(ULSCombinations act, CroSec cs,double ly, double lz, double lsp)
         {
             IForces = act;
             CS = cs;
@@ -32,7 +48,7 @@ namespace BeaverCore.Frame
             this.lsp = lsp;
         }
 
-        public TimberFrame(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lsp)
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lsp)
         {
             Forces = forces;
             Disp = disp;
@@ -284,6 +300,15 @@ namespace BeaverCore.Frame
 
             return result;
         }
+
+        public List<double> CharacteristicDisplacementUtil()
+        {
+            
+        }
+
+        public List<double> LongtermDisplacementUtil() { }
+
+        public List<double> PreCamberDisplacementUtil() { }
 
     }
 }

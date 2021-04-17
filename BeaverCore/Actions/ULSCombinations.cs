@@ -12,7 +12,9 @@ namespace BeaverCore.Actions
         ByLoadType,
         Total
     }
-
+    /// <summary>
+    /// Defines the array of combinated forces according to Eurocode 0, Annex A1
+    /// </summary>
     public class ULSCombinations
     {
         public Force[] Sd;                          // List of design forces
@@ -24,7 +26,9 @@ namespace BeaverCore.Actions
             SC = sc;
             DesignAction(Sk);
         }
-
+        /// <summary>
+        /// Generates all possible combinations (EC0 Eq. 6.9-6.10)
+        /// <param name="Sk"></param>
         public void DesignAction(List<Force> Sk)
         {
             //
@@ -38,7 +42,7 @@ namespace BeaverCore.Actions
             List<string> info = new List<string>();
 
             //
-            //PERMANENT LOADING
+            //PERMANENT LOADING 
             //
 
             Force P = new Force();
@@ -52,8 +56,7 @@ namespace BeaverCore.Actions
             Sd.Add(P);
 
             //
-            //ACIDENTAL LOADING
-            // $$$ Shouldnt it be named IMPOSED or VARIABLE loading instead of ACCIDENTAL?
+            //LIVE LOADING
             //
 
             for (int i = 0; i < SQk.Count; i++)
@@ -67,7 +70,6 @@ namespace BeaverCore.Actions
                     TypeInfo t = new TypeInfo(SQa[j].type);
                     SumQi += SQa[j] * t.phi0;
                 }
-                // $$$ doubt: Should we consider the possibility of combining oposite direction variable loads?
                 Force A = 1.35 * P + 1.5 * (Qmain + SumQi);
                 A.type = Qmain.type;
                 A.duration = new TypeInfo(A.type).duration;
@@ -94,9 +96,9 @@ namespace BeaverCore.Actions
             {
                 Force Wcomb = new Force();
                 string output = "";
-                if (P * W) // $$$ doubt, what does that * means?
+                if (Force.IsSameDirection(P , W)) 
                 {
-                    if (SumQ * W) // $$$ essa notação não é intuitiva
+                    if (Force.IsSameDirection(SumQ, W)) 
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
 
@@ -111,7 +113,7 @@ namespace BeaverCore.Actions
                 else // $$$ Wcomb and output equations here are not matching, Wcomb should contain 1.0*P and not 1.35*P.
                     // $$$ Also, I believe that SumQ may be disconsidered in this combination when they are favorable to the analysis such as Permanent loads 
                 {
-                    if (SumQ * W)
+                    if (Force.IsSameDirection(SumQ, W))
                     {
                         Wcomb = 1.35 * P + 1.5 * (W + SumQ);
                         output = "G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
@@ -128,35 +130,37 @@ namespace BeaverCore.Actions
                 Sd.Add(Wcomb);
             }
 
-            //
-            //INSTANTIATE CLASS
-            //
-
-            this.Sd = Sd.ToArray();                             // $$$ evitar usar nome de variável com nome de field pq confunde a leitura
+           
+            this.Sd = Sd.ToArray();
         }
-        public List<Force> CriticalForces(List<Force> f)
+        public List<Force> CriticalForces(List<Force> forces)
         {
             int[] idxmax = new int[] { 0, 0, 0, 0, 0, 0 };
             int[] idxmin = new int[] { 0, 0, 0, 0, 0, 0 };
             Force Max = new Force();
             Force Min = new Force();
             int cont = 0;
-            foreach (Force force in f)
+            foreach (Force force in forces)
             {
                 int idx = 0;
                 double fkmod = Utils.KMOD(SC, force.duration);
-                foreach (KeyValuePair<string, double> IF in force.InternalForces)
+                for (int i = 0; i < 6; i++)
+                {
+                    internalforce = forces[i];
+                    double minkmod = Utils.KMOD(SC, forces[idxmin[i]].duration);
+                }
+                foreach (double internalforce in force.ToList())
                 {
                     double minkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
-                    if (IF.Value / fkmod <= Min.InternalForces[IF.Key] / minkmod && IF.Value < 0)
+                    if (internalforce / fkmod <= Min.InternalForces[internalforce.Key] / minkmod && internalforce.Value < 0)
                     {
-                        Min.InternalForces[IF.Key] = IF.Value;
+                        Min.InternalForces[internalforce.Key] = internalforce.Value;
                         idxmin[idx] = cont;
                     }
                     double maxkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
-                    if (IF.Value / fkmod >= Max.InternalForces[IF.Key] / maxkmod && IF.Value > 0)
+                    if (internalforce.Value / fkmod >= Max.InternalForces[internalforce.Key] / maxkmod && internalforce.Value > 0)
                     {
-                        Max.InternalForces[IF.Key] = IF.Value;
+                        Max.InternalForces[internalforce.Key] = internalforce.Value;
                         idxmax[idx] = cont;
                     }
                     idx++;
