@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Combinatorics" Version="1.1.0.19" />
+    <PackageReference Include="Grasshopper" Version="6.34.21034.7001" />
   </ItemGroup>
 
 </Project>

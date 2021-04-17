@@ -20,7 +20,6 @@ namespace BeaverCore.Frame
         {
             TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
         }
-
     }
 
     public class TimberFramePoint
@@ -32,23 +31,25 @@ namespace BeaverCore.Frame
         public CroSec CS;
         public double ly;
         public double lz;
-        public double lsp;
+        public double lspan;
+        public double deflection_limit;
+        public double precamber;
         public string id;
         public string guid;
         public string parameters;
         public int sc;
 
         public TimberFramePoint() { }
-        public TimberFramePoint(ULSCombinations act, CroSec cs,double ly, double lz, double lsp)
+        public TimberFramePoint(ULSCombinations act, CroSec cs,double ly, double lz, double lspan)
         {
             IForces = act;
             CS = cs;
             this.ly = ly;
             this.lz = lz;
-            this.lsp = lsp;
+            this.lspan = lspan;
         }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lsp)
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan)
         {
             Forces = forces;
             Disp = disp;
@@ -57,7 +58,7 @@ namespace BeaverCore.Frame
             CS = cs;
             this.ly = ly;
             this.lz = lz;
-            this.lsp = lsp;
+            this.lspan = lspan;
         }
 
         private double Getkcrit(double lam)
@@ -303,12 +304,24 @@ namespace BeaverCore.Frame
 
         public List<double> CharacteristicDisplacementUtil()
         {
-            
+            /// Calculates the ratio between calculated dispacements and allowed displacements for the characteristic combination
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.winst)
+            {
+                disps_ratio.Add(disp.Absolute() / deflection_limit);
+            }
+            return disps_ratio;
         }
 
-        public List<double> LongtermDisplacementUtil() { }
-
-        public List<double> PreCamberDisplacementUtil() { }
-
+        public List<double> LongtermDisplacementUtil()
+        {
+            /// Calculates the ratio between calculated dispacements and allowed displacements for the quasi-permanent combination considering creep deformations
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.wfin)
+            {
+                disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
+            }
+            return disps_ratio;
+        }        
     }
 }

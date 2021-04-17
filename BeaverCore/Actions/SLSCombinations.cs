@@ -153,7 +153,7 @@ namespace BeaverCore.Actions
             }
 
             winst = displacements;
-            List<Displacement> displacements = new List<Displacement>();
+            displacements = new List<Displacement>();
 
             // QUASI-PERMANENT COMBINATION
             // ΣG∙(1+kdef) + P + Qk1∙φ₁∙(1+kdef∙φᵢ₂) + Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
