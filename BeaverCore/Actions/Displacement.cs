@@ -57,7 +57,7 @@ namespace BeaverCore.Actions
 
         public double Absolute()
         {
-            return Math.Pow(dx*dx + dy*dy + dz*dz,1/3);
+            return Math.Pow(dx*dx + dy*dy + dz*dz,1/2);
         }
     }
 }

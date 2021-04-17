@@ -8,70 +8,96 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Actions
 {
-    using IF = Dictionary<string, double>;
 
     public class Force: Action
     {
-        public IF InternalForces = new IF() {
-        {"N",0},{"Vy",0},{"Vz",0},{"Mt",0},{"My",0},{"Mz",0}
-        };
+        public double N;
+        public double Vy;
+        public double Vz;
+        public double Mt;
+        public double My;
+        public double Mz;
         
 
         public Force() { }
 
         public Force(double n, double my, double mz, double vy, double vz, double mt, string type)
         {
-            InternalForces["N"] = n;
-            InternalForces["Vy"] = vy;
-            InternalForces["Vz"] = vz;
-            InternalForces["Mt"] = mt;
-            InternalForces["My"] = my;
-            InternalForces["Mz"] = mz;
+            N = n;
+            Vy = vy;
+            Vz = vz;
+            Mt = mt;
+            My = my;
+            Mz = mz;
             this.type = type;
             duration = new TypeInfo(type).duration;
+        }
+
+        private Force(Dictionary<string, double> InternalForces)
+        {
+            N =InternalForces["N"];
+            Vy =InternalForces["Vy"];
+            Vz =InternalForces["Vz"];
+            Mt = InternalForces["Mt"];
+            My = InternalForces["My"];
+            Mz = InternalForces["Mz"];
+        }
+
+        private Dictionary<string, double> toDictionary()
+        {
+            Dictionary<string, double> InternalForces = new Dictionary<string, double>();
+            InternalForces["N"] = N;
+            InternalForces["Vy"] = Vy;
+            InternalForces["Vz"] = Vz;
+            InternalForces["Mt"] = Mt;
+            InternalForces["My"] = My;
+            InternalForces["Mz"] = Mz;
+            return InternalForces;
         }
 
         public static Force operator +(Force f1, Force f2)
         {
             Force result = new Force();
-            foreach (KeyValuePair<string, double> f in f1.InternalForces)
+            Dictionary<string, double>  f1Dict = f1.toDictionary();
+            Dictionary<string, double>  f2Dict = f2.toDictionary();
+            foreach (KeyValuePair<string, double> f in f1Dict)
             {
-                // $$$ soma os strings?
-                result.InternalForces[f.Key] = f.Value + f2.InternalForces[f.Key];
+                f1Dict[f.Key] += f2Dict[f.Key];
             }
-            result.type = f1.type;
-            return result;
+            return new Force(f1Dict);
         }
 
         public static Force operator *(double s, Force f1)
         {
             Force result = new Force();
-            foreach (KeyValuePair<string, double> f in f1.InternalForces)
+            Dictionary<string, double> f1Dict = f1.toDictionary();
+            foreach (KeyValuePair<string, double> f in f1Dict)
             {
-                result.InternalForces[f.Key] = s * f.Value;
+                f1Dict[f.Key] *= s;
             }
-            result.type = f1.type;
-            return result;
+            return new Force(f1Dict);
         }
 
         public static Force operator *(Force f1, double s)
         {
             Force result = new Force();
-            foreach (KeyValuePair<string, double> f in f1.InternalForces)
+            Dictionary<string, double> f1Dict = f1.toDictionary();
+            foreach (KeyValuePair<string, double> f in f1Dict)
             {
-                result.InternalForces[f.Key] = s * f.Value;
+                f1Dict[f.Key] *= s;
             }
-            result.type = f1.type;
-            return result;
+            return new Force(f1Dict);
         }
 
         public static bool operator *(Force f1, Force f2)
         {
             // Tests if Internal Forces have same direction
             bool result = true;
-            foreach (string key in f1.InternalForces.Keys)
+            Dictionary<string, double> f1Dict = f1.toDictionary();
+            Dictionary<string, double> f2Dict = f2.toDictionary();
+            foreach (string key in f1Dict.Keys)
             {
-                if (f1.InternalForces[key] * f2.InternalForces[key] < 0)
+                if (f1Dict[key] * f2Dict[key] < 0)
                 {
                     result = false;
                 }
