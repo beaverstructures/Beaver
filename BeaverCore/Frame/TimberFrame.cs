@@ -11,10 +11,14 @@ using System.Threading.Tasks;
 namespace BeaverCore.Frame
 
 {
+    /// <summary>
+    /// a TimberFrame element for calculating stresses and displacements on a given element
+    /// </summary>
     public class TimberFrame
     {
         /// <summary>
-        /// a TimberFrame element for calculating stresses and displacements on a given element
+        /// Mapping between TimberFramePoints and it's
+        /// relative positions [0,1].
         /// </summary>
         public Dictionary<double, TimberFramePoint> TimberPointsMap;
 
@@ -76,7 +80,7 @@ namespace BeaverCore.Frame
         }
 
         // Section Analisys
-        public TimberFrameULSResult Utilization()
+        public TimberFrameULSResult ULSUtilization()
         {
             string[] Info = new string[] {
                     //0
