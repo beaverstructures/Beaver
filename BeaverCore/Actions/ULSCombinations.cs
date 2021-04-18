@@ -27,157 +27,216 @@ namespace BeaverCore.Actions
             DesignAction(Sk);
         }
         /// <summary>
-        /// Generates all possible combinations (EC0 Eq. 6.9-6.10)
+        /// Generates all possible combinations (EC0 Eq. 6.9-6.10).
+        /// Takes account for favourable and unfavourable actions
+        /// according to EC0 Table A1.2(B).
         /// <param name="Sk"></param>
-        public void DesignAction(List<Force> Sk)
+        /// 
+
+        public void DesignAction(List<Force> LoadcaseForce)
         {
-            //
-            //INITIAL DATA
-            //
-            List<Force> SGk = Sk.Where(x => x.type.Contains("P")).ToList();
-            List<Force> SQk = Sk.Where(x => x.type.Contains("Q")).ToList();
-            List<Force> SWk = Sk.Where(x => x.type.Contains("W")).ToList();
-            List<Force> Sd = new List<Force>();
-            List<double> kmod = new List<double>();
-            List<string> info = new List<string>();
+            List<string> loadList = new List<string>()
+                                    {"P",
+                                    "QA",
+                                    "QB",
+                                    "QC",
+                                    "QD",
+                                    "QE",
+                                    "QE",
+                                    "QG",
+                                    "QH",
+                                    "S",
+                                    "W"};
 
-            //
-            //PERMANENT LOADING 
-            //
+            Force Gravity = new Force();
 
-            Force P = new Force();
-            foreach (Force act in SGk)
+            // Persistent Combination
+            // ΣγgP + γq(Qk1 + Σ(φ₀Qkᵢ))
+
+            //Add Gravity Only Combinations
+            foreach (Force force in LoadcaseForce.Where(x => x.type.Contains("P")).ToList())
             {
-                P += act;
+                // sums all gravity loads
+                Gravity += force;
             }
-            P.type = "P";
-            P.duration = new TypeInfo(P.type).duration;
-            P.combination = "1.35G";
-            Sd.Add(P);
+            Force GravityForce = 1.35 * Gravity;
+            GravityForce.combination = "ΣγgP";
+            GravityForce.type = "P";
 
-            //
-            //LIVE LOADING
-            //
+            List<Force> forces = new List<Force>() { GravityForce };
 
-            for (int i = 0; i < SQk.Count; i++)
+            List<Force> Gravities = new List<Force>() { Gravity, 1.35 * Gravity };
+
+            forces.Add(1.35 * Gravity);
+
+            List<List<Force>> SortedForces = new List<List<Force>>()
             {
-                List<Force> SQa = new List<Force>(SQk);
-                SQa.RemoveAt(i);
-                Force Qmain = SQk[i];
-                Force SumQi = new Force();
-                for (int j = 0; j < SQa.Count; j++)
+                Gravities
+            };
+
+
+            //Prepare Live, Wind and Snow sublists
+            SortedForces.Add(LoadcaseForce.Where(x => x.type.Contains("Q")).ToList());
+            SortedForces.Add(LoadcaseForce.Where(x => x.type.Contains("S")).ToList());
+            SortedForces.Add(LoadcaseForce.Where(x => x.type.Contains("W")).ToList());
+
+            for (int i = 1; i < 4; i++)
+            {
+                for (int j = 0; j < SortedForces[i].Count; j++)
                 {
-                    TypeInfo t = new TypeInfo(SQa[j].type);
-                    SumQi += SQa[j] * t.phi0;
+                    SortedForces[i][j] *= 1.5;
                 }
-                Force A = 1.35 * P + 1.5 * (Qmain + SumQi);
-                A.type = Qmain.type;
-                A.duration = new TypeInfo(A.type).duration;
-                A.combination = "1.35G + 1.5 " + A.type + " + 1.5Σ(φᵢ₀Qᵢ)";
-                Sd.Add(A);
-                foreach (Force w in SWk)
-                {
-                    Force B = A + 0.6 * w;
-                    B.combination = "1.35G + 1.5 " + A.type + " + 1.5(Σ(φᵢ₀Qᵢ)+0.6W)";
-                }
             }
+            // generates null force for the cartesian product
+            // (all possible combinations between values)
+            SortedForces[1].Insert(0, new Force());
+            SortedForces[2].Insert(0, new Force());
+            SortedForces[3].Insert(0, new Force());
 
-            //
-            //WIND LOADING
-            //
 
-            Force SumQ = new Force();
-            foreach (Force Q in SQk)
+
+            for (int primaryload = 1; primaryload < 4; primaryload++)
             {
-                TypeInfo t = new TypeInfo(Q.type);
-                SumQ += Q * t.phi0;
-            }
-            foreach (Force W in SWk)
-            {
-                Force Wcomb = new Force();
-                string output = "";
-                if (Force.IsSameDirection(P , W)) 
+                List<int> loadtypes = new List<int> { 1, 2, 3 };
+                loadtypes.Remove(primaryload);
+                for (int i = 1; i < SortedForces[primaryload].Count; i++)
                 {
-                    if (Force.IsSameDirection(SumQ, W)) 
+                    // i=1 to skip null force case
+                    // ΣγgP + γqQk1
+                    Force PrimaryForce = SortedForces[primaryload][i];
+                    var cartesianproduct = Utils.CartesianProduct(new List<Force> { new Force() });
+
+                    // Creates all possible combinations between LIVE LOADS: [Qa , Qh , Qa + Qh]
+                    List<Force> LiveForces = SortedForces.ElementAt(1);
+                    LiveForces.RemoveAt(0); //removes null case
+                    if (primaryload == 1)
                     {
-                        Wcomb = 1.35 * P + 1.5 * (W + SumQ);
+                        LiveForces.RemoveAt(i); //removes primary case if live load
+                    }
+                    List<List<Force>> LiveCombinations = Enumerable.Range(1, (1 << LiveForces.Count) - 1).Select(index => LiveForces.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
+                    LiveForces = new List<Force>();
+                    foreach (List<Force> combo in LiveCombinations)
+                    {
+                        Force sum = new Force();
+                        foreach (Force load in combo)
+                        {
+                            sum += load * load.typeinfo.phi0;
+                            sum.type = "QX";
+                            // $$$ Accepting suggestions on how to improve this
+                            // QX is set so that the phi0 is not accounted twice
+                        }
+                        LiveForces.Add(sum);
+                    }
+                    LiveForces.Insert(0, new Force());
 
-                        output = "1.35G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
+                    if (primaryload == 1)
+                    {
+                        // Generates the CARTESIAN PRODUCT of live secondary loads including other variable combinations (Snow and Wind)
+                        cartesianproduct = Utils.CartesianProduct(LiveForces,
+                                                                     SortedForces[loadtypes[0]],
+                                                                     SortedForces[loadtypes[1]]);
                     }
                     else
                     {
-                        Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        output = "1.35G + 1.5W";
+                        //Generates the CARTESION PRODUCT of live secondary loads including other variable combinations (Snow or Wind)
+                        cartesianproduct = Utils.CartesianProduct(LiveForces,
+                                                                     SortedForces[loadtypes[1]]);
                     }
-                }
-                else // $$$ Wcomb and output equations here are not matching, Wcomb should contain 1.0*P and not 1.35*P.
-                    // $$$ Also, I believe that SumQ may be disconsidered in this combination when they are favorable to the analysis such as Permanent loads 
-                {
-                    if (Force.IsSameDirection(SumQ, W))
-                    {
-                        Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        output = "G + 1.5W + 1.5Σ(φᵢ₀Qᵢ)";
-                    }
-                    else
-                    {
-                        Wcomb = 1.35 * P + 1.5 * (W + SumQ);
-                        output = "G + 1.5W";
-                    }
-                }
-                Wcomb.type = W.type;
-                Wcomb.duration = new TypeInfo(W.type).duration;
-                Wcomb.combination = output;
-                Sd.Add(Wcomb);
-            }
 
-           
-            this.Sd = Sd.ToArray();
+
+                    
+                    Force SecondaryForce = new Force();
+                    foreach (var product in cartesianproduct)
+                    {
+                        // Sum forces inside cartesian products
+                        foreach (Force force in product)
+                        {
+                            if (force.type == "QX")
+                            {
+                                SecondaryForce += force;
+                            }
+                            else
+                            {
+                                SecondaryForce += force.typeinfo.phi0 * force;
+                            }
+                            
+                        }
+                        //Sum fabourable and unfabourable combinations (EC0 Table A1.2)
+                        Force FavourableForce = Gravity + SecondaryForce;
+                        FavourableForce.combination = "G + 1.5Σ(φᵢ₀Qᵢ)";
+                        FavourableForce.type = PrimaryForce.type;
+                        Force UnfavourableForce = 1.35 * Gravity + SecondaryForce;
+                        UnfavourableForce.combination = "1.35G + 1.5Σ(φᵢ₀Qᵢ)";
+                        UnfavourableForce.type = PrimaryForce.type;
+                        forces.Add(FavourableForce);
+                        forces.Add(UnfavourableForce);
+                        FavourableForce += PrimaryForce;
+                        FavourableForce.combination = "G + 1.5 " + PrimaryForce.type + " + 1.5Σ(φᵢ₀Qᵢ)";
+                        UnfavourableForce += PrimaryForce;
+                        UnfavourableForce.combination = "1.35G + 1.5 " + PrimaryForce.type + " + 1.5Σ(φᵢ₀Qᵢ)";
+                        forces.Add(FavourableForce);
+                        forces.Add(UnfavourableForce);
+
+                    }
+                }
+            }
+            Sd = new List<Force>(forces).ToArray();
         }
+
+        /// <summary>
+        /// Defines the critical combinations.
+        /// This function is used to allow to operate with a reduced number of combinations
+        /// by determining the critical values for each internal force (N,V,M) for both positive
+        /// and negative values. 
+        /// Please be carefull when using this. It can help a lot to reduce computation time, 
+        /// but the final analysis must be made always considering all possible combinations.
+        /// </summary>
+        /// <param name="forces"></param>
+        /// <returns></returns>
         public List<Force> CriticalForces(List<Force> forces)
         {
             int[] idxmax = new int[] { 0, 0, 0, 0, 0, 0 };
             int[] idxmin = new int[] { 0, 0, 0, 0, 0, 0 };
-            Force Max = new Force();
-            Force Min = new Force();
+            List<double> Max = new List<double>() { 0, 0, 0, 0, 0, 0 };
+            List<double> Min = new List<double>() { 0, 0, 0, 0, 0, 0 };
             int cont = 0;
+            List<List<double>> force_lists = new List<List<double>>();
             foreach (Force force in forces)
             {
+                List<double> force_list = force.ToList();
+                force_lists.Add(force_list);
                 int idx = 0;
                 double fkmod = Utils.KMOD(SC, force.duration);
                 for (int i = 0; i < 6; i++)
                 {
-                    internalforce = forces[i];
+                    double internalforce = force_list[i];
                     double minkmod = Utils.KMOD(SC, forces[idxmin[i]].duration);
-                }
-                foreach (double internalforce in force.ToList())
-                {
-                    double minkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
-                    if (internalforce / fkmod <= Min.InternalForces[internalforce.Key] / minkmod && internalforce.Value < 0)
+                    if (internalforce / fkmod <= Min[i] / minkmod && internalforce < 0)
                     {
-                        Min.InternalForces[internalforce.Key] = internalforce.Value;
-                        idxmin[idx] = cont;
+                        Min[i] = internalforce;
+                        idxmin[i] = cont;
                     }
-                    double maxkmod = Utils.KMOD(SC, f[idxmin[idx]].duration);
-                    if (internalforce.Value / fkmod >= Max.InternalForces[internalforce.Key] / maxkmod && internalforce.Value > 0)
+                    double maxkmod = Utils.KMOD(SC, forces[idxmin[i]].duration);
+                    if (internalforce / fkmod >= Max[i] / maxkmod && internalforce > 0)
                     {
-                        Max.InternalForces[internalforce.Key] = internalforce.Value;
-                        idxmax[idx] = cont;
+                        Max[i] = internalforce;
+                        idxmax[i] = cont;
                     }
-                    idx++;
                 }
                 cont++;
             }
             List<int> finalidx = new List<int>();
+
             foreach (int idx in idxmax)
             {
-                if (finalidx.Exists(x => x == idx) == false && f[idx].InternalForces.Values.ToList().Exists(x => x != 0))
+                if (finalidx.Exists(x => x == idx) == false && force_lists[idx].Exists(x => x != 0))
                 {
                     finalidx.Add(idx);
                 }
             }
             foreach (int idx in idxmin)
             {
-                if (finalidx.Exists(x => x == idx) == false && f[idx].InternalForces.Values.ToList().Exists(x => x != 0))
+                if (finalidx.Exists(x => x == idx) == false && force_lists[idx].Exists(x => x != 0))
                 {
                     finalidx.Add(idx);
                 }
@@ -185,10 +244,17 @@ namespace BeaverCore.Actions
             List<Force> result = new List<Force>();
             foreach (int idx in finalidx)
             {
-                result.Add(f[idx]);
+                result.Add(forces[idx]);
             }
             return result;
         }
+
+
+        /// <summary>
+        /// Filter the combination using the CriticalForce function.
+        /// It can filter by load duration, load type and for all combinations.
+        /// </summary>
+        /// <param name="type"></param>
         public void FilterCombinations(int type)
         {
 
@@ -255,4 +321,8 @@ namespace BeaverCore.Actions
 
     }
 }
+
+    }
+}
+
 
