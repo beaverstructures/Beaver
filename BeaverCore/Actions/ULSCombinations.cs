@@ -107,15 +107,15 @@ namespace BeaverCore.Actions
                     var cartesianproduct = Utils.CartesianProduct(new List<Force> { new Force() });
 
                     // Creates all possible combinations between LIVE LOADS: [Qa , Qh , Qa + Qh]
-                    List<Force> LiveForces = SortedForces.ElementAt(1);
-                    LiveForces.RemoveAt(0); //removes null case
+                    List<Force> ImposedForces = SortedForces.ElementAt(1);
+                    ImposedForces.RemoveAt(0); //removes null case
                     if (primaryload == 1)
                     {
-                        LiveForces.RemoveAt(i); //removes primary case if live load
+                        ImposedForces.RemoveAt(i); //removes primary case if live load
                     }
-                    List<List<Force>> LiveCombinations = Enumerable.Range(1, (1 << LiveForces.Count) - 1).Select(index => LiveForces.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
-                    LiveForces = new List<Force>();
-                    foreach (List<Force> combo in LiveCombinations)
+                    List<List<Force>> SecondaryImposedCombinations = Enumerable.Range(1, (1 << ImposedForces.Count) - 1).Select(index => ImposedForces.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
+                    List<Force> SecondaryImposedForces = new List<Force>();
+                    foreach (List<Force> combo in SecondaryImposedCombinations)
                     {
                         Force sum = new Force();
                         foreach (Force load in combo)
@@ -125,21 +125,21 @@ namespace BeaverCore.Actions
                             // $$$ Accepting suggestions on how to improve this
                             // QX is set so that the phi0 is not accounted twice
                         }
-                        LiveForces.Add(sum);
+                        SecondaryImposedForces.Add(sum);
                     }
-                    LiveForces.Insert(0, new Force());
+                    SecondaryImposedForces.Insert(0, new Force());
 
                     if (primaryload == 1)
                     {
                         // Generates the CARTESIAN PRODUCT of live secondary loads including other variable combinations (Snow and Wind)
-                        cartesianproduct = Utils.CartesianProduct(LiveForces,
+                        cartesianproduct = Utils.CartesianProduct(SecondaryImposedForces,
                                                                      SortedForces[loadtypes[0]],
                                                                      SortedForces[loadtypes[1]]);
                     }
                     else
                     {
                         //Generates the CARTESION PRODUCT of live secondary loads including other variable combinations (Snow or Wind)
-                        cartesianproduct = Utils.CartesianProduct(LiveForces,
+                        cartesianproduct = Utils.CartesianProduct(SecondaryImposedForces,
                                                                      SortedForces[loadtypes[1]]);
                     }
 

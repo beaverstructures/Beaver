@@ -306,7 +306,7 @@ namespace BeaverCore.Frame
         {
             /// Calculates the ratio between calculated dispacements and allowed displacements for the characteristic combination
             List<double> disps_ratio = new List<double>();
-            foreach (var disp in SLSComb.winst)
+            foreach (var disp in SLSComb.CharacteristicDisplacements)
             {
                 disps_ratio.Add(disp.Absolute() / deflection_limit);
             }
@@ -317,7 +317,7 @@ namespace BeaverCore.Frame
         {
             /// Calculates the ratio between calculated dispacements and allowed displacements for the quasi-permanent combination considering creep deformations
             List<double> disps_ratio = new List<double>();
-            foreach (var disp in SLSComb.wfin)
+            foreach (var disp in SLSComb.CreepDisplacements)
             {
                 disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
             }
