@@ -59,6 +59,15 @@ namespace BeaverCore.Actions
             return result;
         }
 
+        public static Displacement operator *(double s, Displacement w1)
+        {
+            Displacement result = new Displacement(w1.dx * s,
+                                                    w1.dy * s,
+                                                    w1.dz * s,
+                                                    w1.type);
+            return result;
+        }
+
         public double Absolute()
         {
             return Math.Pow(dx*dx + dy*dy + dz*dz,1/2);
