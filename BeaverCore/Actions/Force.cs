@@ -13,15 +13,16 @@ namespace BeaverCore.Actions
     /// </summary>
     public class Force: Action
     {
-        public double N;
-        public double Vy;
-        public double Vz;
-        public double Mt;
-        public double My;
-        public double Mz;
+        public double N=0;
+        public double Vy=0;
+        public double Vz=0;
+        public double Mt=0;
+        public double My=0;
+        public double Mz=0;
         
 
-        public Force() { }
+        public Force() {
+        }
 
         public Force(double n, double my, double mz, double vy, double vz, double mt, string type)
         {

@@ -13,18 +13,22 @@ namespace BeaverCore.Frame
 {
     public class TimberFrame
     {
-        //$$$Add docstring urgent!!
-        public Dictionary<double, TimberFramePoint> TimberPointsMap;
+        /// <summary>
+        /// a TimberFrame element for calculating stresses and displacements on a given element
+        /// </summary>
+        public Dictionary<double,TimberFramePoint> TimberPointsMap;
 
         public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
         {
             TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
         }
-
     }
 
     public class TimberFramePoint
     {
+        /// <summary>
+        /// A referenced point on a TimberFrame element
+        /// </summary>
         public List<Force> Forces;
         public List<Displacement> Disp;
         public ULSCombinations ULSComb;
@@ -32,8 +36,10 @@ namespace BeaverCore.Frame
         public CroSec CS;
         public double ly;
         public double lz;
-        public double lsp;
         public double kflam;
+        public double lspan;
+        public double deflection_limit;
+        public double precamber;
         public string id;
         public string guid;
         public string parameters;
@@ -41,18 +47,18 @@ namespace BeaverCore.Frame
 
         public TimberFramePoint() { }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lsp, double kflam)
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam)
         {
             Forces = forces;
             Disp = disp;
             this.sc = sc;
             ULSComb = new ULSCombinations(forces, sc);
             CS = cs;
-            SLSComb = new SLSCombinations(disp, cs.Mat);
+            SLSComb = new SLSCombinations(disp, sc, cs.Mat);
             this.ly = ly;
             this.lz = lz;
-            this.lsp = lsp;
             this.kflam = kflam;
+            this.lspan = lspan;
         }
 
         private double Getkcrit(double lam)
@@ -70,7 +76,7 @@ namespace BeaverCore.Frame
         }
 
         // Section Analisys
-        public List<double[]> Utilization()
+        public void Utilization()
         {
             List<string> info = new List<string>(new string[] {
                     //0
@@ -247,7 +253,6 @@ namespace BeaverCore.Frame
                 //$$$OUTPUT TA ZUADO
 
             }
-            return result;
 
 
 
@@ -258,12 +263,24 @@ namespace BeaverCore.Frame
 
         public List<double> CharacteristicDisplacementUtil()
         {
-
+            /// Calculates the ratio between calculated dispacements and allowed displacements for the characteristic combination
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.CharacteristicDisplacements)
+            {
+                disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
+            }
+            return disps_ratio;
         }
 
-        public List<double> LongtermDisplacementUtil() { }
-
-        public List<double> PreCamberDisplacementUtil() { }
-
+        public List<double> LongtermDisplacementUtil()
+        {
+            /// Calculates the ratio between calculated dispacements and allowed displacements for the quasi-permanent combination considering creep deformations
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.CreepDisplacements)
+            {
+                disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
+            }
+            return disps_ratio;
+        }        
     }
 }
