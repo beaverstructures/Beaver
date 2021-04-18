@@ -20,16 +20,16 @@ namespace BeaverCore.Connections
         public bool preDrilled;
         public double pk1;
         public int sheartype;
-        public dynamic capacity;
-
+        public Dictionary<string, double> capacities;
+        public double critical_capacity;
+        public string critical_failure_mode;
+        public bool rope_effect;
 
         public abstract void GetFvk(bool type);
 
-        public abstract object FvkSingleShear(bool type);
+        public abstract Dictionary<string,double> FvkSingleShear(bool type);
 
-        public abstract object FvkDoubleShear(bool type);
-
-        public abstract object Faxrk(bool type);
+        public abstract Dictionary<string, double> FvkDoubleShear(bool type);
 
         public double FaxrkUpperLimitValue()
         {
@@ -53,6 +53,19 @@ namespace BeaverCore.Connections
                 return 0;
             }
             return 1;
+        }
+        public void SetCriticalCapacity()
+        {
+            /// Finds and updates the critical capacity from the capacities variable
+            critical_capacity = 9999999;
+            foreach(var keyValuePair in capacities)
+            {
+                if (keyValuePair.Value < critical_capacity)
+                {
+                    critical_capacity = keyValuePair.Value;
+                    critical_failure_mode = keyValuePair.Key;
+                }
+            }
         }
     }
 }
