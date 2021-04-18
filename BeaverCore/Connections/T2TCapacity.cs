@@ -7,6 +7,7 @@ namespace BeaverCore.Connections
 {
     public class T2TCapacity: SingleFastenerCapacity
     {
+        // Calculates the capacity of Timber-to-timber connections according to EC5, Section 8.2.2
         public double alfa2;
         public double t2;
         public double pk2;

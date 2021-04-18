@@ -13,7 +13,9 @@ namespace BeaverCore.Frame
 {
     public class TimberFrame
     {
-        //$$$Add docstring urgent!!
+        /// <summary>
+        /// a TimberFrame element for calculating stresses and displacements on a given element
+        /// </summary>
         public Dictionary<double,TimberFramePoint> TimberPointsMap;
 
         public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
@@ -24,6 +26,9 @@ namespace BeaverCore.Frame
 
     public class TimberFramePoint
     {
+        /// <summary>
+        /// A referenced point on a TimberFrame element
+        /// </summary>
         public List<Force> Forces;
         public List<Displacement> Disp;
         public ULSCombinations IForces;
@@ -308,7 +313,7 @@ namespace BeaverCore.Frame
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.winst)
             {
-                disps_ratio.Add(disp.Absolute() / deflection_limit);
+                disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
             }
             return disps_ratio;
         }

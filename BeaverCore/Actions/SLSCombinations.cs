@@ -156,6 +156,7 @@ namespace BeaverCore.Actions
             displacements = new List<Displacement>();
 
             // QUASI-PERMANENT COMBINATION
+            // EC5, Section 2.2.3, Eq. 2.2
             // ΣG∙(1+kdef) + P + Qk1∙φ₁∙(1+kdef∙φᵢ₂) + Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
 
             // ΣG∙(1+kdef)

@@ -54,7 +54,5 @@ namespace BeaverCore.Connections
             }
             return 1;
         }
-
-
     }
 }
