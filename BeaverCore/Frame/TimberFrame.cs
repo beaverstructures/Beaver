@@ -16,7 +16,7 @@ namespace BeaverCore.Frame
         /// <summary>
         /// a TimberFrame element for calculating stresses and displacements on a given element
         /// </summary>
-        public Dictionary<double,TimberFramePoint> TimberPointsMap;
+        public Dictionary<double, TimberFramePoint> TimberPointsMap;
 
         public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
         {
@@ -76,9 +76,9 @@ namespace BeaverCore.Frame
         }
 
         // Section Analisys
-        public void Utilization()
+        public TimberFrameULSResult Utilization()
         {
-            List<string> info = new List<string>(new string[] {
+            string[] Info = new string[] {
                     //0
                     "EC5 Section 6.1.2 Tension parallel to the grain",
                     //1
@@ -95,21 +95,9 @@ namespace BeaverCore.Frame
                     "EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending",
                     //7
                     "EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression",
-                });
+                };
 
-            double Util0 = 0;
-            double Util1 = 0;
-            double UtilY2 = 0;
-            double UtilZ2 = 0;
-            double UtilY3 = 0;
-            double UtilZ3 = 0;
-            double Util4 = 0;
-            double UtilY5 = 0;
-            double UtilZ5 = 0;
-            double UtilY6 = 0;
-            double UtilZ6 = 0;
-            double UtilY7 = 0;
-            double UtilZ7 = 0;
+
 
             //Basic Geometry and Material Values
             double A = CS.A;
@@ -159,13 +147,28 @@ namespace BeaverCore.Frame
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
 
             //Define Basic Coefficients Output
-            string SectionULSdata = string.Format(
-                "kfalm = {0}, kcrit ={1}, kshape = {2}, λy ={3}, λz ={4},λrely ={5}, λrelz ={6}, ky ={7}, kz ={8}, kcy={9}, kcz={10}, σMcrity= {11}, σMcritz= {12}, λmy ={13}, λmz ={14}",
+            string Sectiondata = string.Format(
+                "kflam = {0}, kcrit ={1}, kshape = {2}, λy ={3}, λz ={4},λrely ={5}, λrelz ={6}, ky ={7}, kz ={8}, kcy={9}, kcz={10}, σMcrity= {11}, σMcritz= {12}, λmy ={13}, λmz ={14}",
                     Math.Round(kflam, 3), Math.Round(kcrit, 3), Math.Round(kcrit, 3), Math.Round(lamy, 3), Math.Round(lamz, 3), Math.Round(lamyrel, 3), Math.Round(lamzrel, 3), Math.Round(ky, 3), Math.Round(kz, 3),
                     Math.Round(kyc, 3), Math.Round(kzc, 3), Math.Round(sigMcrity, 3), Math.Round(sigMcritz, 3), Math.Round(lammy, 3), Math.Round(lammz, 3));
-            parameters = SectionULSdata;
+            parameters = Sectiondata;
 
             //Define Utilization
+            double Util0;
+            double Util1;
+            double UtilY2;
+            double UtilZ2;
+            double UtilY3;
+            double UtilZ3;
+            double Util4;
+            double UtilY5;
+            double UtilZ5;
+            double UtilY6;
+            double UtilZ6;
+            double UtilY7;
+            double UtilZ7;
+            List<double[]> AllUtilsY = new List<double[]>();
+            List<double[]> AllUtilsZ = new List<double[]>();
             foreach (Force f in ULSComb.Sd)
             {
                 //Actions
@@ -246,13 +249,22 @@ namespace BeaverCore.Frame
                     UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
                     UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd);
                 }
+                else
+                {
+                    UtilY7 = 0;
+                    UtilZ7 = 0;
+                }
 
                 List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7 };
                 List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7 };
-
-                //$$$OUTPUT TA ZUADO
+                AllUtilsY.Add(UtilsY.ToArray());
+                AllUtilsZ.Add(UtilsZ.ToArray());
 
             }
+
+            TimberFrameULSResult Result = new TimberFrameULSResult(Info, AllUtilsY, AllUtilsZ, Sectiondata);
+
+            return Result;
 
 
 
@@ -281,6 +293,35 @@ namespace BeaverCore.Frame
                 disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
             }
             return disps_ratio;
-        }        
+        }
+    }
+
+    public class TimberFrameULSResult
+    {
+        string[] Info;
+        List<double[]> UtilsY;
+        List<double[]> UtilsZ;
+        string SectionData;
+
+        public TimberFrameULSResult() { }
+
+        public TimberFrameULSResult(string[] info, List<double[]> utilsY, List<double[]> utilsZ, string sectiondata)
+        {
+            Info = info;
+            UtilsY = utilsY;
+            UtilsZ = utilsZ;
+            SectionData = sectiondata;
+        }
+    }
+
+    public class TimberFrameSLSResult
+    {
+        string[] Info;
+        List<double[]> UtilsCharacterist;
+        List<double[]> UtilsCreep;
+        List<double[]> UtilsPreCamber;
+
+        public TimberFrameSLSResult() { }
+
     }
 }
