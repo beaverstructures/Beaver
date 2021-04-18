@@ -7,10 +7,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeaverCore.Geometry;
 
 namespace BeaverCore.Frame
 
 {
+    public enum SpanType
+    {
+        Span,
+        CantileverSpan
+    }
+
     /// <summary>
     /// a TimberFrame element for calculating stresses and displacements on a given element
     /// </summary>
@@ -22,9 +29,20 @@ namespace BeaverCore.Frame
         /// </summary>
         public Dictionary<double, TimberFramePoint> TimberPointsMap;
 
+        /// <summary>
+        /// Geometric representation of the member axis.
+        /// </summary>
+        public Line FrameAxis;
+
         public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
         {
             TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
+        }
+
+        public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints, Line line)
+        {
+            TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
+            FrameAxis = line;
         }
     }
 
@@ -38,11 +56,14 @@ namespace BeaverCore.Frame
         public ULSCombinations ULSComb;
         public SLSCombinations SLSComb;
         public CroSec CS;
+        public SpanType span_type;
         public double ly;
         public double lz;
         public double kflam;
         public double lspan;
-        public double deflection_limit;
+        public double[] inst_deflection_limit;
+        public double[] netfin_deflection_limit;
+        public double[] fin_deflection_limit;
         public double precamber;
         public string id;
         public string guid;
@@ -63,6 +84,22 @@ namespace BeaverCore.Frame
             this.lz = lz;
             this.kflam = kflam;
             this.lspan = lspan;
+            span_type = SpanType.Span;
+        }
+
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, SpanType span_type)
+        {
+            Forces = forces;
+            Disp = disp;
+            this.sc = sc;
+            ULSComb = new ULSCombinations(forces, sc);
+            CS = cs;
+            SLSComb = new SLSCombinations(disp, sc, cs.Mat);
+            this.ly = ly;
+            this.lz = lz;
+            this.kflam = kflam;
+            this.lspan = lspan;
+            this.span_type = span_type;
         }
 
         private double Getkcrit(double lam)
@@ -274,30 +311,67 @@ namespace BeaverCore.Frame
 
         }
 
-
-
-
-        public List<double> CharacteristicDisplacementUtil()
+        public TimberFrameSLSResult SLSUtilization()
         {
-            /// Calculates the ratio between calculated dispacements and allowed displacements for the characteristic combination
+            string[] Info = new string[] {
+                    //0
+                    "EC5 Section 7.2 Instantaneous deflection",
+                    //1
+                    "EC5 Section 7.2 Net final deflection",
+                    //2
+                    "EC5 Section 7.2 Final deflection",
+                };
+            return new TimberFrameSLSResult(Info, InstDisplacementUtil(), NetFinDisplacementUtil(), FinDisplacementUtil());
+        }
+
+        private double GetDisplacementLimit(double[] displacement_limit)
+        {
+            double result = 0;
+            if (span_type is SpanType.Span)
+            {
+                result = displacement_limit[0];
+            }
+            else if (span_type is SpanType.CantileverSpan)
+            {
+                result = displacement_limit[1];
+            }
+            return result;
+        }
+
+
+        public List<double> InstDisplacementUtil()
+        {
+            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.CharacteristicDisplacements)
             {
-                disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
+                disps_ratio.Add((disp.Absolute())/ deflection_limit);
             }
             return disps_ratio;
         }
 
-        public List<double> LongtermDisplacementUtil()
+        public List<double> NetFinDisplacementUtil()
         {
-            /// Calculates the ratio between calculated dispacements and allowed displacements for the quasi-permanent combination considering creep deformations
+            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.CreepDisplacements)
             {
-                disps_ratio.Add(disp.Absolute() + precamber / deflection_limit);
+                disps_ratio.Add((disp.Absolute() - precamber) / deflection_limit);
             }
             return disps_ratio;
         }
+
+        public List<double> FinDisplacementUtil()
+        {
+            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.CreepDisplacements)
+            {
+                disps_ratio.Add((disp.Absolute()) / deflection_limit);
+            }
+            return disps_ratio;
+        }
+
     }
 
     public class TimberFrameULSResult
@@ -321,11 +395,18 @@ namespace BeaverCore.Frame
     public class TimberFrameSLSResult
     {
         string[] Info;
-        List<double[]> UtilsCharacterist;
-        List<double[]> UtilsCreep;
-        List<double[]> UtilsPreCamber;
+        List<double> InstUtils;
+        List<double> NetFinUtils;
+        List<double> FinUtils;
 
         public TimberFrameSLSResult() { }
 
+        public TimberFrameSLSResult(string[] info, List<double> instUtils, List<double> netFinUtils, List<double> finUtils)
+        {
+            Info = info;
+            InstUtils = instUtils;
+            NetFinUtils = netFinUtils;
+            FinUtils = finUtils;
+        }
     }
 }

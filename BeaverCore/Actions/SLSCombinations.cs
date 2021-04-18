@@ -137,7 +137,7 @@ namespace BeaverCore.Actions
             LongTermGravity.type = "P";
             Displacements.Add(Gravity);
             // ΣG∙(1+kdef)
-            Displacements.Add(LongTermGravity * (1 + mat.kdef));
+            Displacements.Add(LongTermGravity);
 
             for (int primaryload = 1; primaryload < 4; primaryload++)
             {
