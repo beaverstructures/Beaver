@@ -19,17 +19,22 @@ namespace BeaverCore.Connections
         public string connectorMaterial;
         public bool preDrilled;
         public double pk1;
-        public int sheartype;
+        public int sheartype; //1 for single shear, 2 for double shear
         public Dictionary<string, double> capacities;
         public double critical_capacity;
         public string critical_failure_mode;
         public bool rope_effect;
+        public string analysisType;
 
-        public abstract void GetFvk(bool type);
+        public void GetFvk()
+        {
+            if (sheartype ==1) capacities = FvkSingleShear();
+            else if (sheartype==2) capacities = FvkDoubleShear();
+        }
 
-        public abstract Dictionary<string,double> FvkSingleShear(bool type);
+        public abstract Dictionary<string,double> FvkSingleShear();
 
-        public abstract Dictionary<string, double> FvkDoubleShear(bool type);
+        public abstract Dictionary<string, double> FvkDoubleShear();
 
         public double FaxrkUpperLimitValue()
         {
