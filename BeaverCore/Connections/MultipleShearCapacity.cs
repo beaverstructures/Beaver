@@ -1,54 +1,127 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+
 namespace BeaverCore.Connections
 {
+    using DictResults = Dictionary<string, double>;
     public class MultipleFastenerCapacity
     {
-        List<SingleFastenerCapacity> fastener_Cap;
-        Spacing spacing;
+        public List<SingleFastenerCapacity> fastener_capacities;
+        public Spacing spacing;
+        public Fastener fastener;
+        bool isMultiple;
+
+        public MultipleFastenerCapacity(List<SingleFastenerCapacity> fastener_capacities, Spacing spacing)
+        {
+            if (fastener_capacities.Count != spacing.npar * spacing.npep)
+            {
+                throw new ArgumentException("The number of fastener capacities does not match with the spacing array (npar*npep)");
+            }
+            if (fastener_capacities.Any(x => (x.fastener.type != fastener_capacities[0].fastener.type &&
+                                                  x.fastener.d != fastener_capacities[0].fastener.d)))
+            {
+                throw new ArgumentException("There are different fastener types inputed. Diameter and type of fastener must be the same for all fastener capacities");
+            }
+            this.fastener_capacities = fastener_capacities;
+            this.spacing = spacing;
+            isMultiple = true;
+        }
 
         public MultipleFastenerCapacity(SingleFastenerCapacity fastener_Cap, Spacing spacing)
         {
-            this.fastener_Cap = fastener_Cap;
+            this.fastener_capacities = new List<SingleFastenerCapacity>() { fastener_Cap };
             this.spacing = spacing;
+            this.fastener = fastener_Cap.fastener;
+            isMultiple = false;
         }
 
-        public double OverallShearResistance() {
-
-            double alpha = fastener_Cap.alfa1;
-            if (fastener_Cap is T2TCapacity)
+        public List<DictResults> ShearResistance()
+        {
+            if (isMultiple)
             {
-                T2TCapacity t2tfast = (T2TCapacity)fastener_Cap;
-                alpha = Math.Min(alpha, t2tfast.alfa2);
+                return new List<DictResults>() { OverallShearResistance() };
             }
+            else
+            {
+                return IndividualShearResistance();
+            }
+        }
+
+        DictResults OverallShearResistance()
+        {
+            SingleFastenerCapacity capacity = fastener_capacities[0];
             int npar = spacing.npar;
             int npep = spacing.npep;
-            double d = fastener_Cap.fastener.d;
-            double result = 0;
             double n = npar * npep;
             double nef = Nef();
-            double nalfa = (alpha / (Math.PI / 2)) * (n - nef) + nef;
+            double alpha = capacity.alfa1;
+            double nalpha;
+            if (capacity is T2TCapacity)
+            {
+                T2TCapacity t2tfast = (T2TCapacity)capacity;
+                double nalpha1 = (alpha / (Math.PI / 2)) * (n - nef) + nef;
+                double nalpha2 = (t2tfast.alfa2 / (Math.PI / 2)) * (n - nef) + nef;
+                nalpha = Math.Min(nalpha1, nalpha2);
+            }
+            else
+            {
+                nalpha = (alpha / (Math.PI / 2)) * (n - nef) + nef;
+            }
+            
+
+            
             double Util = 0;
-            double FVrd = nalfa * fastener_Cap.capacity.Fvk;
-
+            DictResults result = new DictResults(capacity.capacities);
+            foreach (string failure in capacity.capacities.Keys.ToList())
+            {
+                result[failure] *= nalpha;
+            }
             return result;
-        
+
         }
 
-        //What the fuck
-        public double IndividualResistance() {
-            List<double> result = new List<double>();
+        List<DictResults> IndividualShearResistance()
+        {
+            List<DictResults> result_list = new List<DictResults>();
+            int npar = spacing.npar;
+            int npep = spacing.npep;
+            double n = npar * npep;
+            double nef = Nef();
+            foreach (SingleFastenerCapacity capacity in fastener_capacities)
+            {
+                double alpha = capacity.alfa1;
+                double nalpha;
+                if (capacity is T2TCapacity)
+                {
+                    T2TCapacity t2tfast = (T2TCapacity)capacity;
+                    double nalpha1 = (alpha / (Math.PI / 2)) * (n - nef) + nef;
+                    double nalpha2 = (t2tfast.alfa2 / (Math.PI / 2)) * (n - nef) + nef;
+                    nalpha = Math.Min(nalpha1, nalpha2);
+                }
+                else
+                {
+                    nalpha = (alpha / (Math.PI / 2)) * (n - nef) + nef;
+                }
 
-            return result;
+                DictResults result = new DictResults(capacity.capacities);
+                foreach (string failure in capacity.capacities.Keys.ToList())
+                {
+                    result[failure] *= nalpha;
+                }
+                result_list.Add(result);
+            }
+            return result_list;
         }
+
         double Nef()
         {
-            string type = fastener_Cap.fastener.type;
-            double d = fastener_Cap.fastener.d;
+            string type = fastener.type;
+            double d = fastener.d;
             double nef = 0;
             double a1 = spacing.a1;
             double npar = spacing.npar;
@@ -76,7 +149,7 @@ namespace BeaverCore.Connections
                 }
                 nef = (Math.Pow(npar, kef)) * npep;
             }
-            if (type == "bolt" || (type == "screw" & d >= 6) || type =="dowel")
+            if (type == "bolt" || (type == "screw" & d >= 6) || type == "dowel")
             {
                 if (npar * npep == 1) { nef = 1; }
                 else

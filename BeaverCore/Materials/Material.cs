@@ -76,7 +76,7 @@ namespace BeaverCore.Materials
             }
         }
 
-        public List<string> GetTypesNames()
+        public static List<string> GetTypesNames()
         {
 
             List<string> names = new List<string>();

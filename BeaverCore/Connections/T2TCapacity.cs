@@ -32,11 +32,8 @@ namespace BeaverCore.Connections
             double T_head,
             string WoodType,
             double T_thread,
-            double Alfafast,
-            double Npar,
-            double Npep,
-            double A1,
-            bool type
+            double Alfafast
+            
         )
         {
             this.t1 = T1;
@@ -57,14 +54,14 @@ namespace BeaverCore.Connections
   
         }
 
-        public override void GetFvk(bool type)
+        public override void GetFvk()
         {
-            if (sheartype == 0) capacities = FvkSingleShear(type);
-            else capacities = FvkDoubleShear(type);
-            SetCriticalCapacity();
+            if (base.sheartype == 1)   capacities = FvkSingleShear();
+            else if (base.sheartype == 2) capacities = FvkDoubleShear();
+            else { throw new ArgumentException(); }
         }
 
-        public override Dictionary<string, double> FvkSingleShear(bool type)
+        public override Dictionary<string, double> FvkSingleShear()
         {
             /// Calculates fastener capacity for single shear according to EC5, Section 8.2.2, Eq. 8.6
             double maxFaxrk = FaxrkUpperLimitValue();
@@ -110,7 +107,7 @@ namespace BeaverCore.Connections
             return capacities;
         }
 
-        public override Dictionary<string, double> FvkDoubleShear(bool type)
+        public override Dictionary<string, double> FvkDoubleShear()
         {
             double maxFaxrk = FaxrkUpperLimitValue();
             double Mryk = this.variables.Myrk;

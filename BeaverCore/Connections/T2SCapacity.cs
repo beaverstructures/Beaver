@@ -37,13 +37,19 @@ namespace BeaverCore.Connections
             this.sheartype = SD;
             this.variables = new Variables(Fastener, PreDrilled, Pk, Alfa, Alfafast, tMat1.type, T1, T_steel, T_thread);
             this.alfafast=Alfafast;
+            if (base.sheartype == 1) capacities = FvkSingleShear();
+            else if (base.sheartype == 2) capacities = FvkDoubleShear();
+            else { throw new ArgumentException(); }
         }
 
         
-        public override void GetFvk(bool type)
+        public override if (base.sheartype == 1) capacity = FvkSingleShear(type);
+            else if (base.sheartype == 2) capacity = FvkDoubleShear();
+            else { throw new ArgumentException(); } GetFvk()
         {
-            if (base.sheartype == 0) capacity = FvkSingleShear(type);
-            else capacity = FvkDoubleShear(type);
+            if (base.sheartype == 1) capacity = FvkSingleShear(type);
+            else if (base.sheartype == 2) capacity = FvkDoubleShear();
+            else { throw new ArgumentException(); }
         }
         public override object FvkSingleShear(bool type)
         {
@@ -121,7 +127,7 @@ namespace BeaverCore.Connections
             
         }
 
-        public override object FvkDoubleShear(bool type)
+        public override object FvkDoubleShear()
         {
             double maxFaxrk = this.FaxrkUpperLimitValue();
             double Fvrk = 0;

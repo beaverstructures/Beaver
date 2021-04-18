@@ -25,11 +25,11 @@ namespace BeaverCore.Connections
         public string critical_failure_mode;
         public bool rope_effect;
 
-        public abstract void GetFvk(bool type);
+        public abstract void GetFvk();
 
-        public abstract Dictionary<string,double> FvkSingleShear(bool type);
+        public abstract Dictionary<string,double> FvkSingleShear();
 
-        public abstract Dictionary<string, double> FvkDoubleShear(bool type);
+        public abstract Dictionary<string, double> FvkDoubleShear();
 
         public double FaxrkUpperLimitValue()
         {
