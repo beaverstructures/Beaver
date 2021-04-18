@@ -24,12 +24,18 @@ namespace BeaverCore.Connections
         public double critical_capacity;
         public string critical_failure_mode;
         public bool rope_effect;
+        public string analysisType;
 
-        public abstract void GetFvk(bool type);
+        public void GetFvk(bool type)
+        {
+            if (sheartype == 0) capacities = FvkSingleShear();
+            else capacities = FvkDoubleShear();
+            SetCriticalCapacity();
+        }
 
-        public abstract Dictionary<string,double> FvkSingleShear(bool type);
+        public abstract Dictionary<string,double> FvkSingleShear();
 
-        public abstract Dictionary<string, double> FvkDoubleShear(bool type);
+        public abstract Dictionary<string, double> FvkDoubleShear();
 
         public double FaxrkUpperLimitValue()
         {
