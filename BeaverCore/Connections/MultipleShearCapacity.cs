@@ -111,7 +111,7 @@ namespace BeaverCore.Connections
                 DictResults result = new DictResults(capacity.capacities);
                 foreach (string failure in capacity.capacities.Keys.ToList())
                 {
-                    result[failure] *= nalpha;
+                    result[failure] *= nalpha/n;
                 }
                 result_list.Add(result);
             }
