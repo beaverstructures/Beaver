@@ -9,9 +9,9 @@ namespace BeaverCore.Connections
     public class MultipleFastenerCapacity
     {
         List<SingleFastenerCapacity> fastener_Cap;
-        Spacing spacing;
+        ShearSpacing spacing;
 
-        public MultipleFastenerCapacity(SingleFastenerCapacity fastener_Cap, Spacing spacing)
+        public MultipleFastenerCapacity(SingleFastenerCapacity fastener_Cap, ShearSpacing spacing)
         {
             this.fastener_Cap = fastener_Cap;
             this.spacing = spacing;
