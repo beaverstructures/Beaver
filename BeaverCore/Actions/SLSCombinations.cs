@@ -152,7 +152,9 @@ namespace BeaverCore.Actions
                 }
             }
 
-            winst = displacements;
+
+            winst = new List<Displacement>(displacements);
+
             displacements = new List<Displacement>();
 
             // QUASI-PERMANENT COMBINATION
