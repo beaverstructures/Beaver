@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Connections
 {
-    public class Spacing
+    public class ShearSpacing
     {
         public double a1;
         public double a2;
@@ -17,7 +17,28 @@ namespace BeaverCore.Connections
         public int npar;
         public int npep;
 
-        public Spacing(Fastener fastener, double pk, double alfa, bool preDrilled)
+        /// <summary>
+        /// Creates a generic ShearSpacing object based on spacing parameters.
+        /// </summary>
+        public ShearSpacing(double a1, double a2, double a3t, double a3c, double a4t, double a4c, int npar, int npep)
+        {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a3t = a3t;
+            this.a3c = a3c;
+            this.a4t = a4t;
+            this.a4c = a4c;
+            this.npar = npar;
+            this.npep = npep;
+        }
+
+        /// <summary>
+        /// Construct the minimum requirements ShearSpacing object
+        /// for provided fastener, load orientation and timer density.
+        /// This is used later to define the acceptance of the spacing of
+        /// the current connection.
+        /// </summary>
+        public ShearSpacing(Fastener fastener, double pk, double alfa, bool preDrilled)
         {
             if (fastener.type == "nail" || (fastener.type == "screw" && fastener.d <= 6))
             {
@@ -33,6 +54,8 @@ namespace BeaverCore.Connections
 
             }
         }
+
+
 
         void CalculateForNails(double pk, double d, double alfa)
         {
@@ -101,5 +124,57 @@ namespace BeaverCore.Connections
             this.a4t = Math.Max((2 + 2 * sinAlfa) * d, 3 * d);
             this.a4c = 3 * d;
         }
+
+
+
+
+    }
+
+    public class AxialSpacing
+    {
+
+        public double a1;
+        public double a2;
+        public double a1CG;
+        public double a2CG;
+        public int npar;
+        public int npep;
+
+        /// <summary>
+        /// Creates a generic AxialSpacing object based on spacing parameters.
+        /// </summary>
+        public AxialSpacing(double a1, double a2, double a1CG, double a2CG, int npar, int npep)
+        {
+            this.a1 = a1;
+            this.a2 = a2;
+            this.a1CG = a1CG;
+            this.a1CG = a1CG;
+            this.npar = npar;
+            this.npep = npep;
+        }
+
+        //EC5 Section 8.7.2
+        /// <summary>
+        /// Construct the minimum requirements AxialSpacing object
+        /// for provided fastenern.
+        /// This is used later to define the acceptance of the spacing of
+        /// the current connection.
+        /// </summary>
+        public AxialSpacing(Fastener fastener, double d)
+        {
+            if (fastener.type != "screw")
+            {
+                throw new ArgumentException("EC5 Section 8.7.2 - Fastener must be a screw for this evaluation");
+            }
+            else
+            {
+                this.a1 = 7 * d;
+                this.a2 = 5 * d;
+                this.a1CG = 10 * d;
+                this.a2CG = 4 * d;
+            }
+        }
+
     }
 }
+

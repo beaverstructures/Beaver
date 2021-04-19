@@ -7,57 +7,99 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeaverCore.Geometry;
 
 namespace BeaverCore.Frame
 
 {
+    public enum SpanType
+    {
+        Span,
+        CantileverSpan
+    }
+
+    /// <summary>
+    /// a TimberFrame element for calculating stresses and displacements on a given element
+    /// </summary>
     public class TimberFrame
     {
-        //$$$Add docstring urgent!!
-        public Dictionary<double,TimberFramePoint> TimberPointsMap;
+        /// <summary>
+        /// Mapping between TimberFramePoints and it's
+        /// relative positions [0,1].
+        /// </summary>
+        public Dictionary<double, TimberFramePoint> TimberPointsMap;
+
+        /// <summary>
+        /// Geometric representation of the member axis.
+        /// </summary>
+        public Line FrameAxis;
 
         public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
         {
             TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
         }
 
+        public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints, Line line)
+        {
+            TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
+            FrameAxis = line;
+        }
     }
 
     public class TimberFramePoint
     {
+        /// <summary>
+        /// A referenced point on a TimberFrame element
+        /// </summary>
         public List<Force> Forces;
         public List<Displacement> Disp;
-        public ULSCombinations IForces;
+        public ULSCombinations ULSComb;
         public SLSCombinations SLSComb;
         public CroSec CS;
+        public SpanType span_type;
         public double ly;
         public double lz;
-        public double lsp;
+        public double kflam;
+        public double lspan;
+        public double[] inst_deflection_limit;
+        public double[] netfin_deflection_limit;
+        public double[] fin_deflection_limit;
+        public double precamber;
         public string id;
         public string guid;
         public string parameters;
         public int sc;
 
         public TimberFramePoint() { }
-        public TimberFramePoint(ULSCombinations act, CroSec cs,double ly, double lz, double lsp)
-        {
-            IForces = act;
-            CS = cs;
-            this.ly = ly;
-            this.lz = lz;
-            this.lsp = lsp;
-        }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lsp)
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam)
         {
             Forces = forces;
             Disp = disp;
             this.sc = sc;
-            IForces = new ULSCombinations(forces, sc);
+            ULSComb = new ULSCombinations(forces, sc);
             CS = cs;
+            SLSComb = new SLSCombinations(disp, sc, cs.Mat);
             this.ly = ly;
             this.lz = lz;
-            this.lsp = lsp;
+            this.kflam = kflam;
+            this.lspan = lspan;
+            span_type = SpanType.Span;
+        }
+
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, SpanType span_type)
+        {
+            Forces = forces;
+            Disp = disp;
+            this.sc = sc;
+            ULSComb = new ULSCombinations(forces, sc);
+            CS = cs;
+            SLSComb = new SLSCombinations(disp, sc, cs.Mat);
+            this.ly = ly;
+            this.lz = lz;
+            this.kflam = kflam;
+            this.lspan = lspan;
+            this.span_type = span_type;
         }
 
         private double Getkcrit(double lam)
@@ -73,242 +115,298 @@ namespace BeaverCore.Frame
             }
             return kcrit;
         }
-        public List<double[]> BendingNormalUtil()
+
+        // Section Analisys
+        public TimberFrameULSResult ULSUtilization()
         {
+            string[] Info = new string[] {
+                    //0
+                    "EC5 Section 6.1.2 Tension parallel to the grain",
+                    //1
+                    "EC5 Section 6.1.4 Compression parallel to the grain.",
+                    //2
+                    "EC5 Section 6.1.6 Biaxial Bending",
+                    //3
+                    "EC5 Section 6.1.7 Shear",
+                    //4
+                    "EC5 Section 6.1.8 Torsion",
+                    //5
+                    "EC5 Section 6.2.3 Combined Tension and Bending",
+                    //6
+                    "EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending",
+                    //7
+                    "EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression",
+                };
+
+
+
+            //Basic Geometry and Material Values
+            double A = CS.A;
+            double Wy = CS.Wy;
+            double Wz = CS.Wz;
+            double ry = CS.ry;
+            double rz = CS.rz;
+
             double Km = 1;
             double Ym = CS.Mat.Ym;
             double fc0k = CS.Mat.fc0k;
             double ft0k = CS.Mat.ft0k;
             double fmk = CS.Mat.fmk;
-            double E05 = CS.Mat.E005;
-            double kflam = 0.9;
+            double Fvk = CS.Mat.fvk;
+            double E05 = CS.Mat.E05;
+            double G05 = CS.Mat.G05;
             double Bc = 0.2;
 
+            //Define EC5 Section 6.1.7 Shear Coefficients
+            double kcrit = 0.67;
 
-            //Definição de valores geométricos
-            double A = CS.A;
-            double Iy = CS.Iy;
-            double Iz = CS.Iz;
-            double Wy = CS.Wy;
-            double Wz = CS.Wz;
-            double ry = CS.ry;
-            double rz = CS.rz;
-            double lamy = (100 * ly) / ry;
-            double lamz = (100 * lz) / rz;
+            //Define EC5 Section 6.1.8 Torsion Coefficients
+            double kshape = 2;
+            CroSec_Rect cs = (CroSec_Rect)CS;
+            if (CS is CroSec_Rect) { kshape = Math.Min(1 + 0.15 * (cs.h / cs.b), 2); };
+            if (CS is CroSec_Circ) { kshape = 1.2; };
+
+            //Define EC5 Section 6.2.3 & 6.3.2 Coefficients
             double lefy = ly * kflam * 100;
             double lefz = lz * kflam * 100;
-
-            //Definição de valores do material 
-            double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
-
-            double lamyrel = lamy * lampi;
-            double lamzrel = lamz * lampi;
-
-            double G05 = E05 / 16;
-            double UtilY = 0;
-            double UtilZ = 0;
-            string info = "";
-
-            //Definição dos valores de cálculo necessários para verificação em pilares ou vigas 
-            double sigMcrity = CS.GetsigMcrit(lefy, E05);
-            double sigMcritz = CS.GetsigMcrit(lefz, E05);
+            double sigMcrity = CS.GetsigMcrit(lefy, E05, G05);
+            double sigMcritz = CS.GetsigMcrit(lefz, E05, G05);
             double lammy = Math.Sqrt(fmk / sigMcrity);
             double lammz = Math.Sqrt(fmk / sigMcritz);
+            double kcrity = Getkcrit(lammy);
+            double kcritz = Getkcrit(lammz);
+
+            //Define EC5 Section 6.3.2 Coefficients
+            double lamy = (100 * ly) / ry;
+            double lamz = (100 * lz) / rz;
+            double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
+            double lamyrel = lamy * lampi;
+            double lamzrel = lamz * lampi;
             double ky = 0.5 * (1 + Bc * (lamyrel - 0.3) + Math.Pow(lamyrel, 2));
             double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2));
             double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
-            string data = string.Format("λy ={0}, λz ={1},λrely ={2}, λrelz ={3}, ky ={4}, kz ={5}, kcy={6}, kcz={7}, σMcrity= {8}, σMcritz= {9}, λmy ={10}, λmz ={11}",
-                    Math.Round(lamy, 3), Math.Round(lamz, 3), Math.Round(lamyrel, 3), Math.Round(lamzrel, 3), Math.Round(ky, 3), Math.Round(kz, 3),
+
+            //Define Basic Coefficients Output
+            string Sectiondata = string.Format(
+                "kflam = {0}, kcrit ={1}, kshape = {2}, λy ={3}, λz ={4},λrely ={5}, λrelz ={6}, ky ={7}, kz ={8}, kcy={9}, kcz={10}, σMcrity= {11}, σMcritz= {12}, λmy ={13}, λmz ={14}",
+                    Math.Round(kflam, 3), Math.Round(kcrit, 3), Math.Round(kcrit, 3), Math.Round(lamy, 3), Math.Round(lamz, 3), Math.Round(lamyrel, 3), Math.Round(lamzrel, 3), Math.Round(ky, 3), Math.Round(kz, 3),
                     Math.Round(kyc, 3), Math.Round(kzc, 3), Math.Round(sigMcrity, 3), Math.Round(sigMcritz, 3), Math.Round(lammy, 3), Math.Round(lammz, 3));
-            parameters = data;
-            List<double[]> result = new List<double[]>();
+            parameters = Sectiondata;
 
-            foreach (Force f in IForces.Sd)
+            //Define Utilization
+            double Util0;
+            double Util1;
+            double UtilY2;
+            double UtilZ2;
+            double UtilY3;
+            double UtilZ3;
+            double Util4;
+            double UtilY5;
+            double UtilZ5;
+            double UtilY6;
+            double UtilZ6;
+            double UtilY7;
+            double UtilZ7;
+            List<double[]> AllUtilsY = new List<double[]>();
+            List<double[]> AllUtilsZ = new List<double[]>();
+            foreach (Force f in ULSComb.Sd)
             {
-                string loaddata = "";
-                double Nd = f.InternalForces["N"];
-                double Myd = f.InternalForces["My"];
-                double Mzd = f.InternalForces["Mz"];
-                double Kmod = Utils.KMOD(IForces.SC, f.duration);
-                double fc0d = Kmod * fc0k / Ym;
-                double ft0d = Kmod * ft0k / Ym;
-                double fmd = Kmod * fmk / Ym;
+                //Actions
+                double Nd = f.N;
+                double Vy = f.Vy;
+                double Vz = f.Vz;
+                double Myd = f.My;
+                double Mzd = f.Mz;
+                double Mt = f.Mt;
                 double sigN = Nd / A;
-                double sigMy = 100 * Math.Abs(Myd) / Wy;
-                double sigMz = 100 * Math.Abs(Mzd) / Wz;
-
-
-                if (Nd > 0)
-                {
-                    if (Myd == 0 && Mzd == 0)
-                    {
-                        loaddata = "Pure Tension";
-                    }
-                    else
-                    {
-                        loaddata = "Tension + Bending";
-                    }
-                }
-                else if (Nd < 0)
-                {
-                    if (Myd == 0 && Mzd == 0)
-                    {
-                        loaddata = "Pure Compression";
-                    }
-                    else
-                    {
-                        loaddata = "Compression + Bending";
-                    }
-                }
-                else if (Nd == 0 && (Myd != 0 || Mzd != 0))
-                {
-                    loaddata = "Pure Bending";
-                }
-                
-
-                if (Nd < 0)
-                {
-                    Nd = Math.Abs(Nd);
-                    sigN = Math.Abs(sigN);
-                    //Verificação de comportamento de Pilares
-                    if (Math.Max(lammy, lammz) < 0.75) //checar se é isso mesmo, ou devo considerar apenas lammy
-                    {
-                        if (lamyrel <= 0.3 && lamzrel <= 0.3)
-                        {
-                            UtilY = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                            UtilZ = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
-                            info = loaddata + ", No Buckling effect:" + data;
-                        }
-                        else
-                        {
-                            UtilY = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
-                            UtilZ = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
-
-                        }
-
-                        info = loaddata + ", Acts as a Column (λm<0.75): " + data;
-                    }
-                    //Verificação de comportamento de Vigas
-                    else
-                    {
-
-                        if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
-                        {
-                            double kcrity = Getkcrit(lammy);
-                            double kcritz = Getkcrit(lammz);
-                            UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                            UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd); ;
-                            info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
-
-                        }
-                        if (Math.Max(lammy, lammz) >= 1.4)
-                        {
-                            double kcrity = Getkcrit(lammy);
-                            double kcritz = Getkcrit(lammz);
-                            UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                            UtilZ = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd);
-                            info = loaddata + ", Acts as a Beam (λm >= 1.4): " + data;
-                        }
-
-
-
-                    }
-
-
-
-                }
-                else if (Nd >= 0)
-                {
-                    if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
-                    {
-                        double kcrity = Getkcrit(lammy);
-                        double kcritz = Getkcrit(lammz);
-                        UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
-                        UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / ft0d) + Km * (sigMy / fmd);
-                        info = loaddata + ", Acts as a Beam (0.75 <= λm < 1.4): " + data;
-                    }
-                    else if (Math.Max(lammy, lammz) >= 1.4)
-                    {
-                        double kcrity = Getkcrit(lammy);
-                        double kcritz = Getkcrit(lammz);
-                        UtilY = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
-                        UtilY = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (ft0d)) + Km * (sigMy / fmd);
-                        info = loaddata + ", Acts as a Beam (λm >= 1.4): " + data;
-                    }
-                    else
-                    {
-                        UtilY = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
-                        UtilZ = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
-                        info = loaddata + ", No Torsional Buckling effects, λmy=" + Math.Round(lammy, 3) + ", λmyz=" + Math.Round(lammz, 3);
-                    }
-                }
-                double[] iresult = new double[] { UtilY, UtilZ };
-                result.Add(iresult);
-            }
-            return result;
-
-            
-        }
-        public List<double[]> ShearUtil()
-        {
-            List<double[]> result = new List<double[]>();
-
-
-            double Ym = CS.Mat.Ym;
-            double Fvk = CS.Mat.fvk;
-
-
-            double kcrit = 0.67;
-
-            foreach (Force f in IForces.Sd)
-            {
-                double Kmod = Utils.KMOD(IForces.SC, f.duration);
-                double Vy = f.InternalForces["Vy"];
-                double Vz = f.InternalForces["Vz"];
-
                 double Sigvy = (3 / 2) * (Vy / (kcrit * CS.A));
                 double Sigvz = (3 / 2) * (Vz / (kcrit * CS.A));
+                double sigMy = 100 * Math.Abs(Myd) / Wy;
+                double sigMz = 100 * Math.Abs(Mzd) / Wz;
+                double SigMt = Math.Abs(Mt) / CS.It;
 
+                //Resistances
+                double Kmod = Utils.KMOD(ULSComb.SC, f.duration);
+                double fc0d = Kmod * fc0k / Ym;
+                double ft0d = Kmod * ft0k / Ym;
                 double fvd = Kmod * Fvk / Ym;
-                double Utily = Sigvy / fvd;
-                double Utilz = Sigvz / fvd;
-                result.Add(new double[] { Utily, Utilz });
-            }
-            return result;
-        }
-        public List<double> TorsionUtil()
-        {
-            List<double> result = new List<double>();
+                double fmd = Kmod * fmk / Ym;
 
-            double kshape = 1;
-            if (CS is CroSec_Rect)
+                //0 EC5 Section 6.1.2 Tension parallel to the grain
+                Util0 = sigN / fc0d;
+
+                //1 EC5 Section 6.1.4 Compression parallel to the grain
+                Util1 = sigN / fc0d;
+
+                //2 EC5 Section 6.1.6 Biaxial Bending
+                UtilY2 = sigN / fc0d + (sigMy / fmd) + Km * (sigMz / fmd);
+                UtilZ2 = sigN / fc0d + Km * (sigMy / fmd) + (sigMz / fmd);
+
+                //3 EC5 Section 6.1.7 Shear
+                UtilY3 = Sigvy / fvd;
+                UtilZ3 = Sigvz / fvd;
+
+                //4 EC5 Section 6.1.8 Torsion
+                Util4 = SigMt / (kshape / fvd);
+
+                //5 EC5 Section 6.2.3 Combined Tension and Bending
+                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
+                {
+                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
+                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / ft0d) + Km * (sigMy / fmd);
+                }
+                else if (Math.Max(lammy, lammz) >= 1.4)
+                {
+                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
+                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (ft0d)) + Km * (sigMy / fmd);
+                }
+                else
+                {
+                    UtilY5 = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
+                    UtilZ5 = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
+                }
+
+                //6 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
+                if (lamyrel <= 0.3 && lamzrel <= 0.3)
+                {
+                    UtilY6 = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
+                    UtilZ6 = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
+                }
+                else
+                {
+                    UtilY6 = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
+                    UtilZ6 = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
+                }
+
+                //7 EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression
+                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
+                {
+                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd); ;
+                }
+                if (Math.Max(lammy, lammz) >= 1.4)
+                {
+                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
+                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd);
+                }
+                else
+                {
+                    UtilY7 = 0;
+                    UtilZ7 = 0;
+                }
+
+                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7 };
+                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7 };
+                AllUtilsY.Add(UtilsY.ToArray());
+                AllUtilsZ.Add(UtilsZ.ToArray());
+
+            }
+
+            TimberFrameULSResult Result = new TimberFrameULSResult(Info, AllUtilsY, AllUtilsZ, Sectiondata);
+
+            return Result;
+
+
+
+        }
+
+        public TimberFrameSLSResult SLSUtilization()
+        {
+            string[] Info = new string[] {
+                    //0
+                    "EC5 Section 7.2 Instantaneous deflection",
+                    //1
+                    "EC5 Section 7.2 Net final deflection",
+                    //2
+                    "EC5 Section 7.2 Final deflection",
+                };
+            return new TimberFrameSLSResult(Info, InstDisplacementUtil(), NetFinDisplacementUtil(), FinDisplacementUtil());
+        }
+
+        private double GetDisplacementLimit(double[] displacement_limit)
+        {
+            double result = 0;
+            if (span_type is SpanType.Span)
             {
-                CroSec_Rect cs = (CroSec_Rect)CS;
-                kshape = Math.Min(1 + 0.15 * (cs.h / cs.b), 2);
+                result = displacement_limit[0];
             }
-            double Ym = CS.Mat.Ym;
-            double Fvk = CS.Mat.fvk;
-            foreach (Force f in IForces.Sd) {
-                double Mt = 0;
-                double Kmod = Utils.KMOD(IForces.SC,f.duration);
-                double Sigt = Mt / CS.It;
-                double fvd = Kmod * Fvk / Ym;
-                double Util = Sigt / (kshape / fvd);
-                result.Add(Util);
+            else if (span_type is SpanType.CantileverSpan)
+            {
+                result = displacement_limit[1];
             }
-
             return result;
         }
 
-        public List<double> CharacteristicDisplacementUtil()
+
+        public List<double> InstDisplacementUtil()
         {
-            
+            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.CharacteristicDisplacements)
+            {
+                disps_ratio.Add((disp.Absolute())/ deflection_limit);
+            }
+            return disps_ratio;
         }
 
-        public List<double> LongtermDisplacementUtil() { }
+        public List<double> NetFinDisplacementUtil()
+        {
+            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.CreepDisplacements)
+            {
+                disps_ratio.Add((disp.Absolute() - precamber) / deflection_limit);
+            }
+            return disps_ratio;
+        }
 
-        public List<double> PreCamberDisplacementUtil() { }
+        public List<double> FinDisplacementUtil()
+        {
+            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            List<double> disps_ratio = new List<double>();
+            foreach (var disp in SLSComb.CreepDisplacements)
+            {
+                disps_ratio.Add((disp.Absolute()) / deflection_limit);
+            }
+            return disps_ratio;
+        }
 
+    }
+
+    public class TimberFrameULSResult
+    {
+        string[] Info;
+        List<double[]> UtilsY;
+        List<double[]> UtilsZ;
+        string SectionData;
+
+        public TimberFrameULSResult() { }
+
+        public TimberFrameULSResult(string[] info, List<double[]> utilsY, List<double[]> utilsZ, string sectiondata)
+        {
+            Info = info;
+            UtilsY = utilsY;
+            UtilsZ = utilsZ;
+            SectionData = sectiondata;
+        }
+    }
+
+    public class TimberFrameSLSResult
+    {
+        string[] Info;
+        List<double> InstUtils;
+        List<double> NetFinUtils;
+        List<double> FinUtils;
+
+        public TimberFrameSLSResult() { }
+
+        public TimberFrameSLSResult(string[] info, List<double> instUtils, List<double> netFinUtils, List<double> finUtils)
+        {
+            Info = info;
+            InstUtils = instUtils;
+            NetFinUtils = netFinUtils;
+            FinUtils = finUtils;
+        }
     }
 }

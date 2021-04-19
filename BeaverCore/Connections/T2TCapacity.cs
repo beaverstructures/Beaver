@@ -7,6 +7,7 @@ namespace BeaverCore.Connections
 {
     public class T2TCapacity: SingleFastenerCapacity
     {
+        // Calculates the capacity of Timber-to-timber connections according to EC5, Section 8.2.2
         public double alfa2;
         public double t2;
         public double pk2;
@@ -31,11 +32,8 @@ namespace BeaverCore.Connections
             double T_head,
             string WoodType,
             double T_thread,
-            double Alfafast,
-            double Npar,
-            double Npep,
-            double A1,
-            bool type
+            double Alfafast
+            
         )
         {
             this.t1 = T1;
@@ -53,181 +51,92 @@ namespace BeaverCore.Connections
             this.t_thread = T_thread;
             this.alfafast = Alfafast;
             this.variables = new Variables(Fastener, PreDrilled, Pk1, Pk2, Alfa1, Alfa2, alfafast, WoodType, T1, T2, T_thread);
+            GetFvk();
   
         }
 
-        public override void GetFvk(bool type)
+        public override Dictionary<string, double> FvkSingleShear()
         {
-            if (sheartype == 0) capacity = FvkSingleShear(type);
-            else capacity = FvkDoubleShear(type);
-        }
+            /// Calculates fastener capacity for single shear according to EC5, Section 8.2.2, Eq. 8.6
 
-        public override object FvkSingleShear(bool type)
-        {
+            analysisType = "FASTENERS IN SINGLE SHEAR - EC5, Section 8.2.2, Eq. 8.6";
+
             double maxFaxrk = FaxrkUpperLimitValue();
             double Mryk = this.variables.Myrk;
             double Fh1k = this.variables.fh1k;
             double Fh2k = this.variables.fh2k;
             double Beta = this.variables.beta;
             double Faxrk = this.variables.Faxrk;
-            double Fvk;
-            string failureMode = "";
-            List<double> Fvrks = new List<double>();
-            List<string> failures = new List<string>();
-            //1º modo (a)
-            double Fvk1 =  Fh1k * t1 * this.fastener.d;
-            Fvk = Fvk1;
-            failureMode = "a";
-            Fvrks.Add(Fvk1);
-            failures.Add("a");
-            //2º modo (b)
-            double Fvk2 =  Fh2k * t2 * this.fastener.d;
-            if (Fvk > Fvk2)
-            {
-                Fvk = Fvk2;
-                failureMode = "b";
-            }
-            Fvrks.Add(Fvk2);
-            failures.Add("b");
-            //3º modo (c)
-            double Fvrk3 = 0;
+
+            var capacities = new Dictionary<string, double>();
+            double rope_effect_contribution;
+
+            //1st Failure Mode (a)
+            capacities.Add("a", Fh1k * t1 * this.fastener.d);
+
+            //2nd Failure Mode (b)
+            capacities.Add("b", Fh2k * t2 * this.fastener.d);
+
+            //3rd Failure Mode (c)
             double Fyrk3 = ((Fh1k * t1 * this.fastener.d) / (1 + Beta))
                 * (Math.Sqrt(Beta + 2 * Math.Pow(Beta, 2) * (1 + (t2 / t1) + Math.Pow(t2 / t1, 2)) + Math.Pow(Beta, 3) * Math.Pow(t2 / t1, 2)) - Beta * (1 + (t2 / t1)));
-            Fvrk3 = Math.Min(Fyrk3 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyrk3);
-            Fvrks.Add(Fvrk3);
-            failures.Add("c");
-            if (Fvk > Fvrk3)
-            {
-                Fvk = Fvrk3;
-                failureMode = "c";
-            }
+            rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk*Fyrk3) : 0;
+            capacities.Add("c", Fyrk3 + rope_effect_contribution);
 
-            //4º modo (d)
-            double Fvk4 = 0;
+            //4th Failure Mode (d)
             double Fyk4 = ((1.05 * Fh1k * t1 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d))) - Beta);
-            Fvk4 = Math.Min(Fyk4 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk4);
-            Fvrks.Add(Fvk4);
-            failures.Add("d");
-            if (Fvk > Fvk4)
-            {
-                Fvk = Fvk4;
-                failureMode = "d";
-            }
+            rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk*Fyk4) : 0;
+            capacities.Add("d", Fyk4 + rope_effect_contribution);
 
-            //5º modo (e)
-            double Fvk5 = 0;
+            //5th Failure Mode (e)
             double Fyk5 = ((1.05 * Fh2k * t2 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh2k * Math.Pow(t2, 2) * this.fastener.d))) - Beta);
-            Fvk5 = Math.Min(Fyk5 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk5);
-            Fvrks.Add(Fvk5);
-            failures.Add("e");
-            if (Fvk > Fvk5)
-            {
-                Fvk = Fvk5;
-                failureMode = "e";
-            }
+            rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk5) : 0;
+            capacities.Add("e", Fyk5 + rope_effect_contribution);
 
-            //6º modo (f)
-            double Fvk6 = 0;
+            //6th Failure Mode (f)
             double Fyk6 = 1.15 * Math.Sqrt((2 * Beta) / (1 + Beta))
                 * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d);
-            Fvk6 = Math.Min(Fyk6 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk6);
-            Fvrks.Add(Fvk6);
-            failures.Add("f");
-            if (Fvk > Fvk6)
-            {
-                Fvk = Fvk6;
-                failureMode = "f";
-            }
+            rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk6) : 0;
+            capacities.Add("f", Fyk6 + rope_effect_contribution);
 
-            if (type)
-            {
-                return new
-                {
-                    Fvk,
-                    failureMode
-                };
-            }
-            else
-            {
-                return new
-                {
-                    Fvrks,
-                    failures
-                };
-            }
+            return capacities;
         }
 
-        public override object FvkDoubleShear(bool type)
+        public override Dictionary<string, double> FvkDoubleShear()
         {
+            /// Calculates fastener capacity for double shear according to EC5, Section 8.2.2, Eq. 8.7
+            analysisType = "FASTENERS IN DOUBLE SHEAR - EC5, Section 8.2.2, Eq. 8.7";
+
             double maxFaxrk = FaxrkUpperLimitValue();
             double Mryk = this.variables.Myrk;
             double Fh1k = this.variables.fh1k;
             double Fh2k = this.variables.fh2k;
             double Beta = this.variables.beta;
             double Faxrk = this.variables.Faxrk;
-            double Fvk;
-            string failureMode = "";
-            List<double> Fvrks = new List<double>();
-            List<string> failures = new List<string>();
-            // 1º mode (g)
-            double Fvk1 =  (Fh1k * t1 * this.fastener.d);
-            Fvk = Fvk1;
-            failureMode = "g";
-            Fvrks.Add(Fvk1);
-            failures.Add("g");
-            // 2º mode (h)
-            double Fvk2 =  (0.5 * Fh2k * t2 * this.fastener.d);
-            Fvrks.Add(Fvk2);
-            failures.Add("h");
-            if (Fvk > Fvk2)
-            {
-                Fvk = Fvk2;
-                failureMode = "h";
-            }
+            
+            var capacities = new Dictionary<string, double>();
+            double rope_effect_contribution;
 
-            // 3º mode (j)
-            double Fvk3 = 0;
+            // 1st Failure Mode (g)
+            capacities.Add("g", Fh1k * t1 * this.fastener.d);
+
+            // 2nd Failure Mode (h)
+            capacities.Add("h", 0.5 * Fh2k * t2 * this.fastener.d);
+
+            // 3rd Failure Mode (j)
             double Fyk3 = (1.05 * ((Fh1k * t1 * this.fastener.d) / (2 * Beta)))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d)) - Beta);
-            Fvk3 = Math.Min(Fyk3 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk3);
-            Fvrks.Add(Fvk3);
-            failures.Add("j");
-            if (Fvk > Fvk3)
-            {
-                Fvk = Fvk3;
-                failureMode = "j";
-            }
+            rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk3) : 0;
+            capacities.Add("j", Fyk3 + rope_effect_contribution);
 
-            // 4º mode (k)
-            double Fvk4 = 0;
+            // 4th Failure Mode (k)
             double Fyk4 = (1.15 * Math.Sqrt((2 * Beta) / (1 + Beta)) * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d));
-            Fvk4 = Math.Min(Fyk4 + variables.Faxrk / 4, (1 + maxFaxrk) * Fyk4);
-            Fvrks.Add(Fvk4);
-            failures.Add("k");
-            if (Fvk > Fvk4)
-            {
-                Fvk = Fvk4;
-                failureMode = "k";
-            }
+            rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk4) : 0;
+            capacities.Add("k", Fyk4 + rope_effect_contribution);
 
-            if (type)
-            {
-                return new
-                {
-                    Fvk,
-                    failureMode
-                };
-            }
-            else
-            {
-                return new
-                {
-                    Fvrks,
-                    failures
-                };
-            }
+            return capacities;
         }
 
     

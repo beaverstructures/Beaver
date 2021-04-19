@@ -20,7 +20,7 @@ namespace BeaverCore.Materials
         public double fvk;
 
         public double E0mean;
-        public double E005;
+        public double E05;
 
         public double Gmean;
         public double G05;
@@ -32,7 +32,7 @@ namespace BeaverCore.Materials
 
         public Material() { }
 
-        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E005, double _Gmean, double _G05)
+        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _Gmean, double _G05)
         {
             name = _name;
             type = _type;
@@ -43,7 +43,7 @@ namespace BeaverCore.Materials
             fc90k = _fc90k;
             fvk = _fvk;
             E0mean = _E0mean;
-            E005 = _E005;
+            E05 = _E05;
             Gmean = _Gmean;
             G05 = _G05;
         }
@@ -66,7 +66,7 @@ namespace BeaverCore.Materials
                     fvk = Double.Parse(values[6]);
                     pk = 100 * Double.Parse(values[7]);
                     E0mean = Double.Parse(values[8]);
-                    E005 = Double.Parse(values[9]);
+                    E05 = Double.Parse(values[9]);
                     G05 = Double.Parse(values[10]);
                     Ym = Double.Parse(values[12]);
                     name = values[13];
@@ -76,7 +76,7 @@ namespace BeaverCore.Materials
             }
         }
 
-        public List<string> GetTypesNames()
+        public static List<string> GetTypesNames()
         {
 
             List<string> names = new List<string>();
