@@ -322,7 +322,5 @@ namespace BeaverCore.Actions
     }
 }
 
-    }
-}
 
 
