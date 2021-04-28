@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BeaverCore.Actions
 {
+    [Serializable]
     public class Action
     {
         public string type;
@@ -19,6 +20,7 @@ namespace BeaverCore.Actions
 
     }
 
+    [Serializable]
     public class TypeInfo
     {
         public double phi0;

@@ -43,6 +43,7 @@ namespace BeaverCore.Actions
             // ΣG
             Gravity.combination = "G";
             Gravity.type = "P";
+            Gravity.duration = "perm";
             Displacements.Add(Gravity);
 
             for (int primaryload = 1; primaryload < 4; primaryload++)
@@ -59,25 +60,27 @@ namespace BeaverCore.Actions
 
 
                     // Creates all possible combinations between IMPOSED LOADS: [Qa , Qh , Qa + Qh]
-                    List<Displacement> ImposedDisplacements = SortedDisplacements.ElementAt(primaryload);
+                    List<Displacement> ImposedDisplacements = SortedDisplacements.ElementAt(1).DeepClone();
                     ImposedDisplacements.RemoveAt(0); //removes 0 displacement case
                     if (primaryload == 1)
                     {
-                        ImposedDisplacements.RemoveAt(i); //removes primary displacement case
+                        ImposedDisplacements.RemoveAt(i-1); //removes primary displacement case
                     }
                     var LiveCombinations = Enumerable.Range(1, (1 << ImposedDisplacements.Count) - 1).Select(index => ImposedDisplacements.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
                     ImposedDisplacements = new List<Displacement>();
                     foreach (var combo in LiveCombinations)
                     {
+                        bool active = true;
                         Displacement sum = new Displacement();
                         foreach (var load in combo)
                         {
-                            sum += load * load.typeinfo.phi0;
-                            sum.type = "QX";
+                            if (load.typeinfo.phi0 == 0) active = false;
+                            else sum += load * load.typeinfo.phi0;
+                            
                             // $$$ Accepting suggestions on how to improve this
                             // QX is set so that the phi0 is not accounted twice
                         }
-                        ImposedDisplacements.Add(sum);
+                        if (active) ImposedDisplacements.Add(sum);
                     }
                     ImposedDisplacements.Insert(0, new Displacement());
                     if (primaryload == 1)
@@ -93,13 +96,12 @@ namespace BeaverCore.Actions
                         cartesianproduct = Utils.CartesianProduct(ImposedDisplacements,
                                                                         SortedDisplacements[loadtypes[1]]);
                     }
-
+                    Displacement PrimaryCombination = Gravity + PrimaryDisplacement;
 
                     // Generate Combinations according to EC5 Section 2.2.3
-                    Displacement SecondaryDisplacement = new Displacement();
                     foreach (var product in cartesianproduct)
                     {
-                        // ΣG + Qk1 + Σ(φ₀Qkᵢ)
+                        Displacement SecondaryDisplacement = new Displacement();
                         foreach (Displacement displacement in product)
                         {
                             if (displacement.type == "QX")
@@ -111,7 +113,11 @@ namespace BeaverCore.Actions
                                 SecondaryDisplacement += displacement.typeinfo.phi0 * displacement;
                             }
                         }
-                        Displacements.Add(Gravity + PrimaryDisplacement + SecondaryDisplacement);
+                        Displacement SecondaryCombination = PrimaryCombination + SecondaryDisplacement;
+                        SecondaryCombination.type = PrimaryDisplacement.type;
+                        SecondaryCombination.duration = PrimaryDisplacement.duration;
+                        Displacements.Add(SecondaryCombination);
+                        
                     }
                 }
             }
@@ -125,18 +131,15 @@ namespace BeaverCore.Actions
             // QUASI-PERMANENT COMBINATION
             // EC5, Section 2.2.3, Eq. 2.2
             // ΣG∙(1+kdef) + P + Qk1∙φ₁∙(1+kdef∙φᵢ₂) + Σ(φᵢ₂Qkᵢ)∙(φᵢ₀ + kdef∙φᵢ₂)
-            Displacement Gravity = new Displacement();
+            Displacement Gravity = new Displacement("P");
             foreach (Displacement disp in SortedDisplacements[0])
             {
                 // sums all gravity loads
                 Gravity += disp;
             }
+            Gravity.type = "G";
+          
             Displacement LongTermGravity = (1 + mat.kdef) * Gravity;
-            // ΣG
-            LongTermGravity.combination = "(1+kdef)G";
-            LongTermGravity.type = "P";
-            Displacements.Add(Gravity);
-            // ΣG∙(1+kdef)
             Displacements.Add(LongTermGravity);
 
             for (int primaryload = 1; primaryload < 4; primaryload++)
@@ -153,46 +156,49 @@ namespace BeaverCore.Actions
                     var cartesianproduct = Utils.CartesianProduct(new List<Displacement> { new Displacement() });
 
                     // Creates all possible combinations between IMPOSED LOADS: [Qa , Qh , Qa + Qh]
-                    List<Displacement> ImposedDisplacements = SortedDisplacements.ElementAt(primaryload);
+                    List<Displacement> ImposedDisplacements = SortedDisplacements.ElementAt(1).DeepClone();
                     ImposedDisplacements.RemoveAt(0); //removes 0 displacement case
                     if (primaryload == 1)
                     {
-                        ImposedDisplacements.RemoveAt(i); //removes primary displacement case
+                        ImposedDisplacements.RemoveAt(i-1); //removes primary displacement case
                     }
                     var ImposedCombinations = Enumerable.Range(1, (1 << ImposedDisplacements.Count) - 1).Select(index => ImposedDisplacements.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
-                    List<Displacement> SecondaryImposedDisplacements = new List<Displacement>();
+                    ImposedDisplacements = new List<Displacement>();
                     foreach (var combo in ImposedCombinations)
                     {
+                        bool active = true;
                         Displacement sum = new Displacement();
-                        foreach (var displacement in combo)
+                        foreach (var load in combo)
                         {
-                            sum += displacement * (displacement.typeinfo.phi0 + displacement.typeinfo.phi2 * mat.kdef);
-                            sum.type = "QX";
+                            if (load.typeinfo.phi0 == 0) active = false;
+                            else sum += load * (load.typeinfo.phi0+mat.kdef*load.typeinfo.phi2);
+
                             // $$$ Accepting suggestions on how to improve this
                             // QX is set so that the phi0 is not accounted twice
                         }
-                        SecondaryImposedDisplacements.Add(sum);
+                        if (active) ImposedDisplacements.Add(sum);
                     }
-                    SecondaryImposedDisplacements.Insert(0, new Displacement());
+                    ImposedDisplacements.Insert(0, new Displacement());
                     if (primaryload == 1)
                     {
                         // Generates the CARTESIAN PRODUCT of secondary loads including other Imposed combinations
-                        cartesianproduct = Utils.CartesianProduct(SecondaryImposedDisplacements,
+                        cartesianproduct = Utils.CartesianProduct(ImposedDisplacements,
                                                                         SortedDisplacements[loadtypes[0]],
                                                                         SortedDisplacements[loadtypes[1]]);
                     }
                     else
                     {
                         // Generates the CARTESIAN PRODUCT of secondary loads
-                        cartesianproduct = Utils.CartesianProduct(SecondaryImposedDisplacements,
+                        cartesianproduct = Utils.CartesianProduct(ImposedDisplacements,
                                                                         SortedDisplacements[loadtypes[1]]);
                     }
-
+                    Displacement PrimaryCombination = LongTermGravity + PrimaryDisplacement;
 
                     // Generate Combination according to EC5 Section 2.2.3
-                    Displacement SecondaryDisplacement = new Displacement();
+
                     foreach (var product in cartesianproduct)
                     {
+                        Displacement SecondaryDisplacement = new Displacement();
                         // ΣG + Qk1 + Σ(φ₀Qkᵢ)
                         foreach (Displacement displacement in product)
                         {
@@ -205,7 +211,10 @@ namespace BeaverCore.Actions
                                 SecondaryDisplacement += (displacement.typeinfo.phi0 + displacement.typeinfo.phi2 * mat.kdef) * displacement;
                             }
                         }
-                        Displacements.Add(Gravity + PrimaryDisplacement + SecondaryDisplacement);
+                        Displacement SecondaryCombination = PrimaryCombination + SecondaryDisplacement;
+                        SecondaryCombination.type = PrimaryDisplacement.type;
+                        SecondaryCombination.duration = PrimaryDisplacement.duration;
+                        Displacements.Add(SecondaryCombination);
                     }
                 }
             }
