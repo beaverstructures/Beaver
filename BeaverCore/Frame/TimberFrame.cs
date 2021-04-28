@@ -79,7 +79,8 @@ namespace BeaverCore.Frame
             this.sc = sc;
             ULSComb = new ULSCombinations(forces, sc);
             CS = cs;
-            SLSComb = new SLSCombinations(disp, sc, cs.Mat);
+            CS.Mat.Setkdef(sc);
+            SLSComb = new SLSCombinations(disp, sc, CS.Mat);
             this.ly = ly;
             this.lz = lz;
             this.kflam = kflam;
@@ -210,7 +211,7 @@ namespace BeaverCore.Frame
             double UtilZ7;
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
-            foreach (Force f in ULSComb.Sd)
+            foreach (Force f in ULSComb.DesignForces)
             {
                 //Actions
                 double Nd = f.N;

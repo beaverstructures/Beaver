@@ -33,7 +33,7 @@ namespace BeaverCore.Connections
 
         public MultipleShearFastenerCapacity ConnectionCapacity()
         {
-
+            throw new NotImplementedException();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BeaverCore.Actions
 {
+    [Serializable]
     public class Displacement : Action
     /// <summary>
     /// Displacement class for SLS calculations.
@@ -15,12 +16,20 @@ namespace BeaverCore.Actions
         public double dz = 0;    // Global Z deflection
 
         // INSTANTIATE CLASS
-        public Displacement() { }
+        public Displacement()
+        {
+            type = "QX";
+            typeinfo = new TypeInfo("QX");
+            duration = typeinfo.duration;
+            combination = "";
+        }
 
         public Displacement(string type)
         {
             this.type = type;
-            duration = new TypeInfo(type).duration;
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = type;
         }
 
         public Displacement(double disp, string type)
@@ -29,7 +38,9 @@ namespace BeaverCore.Actions
             dx = 0;
             dy = 0;
             this.type = type;
-            duration = new TypeInfo(type).duration;
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = type;
         }
 
         public Displacement(double dispX, double dispY, double dispZ, string type)
@@ -38,7 +49,9 @@ namespace BeaverCore.Actions
             dy = dispY;
             dz = dispZ;
             this.type = type;
-            duration = new TypeInfo(type).duration;
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = type;
         }
 
         public static Displacement operator +(Displacement w1, Displacement w2)
@@ -46,7 +59,14 @@ namespace BeaverCore.Actions
             Displacement result = new Displacement(w1.dx + w2.dx,
                                                     w1.dy + w2.dy,
                                                     w1.dz + w2.dz,
-                                                    w1.type + w2.type);
+                                                    w1.type);
+            if (w1.combination == "") { result.combination = w2.combination;
+            }
+            else if (w2.combination == "") { result.combination = w1.combination;
+            }
+            else { result.combination = w1.combination + "+" + w2.combination;
+
+            }
             return result;
         }
 
@@ -56,6 +76,7 @@ namespace BeaverCore.Actions
                                                     w1.dy * s,
                                                     w1.dz * s,
                                                     w1.type);
+            result.combination = Math.Round(s, 2).ToString() + w1.combination;
             return result;
         }
 
@@ -65,6 +86,7 @@ namespace BeaverCore.Actions
                                                     w1.dy * s,
                                                     w1.dz * s,
                                                     w1.type);
+            result.combination = Math.Round(s, 2).ToString() + w1.combination;
             return result;
         }
 

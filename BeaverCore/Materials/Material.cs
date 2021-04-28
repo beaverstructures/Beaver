@@ -101,7 +101,7 @@ namespace BeaverCore.Materials
         public void Setkdef(int SC)
         {
             // Eurocode 5 Table 3.2
-            switch (name) 
+            switch (type) 
             {
                 case "Solid Timber":
                     switch (SC){
