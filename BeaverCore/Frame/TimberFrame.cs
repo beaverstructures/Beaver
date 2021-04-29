@@ -377,10 +377,10 @@ namespace BeaverCore.Frame
 
     public class TimberFrameULSResult
     {
-        string[] Info;
-        List<double[]> UtilsY;
-        List<double[]> UtilsZ;
-        string SectionData;
+        public string[] Info { get; } 
+        public List<double[]> UtilsY { get; }
+        public List<double[]> UtilsZ { get; }
+        public string SectionData { get; }
 
         public TimberFrameULSResult() { }
 
