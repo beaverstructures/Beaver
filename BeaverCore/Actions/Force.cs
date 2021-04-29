@@ -11,6 +11,7 @@ namespace BeaverCore.Actions
     /// <summary>
     /// Class for individual Force
     /// </summary>
+    [Serializable]
     public class Force: Action
     {
         public double N=0;
@@ -22,6 +23,16 @@ namespace BeaverCore.Actions
         
 
         public Force() {
+            N = 0;
+            Vy = 0;
+            Vz = 0;
+            Mt = 0;
+            My = 0;
+            Mz = 0;
+            type = "QX";
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = "";
         }
 
         public Force(double n,  double vy, double vz, double mt, double my, double mz, string type)
@@ -33,10 +44,12 @@ namespace BeaverCore.Actions
             My = my;
             Mz = mz;
             this.type = type;
-            duration = new TypeInfo(type).duration;
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = type;
         }
 
-        private Force(List<double> InternalForces)
+        public Force(List<double> InternalForces, string type)
         {
             N =InternalForces[0];
             Vy =InternalForces[1];
@@ -44,6 +57,10 @@ namespace BeaverCore.Actions
             Mt = InternalForces[3];
             My = InternalForces[4];
             Mz = InternalForces[5];
+            this.type = type;
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = type;
         }
 
         public List<double> ToList()
@@ -63,34 +80,42 @@ namespace BeaverCore.Actions
         {
             List<double> f1List = f1.ToList();
             List<double> f2List = f2.ToList();
-            List<double> result = new List<double>();
+            List<double> resultvalues = new List<double>();
             foreach (var f in f1List.Zip(f2List, Tuple.Create))
             {
-                result.Add(f.Item1 + f.Item2);
+                resultvalues.Add(f.Item1 + f.Item2);
             }
-            return new Force(result);
+            Force result = new Force(resultvalues, f1.type);
+            if (f1.combination == "") result.combination = f2.combination;
+            else if (f2.combination == "") result.combination = f1.combination;
+            else result.combination = f1.combination + "+" + f2.combination;
+            return result;
         }
 
         public static Force operator *(double s, Force f1)
         {
-            List<double> result = new List<double>();
+            List<double> resultvalues = new List<double>();
             List<double> f1List = f1.ToList();
             foreach (var f in f1List)
             {
-                result.Add(s * f);
+                resultvalues.Add(s * f);
             }
-            return new Force(result);
+            Force result = new Force(resultvalues, f1.type);
+            result.combination = Math.Round(s, 2).ToString() + f1.combination;
+            return result;
         }
 
         public static Force operator *(Force f1, double s)
         {
-            List<double> result = new List<double>();
+            List<double> resultvalues = new List<double>();
             List<double> f1List = f1.ToList();
             foreach (var f in f1List)
             {
-                result.Add(s * f);
+                resultvalues.Add(s * f);
             }
-            return new Force(result);
+            Force result = new Force(resultvalues, f1.type);
+            result.combination = Math.Round(s, 2).ToString() + f1.combination;
+            return result;
         }
 
         /// <summary>
