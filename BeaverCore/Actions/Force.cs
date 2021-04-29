@@ -24,7 +24,7 @@ namespace BeaverCore.Actions
         public Force() {
         }
 
-        public Force(double n, double my, double mz, double vy, double vz, double mt, string type)
+        public Force(double n,  double vy, double vz, double mt, double my, double mz, string type)
         {
             N = n;
             Vy = vy;

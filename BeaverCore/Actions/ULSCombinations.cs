@@ -17,7 +17,7 @@ namespace BeaverCore.Actions
     /// </summary>
     public class ULSCombinations
     {
-        public Force[] Sd;                          // List of design forces
+        public Force[] DesignForces;                          // List of design forces
         public int SC;                              // Service Class 
         public ULSCombinations() { }
 
@@ -48,7 +48,7 @@ namespace BeaverCore.Actions
                                     "S",
                                     "W"};
 
-            Force Gravity = new Force();
+            Force Gravity = new Force(new List<double>() { 0, 0, 0, 0, 0, 0 }, "P");
 
             // Persistent Combination
             // ΣγgP + γq(Qk1 + Σ(φ₀Qkᵢ))
@@ -59,19 +59,16 @@ namespace BeaverCore.Actions
                 // sums all gravity loads
                 Gravity += force;
             }
-            Force GravityForce = 1.35 * Gravity;
-            GravityForce.combination = "ΣγgP";
-            GravityForce.type = "P";
+            Gravity.combination = "G";
+            Gravity.type = "P";
+            Gravity.duration = "perm";
 
-            List<Force> forces = new List<Force>() { GravityForce };
+            List<Force> forces = new List<Force>() { Gravity, 1.35 * Gravity };
 
-            List<Force> Gravities = new List<Force>() { Gravity, 1.35 * Gravity };
-
-            forces.Add(1.35 * Gravity);
 
             List<List<Force>> SortedForces = new List<List<Force>>()
             {
-                Gravities
+                forces.DeepClone()
             };
 
 
@@ -80,13 +77,6 @@ namespace BeaverCore.Actions
             SortedForces.Add(LoadcaseForce.Where(x => x.type.Contains("S")).ToList());
             SortedForces.Add(LoadcaseForce.Where(x => x.type.Contains("W")).ToList());
 
-            for (int i = 1; i < 4; i++)
-            {
-                for (int j = 0; j < SortedForces[i].Count; j++)
-                {
-                    SortedForces[i][j] *= 1.5;
-                }
-            }
             // generates null force for the cartesian product
             // (all possible combinations between values)
             SortedForces[1].Insert(0, new Force());
@@ -107,25 +97,27 @@ namespace BeaverCore.Actions
                     var cartesianproduct = Utils.CartesianProduct(new List<Force> { new Force() });
 
                     // Creates all possible combinations between LIVE LOADS: [Qa , Qh , Qa + Qh]
-                    List<Force> ImposedForces = SortedForces.ElementAt(1);
+                    List<Force> ImposedForces = new List<Force>(SortedForces.ElementAt(1)).DeepClone();
                     ImposedForces.RemoveAt(0); //removes null case
                     if (primaryload == 1)
                     {
-                        ImposedForces.RemoveAt(i); //removes primary case if live load
+                        ImposedForces.RemoveAt(i - 1); //removes primary case if live load
                     }
                     List<List<Force>> SecondaryImposedCombinations = Enumerable.Range(1, (1 << ImposedForces.Count) - 1).Select(index => ImposedForces.Where((item, idx) => ((1 << idx) & index) != 0).ToList()).ToList();
                     List<Force> SecondaryImposedForces = new List<Force>();
                     foreach (List<Force> combo in SecondaryImposedCombinations)
                     {
+                        bool active = true;
                         Force sum = new Force();
-                        foreach (Force load in combo)
+                        foreach (var load in combo)
                         {
-                            sum += load * load.typeinfo.phi0;
-                            sum.type = "QX";
+                            if (load.typeinfo.phi0 == 0) active = false;
+                            else sum += load * (1.5*load.typeinfo.phi0);
+
                             // $$$ Accepting suggestions on how to improve this
                             // QX is set so that the phi0 is not accounted twice
                         }
-                        SecondaryImposedForces.Add(sum);
+                        if (active) SecondaryImposedForces.Add(sum);
                     }
                     SecondaryImposedForces.Insert(0, new Force());
 
@@ -144,10 +136,10 @@ namespace BeaverCore.Actions
                     }
 
 
-                    
-                    Force SecondaryForce = new Force();
+
                     foreach (var product in cartesianproduct)
                     {
+                        Force SecondaryForce = new Force();
                         // Sum forces inside cartesian products
                         foreach (Force force in product)
                         {
@@ -157,30 +149,23 @@ namespace BeaverCore.Actions
                             }
                             else
                             {
-                                SecondaryForce += force.typeinfo.phi0 * force;
+                                SecondaryForce += (1.5 * force.typeinfo.phi0) * force;
                             }
-                            
+
                         }
                         //Sum fabourable and unfabourable combinations (EC0 Table A1.2)
-                        Force FavourableForce = Gravity + SecondaryForce;
-                        FavourableForce.combination = "G + 1.5Σ(φᵢ₀Qᵢ)";
+                        Force FavourableForce = Gravity + 1.5 * PrimaryForce + SecondaryForce;
                         FavourableForce.type = PrimaryForce.type;
-                        Force UnfavourableForce = 1.35 * Gravity + SecondaryForce;
-                        UnfavourableForce.combination = "1.35G + 1.5Σ(φᵢ₀Qᵢ)";
+                        FavourableForce.duration = PrimaryForce.duration;
+                        Force UnfavourableForce = 1.35 * Gravity + 1.5 * PrimaryForce + SecondaryForce;
                         UnfavourableForce.type = PrimaryForce.type;
+                        UnfavourableForce.duration = PrimaryForce.duration;
                         forces.Add(FavourableForce);
                         forces.Add(UnfavourableForce);
-                        FavourableForce += PrimaryForce;
-                        FavourableForce.combination = "G + 1.5 " + PrimaryForce.type + " + 1.5Σ(φᵢ₀Qᵢ)";
-                        UnfavourableForce += PrimaryForce;
-                        UnfavourableForce.combination = "1.35G + 1.5 " + PrimaryForce.type + " + 1.5Σ(φᵢ₀Qᵢ)";
-                        forces.Add(FavourableForce);
-                        forces.Add(UnfavourableForce);
-
                     }
                 }
             }
-            Sd = new List<Force>(forces).ToArray();
+            DesignForces = new List<Force>(forces).ToArray();
         }
 
         /// <summary>
@@ -270,9 +255,9 @@ namespace BeaverCore.Actions
                 List<List<Force>> Sp = new List<List<Force>>();
                 foreach (string t in types)
                 {
-                    if (this.Sd.Where(x => x.type.Contains(t)).ToList().Count > 0)
+                    if (this.DesignForces.Where(x => x.type.Contains(t)).ToList().Count > 0)
                     {
-                        Sp.Add(this.Sd.Where(x => x.type.Contains(t)).ToList());
+                        Sp.Add(this.DesignForces.Where(x => x.type.Contains(t)).ToList());
                     }
                 }
                 foreach (List<Force> Lf in Sp)
@@ -283,7 +268,7 @@ namespace BeaverCore.Actions
                         Sd.Add(f);
                     }
                 }
-                this.Sd = Sd.ToArray();
+                this.DesignForces = Sd.ToArray();
             }
             //
             //BY LOAD TYPE
@@ -294,9 +279,9 @@ namespace BeaverCore.Actions
                 List<List<Force>> Sp = new List<List<Force>>();
                 foreach (string t in types)
                 {
-                    if (this.Sd.Where(x => x.type.Contains(t)).ToList().Count > 0)
+                    if (this.DesignForces.Where(x => x.type.Contains(t)).ToList().Count > 0)
                     {
-                        Sp.Add(this.Sd.Where(x => x.type.Contains(t)).ToList());
+                        Sp.Add(this.DesignForces.Where(x => x.type.Contains(t)).ToList());
                     }
                 }
                 foreach (List<Force> Lf in Sp)
@@ -307,22 +292,20 @@ namespace BeaverCore.Actions
                         Sd.Add(f);
                     }
                 }
-                this.Sd = Sd.ToArray();
+                this.DesignForces = Sd.ToArray();
             }
             //
             //TOTAL
             //
             if (type == 2)
             {
-                Sd = CriticalForces(new List<Force>(this.Sd));
-                this.Sd = Sd.ToArray();
+                Sd = CriticalForces(new List<Force>(this.DesignForces));
+                this.DesignForces = Sd.ToArray();
             }
         }
 
     }
 }
 
-    }
-}
 
 

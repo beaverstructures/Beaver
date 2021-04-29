@@ -32,7 +32,7 @@ namespace BeaverCore.Materials
 
         public Material() { }
 
-        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _Gmean, double _G05)
+        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _Gmean, double _G05, double _ym)
         {
             name = _name;
             type = _type;
@@ -46,6 +46,7 @@ namespace BeaverCore.Materials
             E05 = _E05;
             Gmean = _Gmean;
             G05 = _G05;
+            Ym = _ym;
         }
         public Material(string _type)
         {

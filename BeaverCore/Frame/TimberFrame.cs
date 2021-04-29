@@ -84,6 +84,9 @@ namespace BeaverCore.Frame
             this.lz = lz;
             this.kflam = kflam;
             this.lspan = lspan;
+            fin_deflection_limit = new double[] { lspan / 300, lspan / 150 };
+            inst_deflection_limit = new double[] { lspan / 350, lspan / 175 };
+            netfin_deflection_limit = new double[] { lspan / 250, lspan / 125 };
             span_type = SpanType.Span;
         }
 
@@ -99,6 +102,9 @@ namespace BeaverCore.Frame
             this.lz = lz;
             this.kflam = kflam;
             this.lspan = lspan;
+            fin_deflection_limit = new double[] { lspan / 300, lspan / 150 };
+            inst_deflection_limit = new double[] { lspan / 350, lspan / 175 };
+            netfin_deflection_limit = new double[] { lspan / 250, lspan / 125 };
             this.span_type = span_type;
         }
 
@@ -147,7 +153,7 @@ namespace BeaverCore.Frame
             double ry = CS.ry;
             double rz = CS.rz;
 
-            double Km = 1;
+            double Km = 0.7;
             double Ym = CS.Mat.Ym;
             double fc0k = CS.Mat.fc0k;
             double ft0k = CS.Mat.ft0k;
@@ -155,7 +161,7 @@ namespace BeaverCore.Frame
             double Fvk = CS.Mat.fvk;
             double E05 = CS.Mat.E05;
             double G05 = CS.Mat.G05;
-            double Bc = 0.2;
+            double Bc = 0.1;
 
             //Define EC5 Section 6.1.7 Shear Coefficients
             double kcrit = 0.67;
@@ -167,8 +173,8 @@ namespace BeaverCore.Frame
             if (CS is CroSec_Circ) { kshape = 1.2; };
 
             //Define EC5 Section 6.2.3 & 6.3.2 Coefficients
-            double lefy = ly * kflam * 100;
-            double lefz = lz * kflam * 100;
+            double lefy = ly * kflam;
+            double lefz = lz * kflam;
             double sigMcrity = CS.GetsigMcrit(lefy, E05, G05);
             double sigMcritz = CS.GetsigMcrit(lefz, E05, G05);
             double lammy = Math.Sqrt(fmk / sigMcrity);
@@ -177,8 +183,8 @@ namespace BeaverCore.Frame
             double kcritz = Getkcrit(lammz);
 
             //Define EC5 Section 6.3.2 Coefficients
-            double lamy = (100 * ly) / ry;
-            double lamz = (100 * lz) / rz;
+            double lamy = (ly) / ry;
+            double lamz = (lz) / rz;
             double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
             double lamyrel = lamy * lampi;
             double lamzrel = lamz * lampi;
@@ -222,8 +228,8 @@ namespace BeaverCore.Frame
                 double sigN = Nd / A;
                 double Sigvy = (3 / 2) * (Vy / (kcrit * CS.A));
                 double Sigvz = (3 / 2) * (Vz / (kcrit * CS.A));
-                double sigMy = 100 * Math.Abs(Myd) / Wy;
-                double sigMz = 100 * Math.Abs(Mzd) / Wz;
+                double sigMy = Math.Abs(Myd) / Wy;
+                double sigMz = Math.Abs(Mzd) / Wz;
                 double SigMt = Math.Abs(Mt) / CS.It;
 
                 //Resistances
@@ -234,61 +240,62 @@ namespace BeaverCore.Frame
                 double fmd = Kmod * fmk / Ym;
 
                 //0 EC5 Section 6.1.2 Tension parallel to the grain
-                Util0 = sigN / fc0d;
+                if (sigN < 0) Util0 = 0;
+                else Util0 = Math.Abs(sigN) / fc0d;
 
                 //1 EC5 Section 6.1.4 Compression parallel to the grain
-                Util1 = sigN / fc0d;
+                Util1 = Math.Abs(sigN) / fc0d;
 
                 //2 EC5 Section 6.1.6 Biaxial Bending
-                UtilY2 = sigN / fc0d + (sigMy / fmd) + Km * (sigMz / fmd);
-                UtilZ2 = sigN / fc0d + Km * (sigMy / fmd) + (sigMz / fmd);
+                UtilY2 = Math.Abs(sigN) / fc0d + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                UtilZ2 = Math.Abs(sigN) / fc0d + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
 
                 //3 EC5 Section 6.1.7 Shear
-                UtilY3 = Sigvy / fvd;
-                UtilZ3 = Sigvz / fvd;
+                UtilY3 = Math.Abs(Sigvy) / fvd;
+                UtilZ3 = Math.Abs(Sigvz) / fvd;
 
                 //4 EC5 Section 6.1.8 Torsion
-                Util4 = SigMt / (kshape / fvd);
+                Util4 = Math.Abs(SigMt) / (kshape / fvd);
 
                 //5 EC5 Section 6.2.3 Combined Tension and Bending
                 if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                 {
-                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / ft0d) + Km * (sigMz / fmd);
-                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / ft0d) + Km * (sigMy / fmd);
+                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / ft0d) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / ft0d) + Km * Math.Abs(sigMy / fmd);
                 }
                 else if (Math.Max(lammy, lammz) >= 1.4)
                 {
-                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (ft0d)) + Km * (sigMz / fmd);
-                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (ft0d)) + Km * (sigMy / fmd);
+                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (ft0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (ft0d)) + Km * Math.Abs(sigMy / fmd);
                 }
                 else
                 {
-                    UtilY5 = (sigN / ft0d) + (sigMy / fmd) + Km * (sigMz / fmd);
-                    UtilZ5 = (sigN / ft0d) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    UtilY5 = Math.Abs(sigN / ft0d) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ5 = Math.Abs(sigN / ft0d) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
                 //6 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
                 if (lamyrel <= 0.3 && lamzrel <= 0.3)
                 {
-                    UtilY6 = Math.Pow(sigN / fc0d, 2) + (sigMy / fmd) + Km * (sigMz / fmd);
-                    UtilZ6 = Math.Pow(sigN / fc0d, 2) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    UtilY6 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ6 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
                 else
                 {
-                    UtilY6 = (sigN / (kyc * fc0d)) + (sigMy / fmd) + Km * (sigMz / fmd);
-                    UtilZ6 = (sigN / (kzc * fc0d)) + Km * (sigMy / fmd) + (sigMz / fmd);
+                    UtilY6 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ6 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
                 //7 EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression
                 if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                 {
-                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd); ;
+                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
                 }
                 if (Math.Max(lammy, lammz) >= 1.4)
                 {
-                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + (sigN / (kzc * fc0d)) + Km * (sigMz / fmd);
-                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + (sigN / (kyc * fc0d)) + Km * (sigMy / fmd);
+                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
                 }
                 else
                 {
@@ -343,16 +350,17 @@ namespace BeaverCore.Frame
         {
             double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
             List<double> disps_ratio = new List<double>();
-            foreach (var disp in SLSComb.CharacteristicDisplacements)
+            foreach (Displacement disp in SLSComb.CharacteristicDisplacements)
             {
-                disps_ratio.Add((disp.Absolute())/ deflection_limit);
+                double abs_displacement = disp.Absolute();
+                disps_ratio.Add(abs_displacement / deflection_limit);
             }
             return disps_ratio;
         }
 
         public List<double> NetFinDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            double deflection_limit = GetDisplacementLimit(netfin_deflection_limit);
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.CreepDisplacements)
             {
@@ -363,7 +371,7 @@ namespace BeaverCore.Frame
 
         public List<double> FinDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            double deflection_limit = GetDisplacementLimit(fin_deflection_limit);
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.CreepDisplacements)
             {
