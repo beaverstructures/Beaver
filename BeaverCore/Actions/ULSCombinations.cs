@@ -112,7 +112,7 @@ namespace BeaverCore.Actions
                         foreach (var load in combo)
                         {
                             if (load.typeinfo.phi0 == 0) active = false;
-                            else sum += load * load.typeinfo.phi0;
+                            else sum += load * (1.5*load.typeinfo.phi0);
 
                             // $$$ Accepting suggestions on how to improve this
                             // QX is set so that the phi0 is not accounted twice
