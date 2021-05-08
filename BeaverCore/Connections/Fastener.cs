@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BeaverCore.Geometry;
 
 namespace BeaverCore.Connections
 {
@@ -29,12 +30,20 @@ namespace BeaverCore.Connections
     public class FastenerForce
     {
         public double f = 0;
+        public Vector2D force_vector;
         public double alpha = 0;
 
         public FastenerForce(double f, double alpha)
         {
             this.f = f;
             this.alpha = alpha;
+        }
+
+        public FastenerForce(double f, double alpha,Vector2D force_vector)
+        {
+            this.f = f;
+            this.alpha = alpha;
+            this.force_vector = force_vector;
         }
     }
 }

@@ -52,6 +52,18 @@ namespace BeaverCore.Connections
             }
         }
 
+        public List<DictResults> MinShearResistance()
+        {
+            if (isMultiple)
+            {
+                return new List<DictResults>() { OverallShearResistance() };
+            }
+            else
+            {
+                return IndividualShearResistance();
+            }
+        }
+
         DictResults OverallShearResistance()
         {
             SingleFastenerCapacity capacity = fastener_capacities[0];
