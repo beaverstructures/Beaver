@@ -8,6 +8,8 @@ namespace BeaverCore.CrossSection
     {
         public double d;
 
+        public CroSec_Circ() { }
+
         public CroSec_Circ(double diam)
         {
             d = diam;

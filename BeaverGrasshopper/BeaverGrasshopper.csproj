@@ -8,8 +8,8 @@
     <ProjectGuid>{2F35E0AF-83A4-4FB3-8BBD-E4E915F8F6F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Beaver_v0._1</RootNamespace>
-    <AssemblyName>Beaver_v0.1</AssemblyName>
+    <RootNamespace>BeaverGrasshopper</RootNamespace>
+    <AssemblyName>BeaverGrasshopper</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -81,32 +81,38 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="C_Moment.cs" />
-    <Compile Include="C_Multiple.cs" />
-    <Compile Include="CombinationGEN.cs" />
-    <Compile Include="C_MultipleInclined.cs" />
+    <Compile Include="CoreWrappers\GH_CrossSection.cs" />
+    <Compile Include="CoreWrappers\GH_Material.cs" />
+    <Compile Include="CoreWrappers\GH_ShearConnection.cs" />
+    <Compile Include="CoreWrappers\GH_TimberFrame.cs" />
+    <Compile Include="CoreWrappers\GH_TimberFramePoint.cs" />
+    <Compile Include="Deprecated\C_Moment.cs" />
+    <Compile Include="Deprecated\C_Multiple.cs" />
+    <Compile Include="Deprecated\CombinationGEN.cs" />
+    <Compile Include="Deprecated\C_MultipleInclined.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SLSGEN.cs" />
-    <Compile Include="S_BendingNormal.cs" />
-    <Compile Include="S_BendingNormalTapp.cs" />
-    <Compile Include="S_BendingNormalCurved.cs" />
-    <Compile Include="S_Shear.cs" />
-    <Compile Include="C_BoltS2T.cs" />
-    <Compile Include="C_BoltT2T.cs" />
-    <Compile Include="C_InclinedScrew.cs" />
-    <Compile Include="C_NailT2T.cs" />
-    <Compile Include="S_PerpCompression.cs" />
-    <Compile Include="C_ScrewS2T.cs" />
-    <Compile Include="C_ScrewT2T.cs" />
-    <Compile Include="ReadFromCSV.cs" />
+    <Compile Include="Deprecated\SLSGEN.cs" />
+    <Compile Include="Deprecated\S_BendingNormal.cs" />
+    <Compile Include="Deprecated\S_BendingNormalTapp.cs" />
+    <Compile Include="Deprecated\S_BendingNormalCurved.cs" />
+    <Compile Include="Deprecated\S_Shear.cs" />
+    <Compile Include="Deprecated\C_BoltS2T.cs" />
+    <Compile Include="Deprecated\C_BoltT2T.cs" />
+    <Compile Include="Deprecated\C_InclinedScrew.cs" />
+    <Compile Include="Deprecated\C_NailT2T.cs" />
+    <Compile Include="Deprecated\S_PerpCompression.cs" />
+    <Compile Include="Deprecated\C_ScrewS2T.cs" />
+    <Compile Include="Deprecated\C_ScrewT2T.cs" />
+    <Compile Include="Deprecated\ReadFromCSV.cs" />
     <Compile Include="BeaverInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="C_BrittleFailure.cs" />
-    <Compile Include="S_Torsion.cs" />
+    <Compile Include="Deprecated\C_BrittleFailure.cs" />
+    <Compile Include="Deprecated\S_Torsion.cs" />
+    <Compile Include="Components\InteropComponents\KarambatoBeaver.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -120,64 +126,6 @@
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
-    <None Include="Resources %281%29\Beaver_Icone_Laranja.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\Beaver_Icone_Marrom.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\Beaver_Icone_Positivo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\1.1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\1.2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\2.1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\2.2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\2.3.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\2.4.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\2.6.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\2.7.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.3.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.4.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.5.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.6.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.7.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.8.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources %281%29\3.9.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\3.10.bmp" />
@@ -190,6 +138,11 @@
       <Project>{9b2c6917-9d8b-43a5-9027-5da19e7c4857}</Project>
       <Name>BeaverCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\ConnectionComponents\" />
+    <Folder Include="Components\FrameComponents\" />
+    <Folder Include="Components\PropertiesComponents\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

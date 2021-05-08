@@ -7,7 +7,7 @@ using System.Xml.Schema;
 
 namespace BeaverCore.Connections
 {
-    class ShearConnection
+    public class ShearConnection
     {
         public List<Point2D> fastener_coordinates;
         public List<Force> connection_force;
@@ -29,6 +29,10 @@ namespace BeaverCore.Connections
             connection_force = conn_force;
             ULScombinations = new ULSCombinations(conn_force, service_class);
             this.fastener = fastener;
+        }
+
+        public ShearConnection()
+        {
         }
 
         public MultipleShearFastenerCapacity ConnectionCapacity()

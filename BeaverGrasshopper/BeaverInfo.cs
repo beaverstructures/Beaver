@@ -42,7 +42,7 @@ namespace Beaver_v0._1
             get
             {
                 //Return a string identifying you or your company.
-                return "Márcio Sartorelli and João Pini";
+                return "Márcio Sartorelli, João Pini and Renan Prandini";
             }
         }
         public override string AuthorContact

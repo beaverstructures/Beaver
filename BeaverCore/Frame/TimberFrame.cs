@@ -33,6 +33,12 @@ namespace BeaverCore.Frame
         /// Geometric representation of the member axis.
         /// </summary>
         public Line FrameAxis;
+        public string id;
+
+        public TimberFrame()
+        {
+           
+        }
 
         public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints)
         {
