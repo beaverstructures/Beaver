@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
+    <!-- set GenerateProgramFile -> false to run project with static void Main, otherwise comment out  -->
+    <GenerateProgramFile>false</GenerateProgramFile>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

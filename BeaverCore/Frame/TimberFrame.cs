@@ -242,10 +242,11 @@ namespace BeaverCore.Frame
 
                 //0 EC5 Section 6.1.2 Tension parallel to the grain
                 if (sigN < 0) Util0 = 0;
-                else Util0 = Math.Abs(sigN) / fc0d;
+                else Util0 = Math.Abs(sigN) / ft0d;
 
                 //1 EC5 Section 6.1.4 Compression parallel to the grain
-                Util1 = Math.Abs(sigN) / fc0d;
+                if (sigN > 0) Util1 = 0;
+                else Util1 = Math.Abs(sigN) / fc0d;
 
                 //2 EC5 Section 6.1.6 Biaxial Bending
                 UtilY2 = Math.Abs(sigN) / fc0d + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
@@ -385,10 +386,10 @@ namespace BeaverCore.Frame
 
     public class TimberFrameULSResult
     {
-        string[] Info;
-        List<double[]> UtilsY;
-        List<double[]> UtilsZ;
-        string SectionData;
+        public string[] Info { get; } 
+        public List<double[]> UtilsY { get; }
+        public List<double[]> UtilsZ { get; }
+        public string SectionData { get; }
 
         public TimberFrameULSResult() { }
 
