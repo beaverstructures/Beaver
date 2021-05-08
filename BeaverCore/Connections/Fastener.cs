@@ -25,4 +25,16 @@ namespace BeaverCore.Connections
             smooth = Smooth;
         }
     }
+
+    public class FastenerForce
+    {
+        public double f = 0;
+        public double alpha = 0;
+
+        public FastenerForce(double f, double alpha)
+        {
+            this.f = f;
+            this.alpha = alpha;
+        }
+    }
 }
