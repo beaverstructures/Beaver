@@ -255,8 +255,8 @@ namespace BeaverCore.Frame
                 else Util1 = Math.Abs(sigN) / fc0d;
 
                 //2 EC5 Section 6.1.6 Biaxial Bending
-                UtilY2 = Math.Abs(sigN) / fc0d + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                UtilZ2 = Math.Abs(sigN) / fc0d + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                UtilY2 = Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                UtilZ2 = Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
 
                 //3 EC5 Section 6.1.7 Shear
                 UtilY3 = Math.Abs(Sigvy) / fvd;
