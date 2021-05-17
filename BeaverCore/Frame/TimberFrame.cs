@@ -279,8 +279,8 @@ namespace BeaverCore.Frame
                 if (sigN > 0) UtilY6 = UtilZ6 = 0;
                 else
                 {
-                    UtilY5 = Math.Pow((Math.Abs(sigN) / fc0d),2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ5 = Math.Pow((Math.Abs(sigN) / fc0d),2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    UtilY6 = Math.Pow((Math.Abs(sigN) / fc0d),2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ6 = Math.Pow((Math.Abs(sigN) / fc0d),2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
                 //6 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
