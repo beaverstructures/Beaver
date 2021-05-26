@@ -81,7 +81,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\FrameComponents\TimberFramePointComp.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
+    <Compile Include="CoreWrappers\GH_Force.cs" />
     <Compile Include="CoreWrappers\GH_Material.cs" />
     <Compile Include="CoreWrappers\GH_ShearConnection.cs" />
     <Compile Include="CoreWrappers\GH_TimberFrame.cs" />
@@ -140,8 +142,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components\ConnectionComponents\" />
-    <Folder Include="Components\FrameComponents\" />
     <Folder Include="Components\PropertiesComponents\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
