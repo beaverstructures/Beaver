@@ -221,6 +221,8 @@ namespace BeaverCore.Frame
             double UtilZ6;
             double UtilY7;
             double UtilZ7;
+            double UtilY8;
+            double UtilZ8;
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
             foreach (Force f in ULSComb.DesignForces)
@@ -255,8 +257,8 @@ namespace BeaverCore.Frame
                 else Util1 = Math.Abs(sigN) / fc0d;
 
                 //2 EC5 Section 6.1.6 Biaxial Bending
-                UtilY2 = Math.Abs(sigN) / fc0d + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                UtilZ2 = Math.Abs(sigN) / fc0d + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                UtilY2 = Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                UtilZ2 = Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
 
                 //3 EC5 Section 6.1.7 Shear
                 UtilY3 = Math.Abs(Sigvy) / fvd;
@@ -265,54 +267,53 @@ namespace BeaverCore.Frame
                 //4 EC5 Section 6.1.8 Torsion
                 Util4 = Math.Abs(SigMt) / (kshape / fvd);
 
-                //5 EC5 Section 6.2.3 Combined Tension and Bending
-                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
-                {
-                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / ft0d) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / ft0d) + Km * Math.Abs(sigMy / fmd);
-                }
-                else if (Math.Max(lammy, lammz) >= 1.4)
-                {
-                    UtilY5 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (ft0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ5 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (ft0d)) + Km * Math.Abs(sigMy / fmd);
-                }
+                //5 EC5 Section 6.2.3 Combined Bending and Axial Tension
+                if (sigN < 0) UtilY5 = UtilZ5 = 0;
                 else
                 {
-                    UtilY5 = Math.Abs(sigN / ft0d) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ5 = Math.Abs(sigN / ft0d) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    UtilY5 = sigN/ft0d + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ5 = sigN/ft0d + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                }
+
+                // 6 EC5 Section 6.2.4 Combined Bending and Axial Compression
+                if (sigN > 0) UtilY6 = UtilZ6 = 0;
+                else
+                {
+                    UtilY6 = Math.Pow((Math.Abs(sigN) / fc0d),2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ6 = Math.Pow((Math.Abs(sigN) / fc0d),2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
                 //6 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
                 if (lamyrel <= 0.3 && lamzrel <= 0.3)
                 {
-                    UtilY6 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ6 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ7 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
                 else
                 {
-                    UtilY6 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ6 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    UtilY7 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ7 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
                 //7 EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression
                 if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                 {
-                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
+                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
                 }
                 if (Math.Max(lammy, lammz) >= 1.4)
                 {
-                    UtilY7 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ7 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
+                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
                 }
                 else
                 {
-                    UtilY7 = 0;
-                    UtilZ7 = 0;
+                    UtilY8 = 0;
+                    UtilZ8 = 0;
                 }
 
-                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7 };
-                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7 };
+                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8 };
+                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8 };
                 AllUtilsY.Add(UtilsY.ToArray());
                 AllUtilsZ.Add(UtilsZ.ToArray());
 
