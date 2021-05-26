@@ -110,6 +110,7 @@ namespace BeaverCore.Connections
                     double fastener_force = fastener_force_vector.Magnitude();
                     //TODO: Add ConnectionProperties class to simplify constructor
                     if (timber_to_timber) single_capacities.Add(new T2TCapacity(fastener, 10, 10, alpha, alpha, "timber", "steel", true, 500, 500, 0.1, "timber", 0.1, alpha));
+
                     else single_capacities.Add(new T2SCapacity(fastener,false,500,alpha,alpha,new Material(),10,2,0.1,2,SteelPosition.SteelIn));
 
                     forces.Add(new FastenerForce(fastener_force_vector.Magnitude(), alpha, fastener_force_vector));
