@@ -34,18 +34,21 @@ namespace BeaverCore.Connections
         public double f = 0;
         public Vector2D force_vector;
         public double alpha = 0;
+        public string duration;
 
-        public FastenerForce(double f, double alpha)
+        public FastenerForce(double f, double alpha,string duration)
         {
             this.f = f;
             this.alpha = alpha;
+            this.duration = duration;
         }
 
-        public FastenerForce(double f, double alpha,Vector2D force_vector)
+        public FastenerForce(double f, double alpha,Vector2D force_vector,string duration)
         {
             this.f = f;
             this.alpha = alpha;
             this.force_vector = force_vector;
+            this.duration = duration;
         }
     }
 }

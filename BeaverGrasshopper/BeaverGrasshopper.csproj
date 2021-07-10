@@ -88,7 +88,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\FrameComponents\TimberFramePointComp.cs" />
+    <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
+    <Compile Include="Components\FrameComponents\Comp_Force.cs" />
+    <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
+    <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
+    <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
     <Compile Include="CoreWrappers\GH_Fastener.cs" />
@@ -143,9 +147,7 @@
       <Name>BeaverCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\PropertiesComponents\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

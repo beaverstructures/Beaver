@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Schema;
+using BeaverCore.Misc;
 
 namespace BeaverCore.Connections
 {
@@ -24,10 +25,17 @@ namespace BeaverCore.Connections
         ConnectionType connection_type;
         ShearSpacing spacing;
         ULSCombinations ULScombinations;
+        int service_class;
 
         Fastener fastener;
 
-
+        public ShearConnection(List<Point2D> fastener_coordinates, Fastener fastener, int service_class, ConnectionType connection_type = ConnectionType.TimbertoTimber)
+        {
+            this.fastener_coordinates = fastener_coordinates;
+            this.fastener = fastener;
+            this.connection_type = connection_type;
+            DefineCapacities();
+        }
         public ShearConnection(List<Point2D> fastener_coordinates, List<Force> conn_force, Fastener fastener, int service_class, ConnectionType connection_type = ConnectionType.TimbertoTimber)
         {
             this.fastener_coordinates = fastener_coordinates;
@@ -113,7 +121,7 @@ namespace BeaverCore.Connections
 
                     else single_capacities.Add(new T2SCapacity(fastener,false,500,alpha,alpha,new Material(),10,2,0.1,2,SteelPosition.SteelIn));
 
-                    forces.Add(new FastenerForce(fastener_force_vector.Magnitude(), alpha, fastener_force_vector));
+                    forces.Add(new FastenerForce(fastener_force_vector.Magnitude(), alpha, fastener_force_vector,force.duration));
                 }
                 MultipleShearFastenerCapacity connection_capacity = new MultipleShearFastenerCapacity(single_capacities, spacing);
                 fastener_capacities.Add(connection_capacity);
@@ -137,7 +145,8 @@ namespace BeaverCore.Connections
                     Dictionary<string,double> capacity = capacities.ShearResistance()[j];
                     double min_capacity = capacity.Values.Min();
                     string min_failure_mode = capacity.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
-                    double fastener_utilization = force.f / min_capacity;
+                    double kmod = Utils.KMOD(service_class, force.duration);
+                    double fastener_utilization = force.f / (kmod*min_capacity/1.3);
                     load_case_utilization.Add(fastener_utilization);
                     load_case_failure_mode.Add(min_failure_mode);
                 }

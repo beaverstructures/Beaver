@@ -27,14 +27,8 @@ namespace BeaverGrasshopper
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddParameter(new Param_CroSec(), "Cross Section", "CroSec", "Frame Cross Section", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Normal Force", "N", "Normal force at point", GH_ParamAccess.list, new List<double>() { 0 });
-            pManager.AddNumberParameter("Shear Force Y", "Vy", "Shear force at point in y direction", GH_ParamAccess.list, new List<double>() { 0 });
-            pManager.AddNumberParameter("Shear Force Z", "Vz", "Shear force at point in z direction", GH_ParamAccess.list, new List<double>() { 0 });
-            pManager.AddNumberParameter("Torsional Moment", "Mt", "Normal force at point", GH_ParamAccess.list, new List<double>() { 0 });
-            pManager.AddNumberParameter("Bending Moment Y", "My", "Normal force at point", GH_ParamAccess.list, new List<double>() { 0 });
-            pManager.AddNumberParameter("Bending Moment Z", "Mz", "Normal force at point", GH_ParamAccess.list, new List<double>() { 0 });
-            pManager.AddVectorParameter("Displacement Vector", "Disp.", "Vector of point displcaement", GH_ParamAccess.list, Vector3d.Zero);
-            pManager.AddTextParameter("Force Type", "Ftype", "Action type according to Eurocode 0 Annex A.1", GH_ParamAccess.list, "P");
+            pManager.AddParameter(new Param_Force(), "Forces", "Forces", "Frame nodal forces", GH_ParamAccess.list);
+            pManager.AddParameter(new Param_Displacement(), "Displacement Vector", "Disp.", "Vector of point displcaement", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Lenght Y", "bL_y", "Normal force at point", GH_ParamAccess.item, 3);
             pManager.AddNumberParameter("Buckling Lenght Z", "bL_s", "Normal force at point", GH_ParamAccess.item, 3);
             pManager.AddNumberParameter("Span lenght", "sL", "Normal force at point", GH_ParamAccess.item, 3);
@@ -60,14 +54,8 @@ namespace BeaverGrasshopper
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             GH_CroSec ghcrosec = new GH_CroSec();
-            List<double> N = new List<double>();
-            List<double> Vy = new List<double>();
-            List<double> Vz = new List<double>();
-            List<double> Mx = new List<double>();
-            List<double> My = new List<double>();
-            List<double> Mz = new List<double>();
-            List<Vector3d> displacement = new List<Vector3d>();
-            List<string> force_type = new List<string>();
+            List<GH_Force> ghforce = new List<GH_Force>();
+            List<GH_Displacement> ghdisplacement = new List<GH_Displacement>();
             double bl_y = 0;
             double bl_z = 0;
             double sl = 0;
@@ -76,21 +64,15 @@ namespace BeaverGrasshopper
             double span_range = 0;
             int service_class = 0;
             DA.GetData(0, ref ghcrosec);
-            DA.GetDataList(1, N);
-            DA.GetDataList(2, Vy);
-            DA.GetDataList(3, Vz);
-            DA.GetDataList(4, Mx);
-            DA.GetDataList(5, My);
-            DA.GetDataList(6, Mz);
-            DA.GetDataList(7, displacement);
-            DA.GetDataList(8, force_type);
-            DA.GetData(9, ref bl_y);
-            DA.GetData(10, ref bl_z);
-            DA.GetData(11, ref sl);
-            DA.GetData(12, ref pre_camber);
-            DA.GetData(13, ref span_Type);
-            DA.GetData(14, ref span_range);
-            DA.GetData(15, ref service_class);
+            DA.GetDataList(1, ghforce);
+            DA.GetDataList(2, ghdisplacement);
+            DA.GetData(3, ref bl_y);
+            DA.GetData(4, ref bl_z);
+            DA.GetData(5, ref sl);
+            DA.GetData(6, ref pre_camber);
+            DA.GetData(7, ref span_Type);
+            DA.GetData(8, ref span_range);
+            DA.GetData(9, ref service_class);
             CroSec crosec = ghcrosec.Value;
             List<Force> forces = new List<Force>();
             List<Displacement> displacements = new List<Displacement>();
