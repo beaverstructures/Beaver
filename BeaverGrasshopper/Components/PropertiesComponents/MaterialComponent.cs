@@ -32,9 +32,9 @@ namespace BeaverGrasshopper.Components.Connections
             pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [kN/cm²]", GH_ParamAccess.list);
             pManager.AddNumberParameter("Mean modulus of elasticity parallel", "E0mean", "Mean modulus of elasticity parallel to grain [GPa]", GH_ParamAccess.list);
             pManager.AddNumberParameter("5% modulus of elasticity parallel", "E05", "5% modulus of elasticity parallel to grain [GPa]", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Mean modulus of elasticity perpendicular", "E90mean", "Mean modulus of elasticity perpendiculat to grain [GPa]", GH_ParamAccess.list);
             pManager.AddNumberParameter("Mean modulus of elasticity shear", "E0mean", "Mean modulus of elasticity shear to grain [GPa]", GH_ParamAccess.list);
-            pManager.AddNumberParameter("5% modulus of elasticity shear", "E05", "5% modulus of elasticity shear to grain [GPa]", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Material Coefficient", "γm", "Material Coefficient according to EC5, 2.4.1, Tab. 2.3", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Material Coefficient", "γm", "Material Coefficient. If no value is provided, Beaver will calculate it according to EC5, 2.4.1, Tab. 2.3.", GH_ParamAccess.list);
         }
 
         /// <summary>
