@@ -21,6 +21,7 @@ namespace BeaverCore.Materials
 
         public double E0mean;
         public double E05;
+        public double E90mean;
 
         public double Gmean;
         public double G05;
@@ -33,7 +34,7 @@ namespace BeaverCore.Materials
 
         public Material() { }
 
-        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _Gmean, double _G05, double _ym=0)
+        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _E90mean, double _Gmean, double _ym=0)
         {
             name = _name;
             type = _type;
@@ -45,9 +46,9 @@ namespace BeaverCore.Materials
             fvk = _fvk;
             E0mean = _E0mean;
             E05 = _E05;
+            E90mean = _E90mean;
             Gmean = _Gmean;
-            G05 = _G05;
-            Ym = _ym == null ? _ym : GetYm(type);
+            Ym = _ym == 0 ? _ym : GetYm(type);
             Bc = GetBc(type);
         }
         public Material(string _type)
@@ -169,6 +170,5 @@ namespace BeaverCore.Materials
                     throw new ArgumentException("Timber material type not found");
             }
         }
-
     }
 }
