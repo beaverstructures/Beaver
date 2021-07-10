@@ -168,7 +168,7 @@ namespace BeaverCore.Frame
             double Fvk = CS.Mat.fvk;
             double E05 = CS.Mat.E05;
             double G05 = CS.Mat.G05;
-            double Bc = 0.1;
+            double Bc = 0.1; //*** BC IS NOT IMPLEMENTED!
 
             //Define EC5 Section 6.1.7 Shear Coefficients
             double kcrit = 0.67;
@@ -195,8 +195,8 @@ namespace BeaverCore.Frame
             double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
             double lamyrel = lamy * lampi;
             double lamzrel = lamz * lampi;
-            double ky = 0.5 * (1 + Bc * (lamyrel - 0.3) + Math.Pow(lamyrel, 2));
-            double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2));
+            double ky = 0.5 * (1 + Bc * (lamyrel - 0.3) + Math.Pow(lamyrel, 2)); //Bc is not implemented!
+            double kz = 0.5 * (1 + Bc * (lamzrel - 0.3) + Math.Pow(lamzrel, 2)); //Bc is not implemented!
             double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
 

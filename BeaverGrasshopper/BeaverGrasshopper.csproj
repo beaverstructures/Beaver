@@ -81,6 +81,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\PropertiesComponents\MaterialComponent.cs" />
     <Compile Include="Components\FrameComponents\TimberFramePointComp.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Force.cs" />
@@ -142,7 +143,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components\PropertiesComponents\" />
+    <Folder Include="Components\Connections\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
