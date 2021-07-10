@@ -16,6 +16,7 @@ namespace BeaverCore.Connections
         TimbertoTimber,
         TimbertoSteel
     }
+    [Serializable]
     public class ShearConnection
     {
         public List<Point2D> fastener_coordinates;

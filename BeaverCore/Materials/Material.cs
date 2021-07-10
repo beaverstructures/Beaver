@@ -7,6 +7,7 @@ using System.IO;
 
 namespace BeaverCore.Materials
 {
+    [Serializable]
     public class Material
     {
         public string name;

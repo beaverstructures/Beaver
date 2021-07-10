@@ -3,12 +3,18 @@ using Grasshopper.Kernel.Parameters;
 using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
+using BeaverCore.CrossSection;
+using BeaverCore.Materials;
+using Grasshopper.Kernel.Special;
+using System.Drawing;
 
-namespace BeaverGrasshopper.Components.PropertiesComponents
+namespace BeaverGrasshopper
 {
-    public class Comp_CrossSection : GH_Component, IGH_VariableParameterComponent {
+    public class Comp_CrossSection : GH_Component, IGH_VariableParameterComponent
+    {
 
         string crosec_type = "rectangular";
+        bool updated = false;
 
         /// <summary>
         /// Initializes a new instance of the Comp_CrossSection class.
@@ -20,11 +26,40 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         {
         }
 
+        public override void AddedToDocument(GH_Document document)
+        {
+            if (Params.Input[0].SourceCount == 0)
+            {
+                // Perform Layout to get actual positionning of the component on the canevas
+                this.Attributes.ExpireLayout();
+                this.Attributes.PerformLayout();
+
+                //instantiate new value list
+                var vl = new Grasshopper.Kernel.Special.GH_ValueList();
+                vl.CreateAttributes();
+                vl.NickName = "Type";
+                //clear default contents
+                vl.ListItems.Clear();
+                vl.ListItems.Add(new GH_ValueListItem("Rectangular", "\"rectangular\"" ));
+                vl.ListItems.Add(new GH_ValueListItem("Circular", "\"circular\"" ));
+                document.AddObject(vl, false);
+                Params.Input[0].AddSource(vl);
+                //get the pivot of the "accent" param
+                PointF currPivot = Params.Input[0].Attributes.Pivot;
+                //set the pivot of the new object
+                vl.Attributes.Pivot = new PointF(currPivot.X - 120, currPivot.Y - 11);
+            }
+            base.AddedToDocument(document);
+        }
+
         /// <summary>
         /// Registers all the input parameters for this component.
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddTextParameter("Type", "type", "Cross Section type", GH_ParamAccess.item);
+            pManager.AddParameter(new Param_Material(), "Material", "Mat.", "Timber Material", GH_ParamAccess.item);
+            Params.Input[1].Optional = true;
         }
 
         /// <summary>
@@ -32,6 +67,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddParameter(new Param_CroSec(), "Cross Section", "CroSec.", "CrossSection", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -40,6 +76,36 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            GH_Material ghmaterial = new GH_Material();
+            DA.GetData(0, ref crosec_type);
+            DA.GetData(1, ref ghmaterial);
+            Material material = ghmaterial.Value;
+            if (crosec_type == "circular")
+            {
+                double d = 0;
+                DA.GetData(2, ref d);
+                CroSec cross_section = new CroSec_Circ(d, material);
+                DA.SetData(0, new GH_CroSec(cross_section));
+            }
+            else if (crosec_type == "rectangular")
+            {
+                double h = 0;
+                double b = 0;
+                DA.GetData(2, ref h);
+                DA.GetData(3, ref b);
+                CroSec cross_section = new CroSec_Rect(h, b, material);
+                DA.SetData(0, new GH_CroSec(cross_section));
+            }
+            else
+            {
+                throw new ArgumentException("Something wrong here");
+            }
+        }
+
+        protected override void AfterSolveInstance()
+        {
+            VariableParameterMaintenance();
+            Params.OnParametersChanged();
         }
 
         /// <summary>
@@ -51,7 +117,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.CrossSection;
             }
         }
 
@@ -67,16 +133,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         public bool CanInsertParameter(GH_ParameterSide side, int index)
         {
 
-            // Only insert parameters on input side. This can be changed if you like/need
-            // side== GH_ParameterSide.Output
-            if (side == GH_ParameterSide.Input)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool CanRemoveParameter(GH_ParameterSide side, int index)
@@ -88,19 +145,38 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         {
 
             // Has to return a parameter object!
-            Param_GenericObject param = new Param_GenericObject();
-
-            int count = 0;
-            for (int i = 0; i < Params.Input.Count; i++)
+            Param_Number param = new Param_Number();
+            string name = "";
+            string nickname = "";
+            string description = "";
+            if (crosec_type == "rectangular")
             {
-                count += i;
+                if (index == 2)
+                {
+                    name = "Height";
+                    nickname = "h";
+                    description = "Cross Section Height";
+                }
+                else if (index == 3)
+                {
+                    name = "Width";
+                    nickname = "b";
+                    description = "Cross Section Width";
+                }
             }
-
-            param.Name = "Data" + count.ToString();
-            param.NickName = param.Name;
-            param.Description = "A Data input";
+            else if (crosec_type == "circular")
+            {
+                name = "Diameter";
+                nickname = "d";
+                description = "Cross Section Diameter";
+            }
+            param.Name = name;
+            param.NickName = nickname;
+            param.Description = description;
             param.Optional = true;
             return param;
+
+
         }
 
 
@@ -122,6 +198,38 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
 
 
             //throw new NotImplementedException();
+
+            if (crosec_type == "rectangular")
+            {
+                if (Params.Input.Count == 4) return;
+                else
+                {
+                    if (Params.Input.Count > 2)
+                    {
+                        Params.Input[2].Sources.Clear();
+                        Params.UnregisterInputParameter(Params.Input[2]);
+                    }
+                    Params.RegisterInputParam(CreateParameter(GH_ParameterSide.Input, 2));
+                    Params.RegisterInputParam(CreateParameter(GH_ParameterSide.Input, 3));
+                }
+            }
+            else if (crosec_type == "circular")
+            {
+                if (Params.Input.Count == 3) return;
+                else
+                {
+                    if (Params.Input.Count > 2)
+                    {
+                        Params.Input[3].Sources.Clear();
+                        Params.UnregisterInputParameter(Params.Input[3]);
+                        Params.Input[2].Sources.Clear();
+                        Params.UnregisterInputParameter(Params.Input[2]);
+                    }
+                    Params.RegisterInputParam(CreateParameter(GH_ParameterSide.Input, 2));
+
+                }
+            }
+
 
 
         }

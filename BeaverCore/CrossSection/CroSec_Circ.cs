@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BeaverCore.Materials;
 
 namespace BeaverCore.CrossSection
 {
+    [Serializable]
     public class CroSec_Circ : CroSec
     {
         public double d;
 
         public CroSec_Circ() { }
 
-        public CroSec_Circ(double diam)
+        public CroSec_Circ(double diam, Material mat)
         {
             d = diam;
             A = Math.PI * Math.Pow(d, 2) / 4;
@@ -21,6 +23,7 @@ namespace BeaverCore.CrossSection
             Wz = Iz * (2 / d);
             ry = Math.Sqrt(Iy / A);
             rz = Math.Sqrt(Iz / A);
+            material = mat;
         }
 
         public override double GetsigMcrit(double lef, double E05, double G05)

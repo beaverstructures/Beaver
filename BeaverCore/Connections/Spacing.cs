@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Connections
 {
-
+    [Serializable]
     public class Spacing
     {
         public ShearSpacing shear_spacing;
@@ -171,6 +171,8 @@ namespace BeaverCore.Connections
         public double a2CG;
         public int npar;
         public int npep;
+        public double across;
+        public double e;
 
         /// <summary>
         /// Creates a generic AxialSpacing object based on spacing parameters.

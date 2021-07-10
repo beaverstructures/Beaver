@@ -7,6 +7,7 @@ using BeaverCore.Geometry;
 
 namespace BeaverCore.Connections
 {
+    [Serializable]
     public class Fastener
     {
         public double d;
@@ -15,6 +16,7 @@ namespace BeaverCore.Connections
         public double fu;
         public string type;
         public bool smooth;
+        public double ds;
 
         public Fastener() { }
 

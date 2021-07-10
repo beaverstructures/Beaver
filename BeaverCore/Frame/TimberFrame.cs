@@ -21,6 +21,7 @@ namespace BeaverCore.Frame
     /// <summary>
     /// a TimberFrame element for calculating stresses and displacements on a given element
     /// </summary>
+    [Serializable]
     public class TimberFrame
     {
         /// <summary>
@@ -52,6 +53,7 @@ namespace BeaverCore.Frame
         }
     }
 
+    [Serializable]
     public class TimberFramePoint
     {
         /// <summary>
@@ -85,8 +87,8 @@ namespace BeaverCore.Frame
             this.sc = sc;
             ULSComb = new ULSCombinations(forces, sc);
             CS = cs;
-            CS.Mat.Setkdef(sc);
-            SLSComb = new SLSCombinations(disp, sc, CS.Mat);
+            CS.material.Setkdef(sc);
+            SLSComb = new SLSCombinations(disp, sc, CS.material);
             this.ly = ly;
             this.lz = lz;
             this.kflam = kflam;
@@ -104,7 +106,7 @@ namespace BeaverCore.Frame
             this.sc = sc;
             ULSComb = new ULSCombinations(forces, sc);
             CS = cs;
-            SLSComb = new SLSCombinations(disp, sc, cs.Mat);
+            SLSComb = new SLSCombinations(disp, sc, cs.material);
             this.ly = ly;
             this.lz = lz;
             this.kflam = kflam;
@@ -161,14 +163,14 @@ namespace BeaverCore.Frame
             double rz = CS.rz;
 
             double Km = 0.7;
-            double Ym = CS.Mat.Ym;
-            double fc0k = CS.Mat.fc0k;
-            double ft0k = CS.Mat.ft0k;
-            double fmk = CS.Mat.fmk;
-            double Fvk = CS.Mat.fvk;
-            double E05 = CS.Mat.E05;
-            double G05 = CS.Mat.G05;
-            double Bc = CS.Mat.Bc;
+            double Ym = CS.material.Ym;
+            double fc0k = CS.material.fc0k;
+            double ft0k = CS.material.ft0k;
+            double fmk = CS.material.fmk;
+            double Fvk = CS.material.fvk;
+            double E05 = CS.material.E05;
+            double G05 = CS.material.G05;
+            double Bc = CS.material.Bc;
 
             //Define EC5 Section 6.1.7 Shear Coefficients
             double kcrit = 0.67;
