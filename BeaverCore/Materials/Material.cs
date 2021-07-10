@@ -29,10 +29,11 @@ namespace BeaverCore.Materials
         public double Ym;
 
         public double kdef;
+        public double Bc;
 
         public Material() { }
 
-        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _Gmean, double _G05, double _ym)
+        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _Gmean, double _G05, double _ym=0)
         {
             name = _name;
             type = _type;
@@ -46,7 +47,8 @@ namespace BeaverCore.Materials
             E05 = _E05;
             Gmean = _Gmean;
             G05 = _G05;
-            Ym = _ym;
+            Ym = _ym == null ? _ym : GetYm(type);
+            Bc = GetBc(type);
         }
         public Material(string _type)
         {
@@ -71,6 +73,7 @@ namespace BeaverCore.Materials
                     G05 = Double.Parse(values[10]);
                     Ym = Double.Parse(values[12]);
                     name = values[13];
+                    Bc = GetBc(type);
 
                     stop = true;
                 }
@@ -93,26 +96,26 @@ namespace BeaverCore.Materials
                     var values = line.Split(',');
                     names.Add(values[0]); }
                 line = reader.ReadLine();
-                    if (line == "END") { stop = true; }
+                if (line == "END") { stop = true; }
 
-                }
+            }
             return names;
         }
 
         public void Setkdef(int SC)
         {
             // Eurocode 5 Table 3.2
-            switch (type) 
+            switch (type)
             {
                 case "Solid Timber":
-                    switch (SC){
+                    switch (SC) {
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
                         case 3: kdef = 2.00; break;
                     }
                     break;
                 case "Glulam":
-                    switch (SC){
+                    switch (SC) {
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
                         case 3: kdef = 2.00; break;
@@ -126,7 +129,46 @@ namespace BeaverCore.Materials
                         case 3: kdef = 2.00; break;
                     }
                     break;
+                default:
+                    throw new ArgumentException("Timber material type not found");
             }
         }
+
+        private double GetBc(string type)
+        {
+            // Eurocode 5, Section 6.3.2.
+            switch (type)
+            {
+                case "Solid Timber":
+                    return 0.2;
+                case "Glulam":
+                    return 0.1;
+                case "LVL":
+                    return 0.1;
+                default:
+                    throw new ArgumentException("Timber material type not found");
+            }
+        }
+
+        private double GetYm(string type)
+        {
+            // EC5, 2.4.1, Tab. 2.3.
+            switch (type)
+            {
+                case "Solid Timber":
+                    return 1.3;
+                case "Glulam":
+                    return 1.25;
+                case "LVL":
+                    return 1.2;
+                case "Plywood":
+                    return 1.2;
+                case "OSB":
+                    return 1.2;
+                default:
+                    throw new ArgumentException("Timber material type not found");
+            }
+        }
+
     }
 }

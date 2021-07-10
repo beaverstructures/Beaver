@@ -28,11 +28,11 @@ namespace BeaverCore.Connections
 
         public void GetFvk()
         {
-            if (sheartype ==1) capacities = FvkSingleShear();
-            else if (sheartype==2) capacities = FvkDoubleShear();
+            if (sheartype == 1) capacities = FvkSingleShear();
+            else if (sheartype == 2) capacities = FvkDoubleShear();
         }
 
-        public abstract Dictionary<string,double> FvkSingleShear();
+        public abstract Dictionary<string, double> FvkSingleShear();
 
         public abstract Dictionary<string, double> FvkDoubleShear();
 
@@ -59,6 +59,12 @@ namespace BeaverCore.Connections
             }
             return 1;
         }
+
+        public void SetULSCapacity()
+        {
+
+        }
+
         public void SetCriticalCapacity()
         {
             /// Finds and updates the critical capacity from the capacities variable
