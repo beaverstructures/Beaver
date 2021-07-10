@@ -60,11 +60,6 @@ namespace BeaverCore.Connections
             return 1;
         }
 
-        public void SetULSCapacity()
-        {
-
-        }
-
         public void SetCriticalCapacity()
         {
             /// Finds and updates the critical capacity from the capacities variable
