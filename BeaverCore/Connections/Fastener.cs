@@ -18,6 +18,31 @@ namespace BeaverCore.Connections
 
         public Fastener() { }
 
+        //dowel
+        public Fastener(string fastenerType, double D, double L, double Fu)
+        {
+            d = D;
+            ds = D;
+            dh = D;
+            l = L;
+            fu = Fu;
+            type = fastenerType;
+            smooth = true;
+        }
+
+        //bolt
+        public Fastener(string fastenerType, double D, double Dh, double L, double Fu)
+        {
+            d = D;
+            ds = D;
+            dh = Dh;
+            l = L;
+            fu = Fu;
+            type = fastenerType;
+            smooth = true;
+        }
+
+        //nail
         public Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
         {
             d = D;
@@ -29,7 +54,8 @@ namespace BeaverCore.Connections
             smooth = Smooth;
         }
 
-        public Fastener(string fastenerType, double D, double Ds, double Dh, double L, bool Smooth, double Fu)
+        //screw
+        public Fastener(string fastenerType, double D, double Ds, double Dh, double L, double Fu)
         {
             d = D;
             ds = Ds;
@@ -37,7 +63,7 @@ namespace BeaverCore.Connections
             l = L;
             fu = Fu;
             type = fastenerType;
-            smooth = Smooth;
+            smooth = true;
         }
 
     }
