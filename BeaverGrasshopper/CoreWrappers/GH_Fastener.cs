@@ -1,21 +1,21 @@
 ﻿using System;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
-using BeaverCore.Actions;
+using BeaverCore.Connections;
 using BeaverCore.Misc;
 
 namespace BeaverGrasshopper
 {
-    public class GH_Force : GH_Goo<Force>
+    public class GH_Fastener : GH_Goo<Fastener>
     {
-        public GH_Force()
+        public GH_Fastener()
         {
-            Value = new Force();
+            Value = new Fastener();
         }
 
-        public GH_Force(Force force)
+        public GH_Fastener(Fastener fastener)
         {
-            Value = force.DeepClone<Force>();
+            Value = fastener.DeepClone<Fastener>();
         }
 
         public override bool IsValid
@@ -30,7 +30,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Force";
+                return "Fastener";
             }
         }
 
@@ -38,13 +38,13 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Force";
+                return "Fastener";
             }
         }
 
         public override IGH_Goo Duplicate()
         {
-            GH_Force duplicate = new GH_Force();
+            GH_Fastener duplicate = new GH_Fastener();
             duplicate.Value = Value.DeepClone();
             return duplicate;
         }
@@ -56,9 +56,9 @@ namespace BeaverGrasshopper
         }
     }
 
-    public class Param_Force : GH_Param<GH_Force>
+    public class Param_Fastener : GH_Param<GH_Fastener>
     {
-        public Param_Force() : base("Force", "Force", "Nodal Force", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Fastener() : base("Fastener", "Fastener", "Timber fastener", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {
@@ -73,7 +73,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return new Guid("df377244-8aa2-4e1e-810c-6041400d6280");
+                return new Guid("a1f05e10-535e-4028-87e9-e6aa0e66505d");
             }
         }
     }

@@ -6,6 +6,20 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Connections
 {
+
+    public class Spacing
+    {
+        public ShearSpacing shear_spacing;
+        public AxialSpacing axial_spacing;
+
+        public Spacing() { }
+
+        public Spacing(ShearSpacing shear, AxialSpacing axial)
+        {
+            shear_spacing = shear;
+            axial_spacing = axial;
+        }
+    }
     public class ShearSpacing
     {
         public double a1;
