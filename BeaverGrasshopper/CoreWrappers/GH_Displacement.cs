@@ -6,16 +6,16 @@ using BeaverCore.Misc;
 
 namespace BeaverGrasshopper
 {
-    public class GH_Force : GH_Goo<Force>
+    public class GH_Displacement : GH_Goo<Displacement>
     {
-        public GH_Force()
+        public GH_Displacement()
         {
-            Value = new Force();
+            Value = new Displacement();
         }
 
-        public GH_Force(Force force)
+        public GH_Displacement(Displacement displacement)
         {
-            Value = force.DeepClone<Force>();
+            Value = displacement.DeepClone<Displacement>();
         }
 
         public override bool IsValid
@@ -30,7 +30,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Force";
+                return "Displacement";
             }
         }
 
@@ -38,13 +38,13 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Force";
+                return "Displacement";
             }
         }
 
         public override IGH_Goo Duplicate()
         {
-            GH_Force duplicate = new GH_Force();
+            GH_Displacement duplicate = new GH_Displacement();
             duplicate.Value = Value.DeepClone();
             return duplicate;
         }
@@ -56,9 +56,9 @@ namespace BeaverGrasshopper
         }
     }
 
-    public class Param_Force : GH_Param<GH_Force>
+    public class Param_Displacement : GH_Param<GH_Displacement>
     {
-        public Param_Force() : base("Force", "Force", "Nodal Force", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Displacement() : base("Displacement", "Displacement", "Nodal Displacement", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {
@@ -73,7 +73,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return new Guid("df377244-8aa2-4e1e-810c-6041400d6280");
+                return new Guid("89611faf-7fd4-4342-acfb-6b510cd9e350");
             }
         }
     }

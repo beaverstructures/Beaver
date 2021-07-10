@@ -1,21 +1,21 @@
 ﻿using System;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
-using BeaverCore.Actions;
+using BeaverCore.Connections;
 using BeaverCore.Misc;
 
 namespace BeaverGrasshopper
 {
-    public class GH_Force : GH_Goo<Force>
+    public class GH_Spacing : GH_Goo<Spacing>
     {
-        public GH_Force()
+        public GH_Spacing()
         {
-            Value = new Force();
+            Value = new Spacing();
         }
 
-        public GH_Force(Force force)
+        public GH_Spacing(Spacing Spacing)
         {
-            Value = force.DeepClone<Force>();
+            Value = Spacing.DeepClone<Spacing>();
         }
 
         public override bool IsValid
@@ -30,7 +30,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Force";
+                return "Spacing";
             }
         }
 
@@ -38,27 +38,27 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return "Force";
+                return "Spacing";
             }
         }
 
         public override IGH_Goo Duplicate()
         {
-            GH_Force duplicate = new GH_Force();
+            GH_Spacing duplicate = new GH_Spacing();
             duplicate.Value = Value.DeepClone();
             return duplicate;
         }
 
         public override string ToString()
         {
-            string info_string = Value.type;
+            string info_string = "Spacing";
             return info_string;
         }
     }
 
-    public class Param_Force : GH_Param<GH_Force>
+    public class Param_Spacing : GH_Param<GH_Spacing>
     {
-        public Param_Force() : base("Force", "Force", "Nodal Force", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Spacing() : base("Spacing", "Spacing", "Fastener Spacing", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {
@@ -73,7 +73,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                return new Guid("df377244-8aa2-4e1e-810c-6041400d6280");
+                return new Guid("48e69e47-be77-41b5-8230-6821f144090c");
             }
         }
     }

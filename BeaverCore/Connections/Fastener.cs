@@ -16,6 +16,8 @@ namespace BeaverCore.Connections
         public string type;
         public bool smooth;
 
+        public Fastener() { }
+
         public Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
         {
             d = D;

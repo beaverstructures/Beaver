@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BeaverGrasshopper.Components.FrameComponents
+namespace BeaverGrasshopper
 {
     public class TimberFramePointComp : GH_Component
     {
@@ -17,7 +17,7 @@ namespace BeaverGrasshopper.Components.FrameComponents
         public TimberFramePointComp()
           : base("TimberFramePoint", "FramePoint",
               "Definition of a single timber frame point",
-              "Beaver", "0.Frame")
+              "Beaver", "1.Frame")
         {
         }
 
@@ -128,7 +128,7 @@ namespace BeaverGrasshopper.Components.FrameComponents
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("b6f41d74-5d79-4604-b94c-18e627550eac"); }
+            get { return new Guid("b6fb1405-42ff-4131-a1dd-b55b170cd60d"); }
         }
     }
 }
