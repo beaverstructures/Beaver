@@ -54,26 +54,33 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Eto, Version=2.5.0.0, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.6.34.21034.7001\lib\net45\Eto.dll</HintPath>
+      <HintPath>..\packages\RhinoCommon.7.0.20314.3001\lib\net45\Eto.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="GH_IO, Version=6.34.21034.7000, Culture=neutral, PublicKeyToken=6a29997d2e6b4f97, processorArchitecture=MSIL">
-      <HintPath>..\packages\Grasshopper.6.34.21034.7001\lib\net45\GH_IO.dll</HintPath>
+    <Reference Include="GH_IO, Version=7.0.20314.3000, Culture=neutral, PublicKeyToken=6a29997d2e6b4f97, processorArchitecture=MSIL">
+      <HintPath>..\packages\Grasshopper.7.0.20314.3001\lib\net45\GH_IO.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Grasshopper, Version=6.34.21034.7000, Culture=neutral, PublicKeyToken=dda4f5ec2cd80803, processorArchitecture=MSIL">
-      <HintPath>..\packages\Grasshopper.6.34.21034.7001\lib\net45\Grasshopper.dll</HintPath>
+    <Reference Include="Grasshopper, Version=7.0.20314.3000, Culture=neutral, PublicKeyToken=dda4f5ec2cd80803, processorArchitecture=MSIL">
+      <HintPath>..\packages\Grasshopper.7.0.20314.3001\lib\net45\Grasshopper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="karambaCommon">
       <HintPath>.\karambaCommon.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="karamba">
       <HintPath>.\karamba.gha</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Rhino.UI, Version=6.34.21034.7000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.6.34.21034.7001\lib\net45\Rhino.UI.dll</HintPath>
+    <Reference Include="Rhino.UI, Version=7.0.20314.3000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
+      <HintPath>..\packages\RhinoCommon.7.0.20314.3001\lib\net45\Rhino.UI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="RhinoCommon, Version=6.34.21034.7000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.6.34.21034.7001\lib\net45\RhinoCommon.dll</HintPath>
+    <Reference Include="RhinoCommon, Version=7.0.20314.3000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
+      <HintPath>..\packages\RhinoCommon.7.0.20314.3001\lib\net45\RhinoCommon.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,38 +91,27 @@
     <Compile Include="Components\PropertiesComponents\MaterialComponent.cs" />
     <Compile Include="Components\FrameComponents\TimberFramePointComp.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
+    <Compile Include="CoreWrappers\GH_Displacement.cs" />
+    <Compile Include="CoreWrappers\GH_Fastener.cs" />
     <Compile Include="CoreWrappers\GH_Force.cs" />
     <Compile Include="CoreWrappers\GH_Material.cs" />
     <Compile Include="CoreWrappers\GH_ShearConnection.cs" />
+    <Compile Include="CoreWrappers\GH_Spacing.cs" />
     <Compile Include="CoreWrappers\GH_TimberFrame.cs" />
     <Compile Include="CoreWrappers\GH_TimberFramePoint.cs" />
-    <Compile Include="Deprecated\C_Moment.cs" />
-    <Compile Include="Deprecated\C_Multiple.cs" />
-    <Compile Include="Deprecated\CombinationGEN.cs" />
-    <Compile Include="Deprecated\C_MultipleInclined.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Deprecated\SLSGEN.cs" />
-    <Compile Include="Deprecated\S_BendingNormal.cs" />
-    <Compile Include="Deprecated\S_BendingNormalTapp.cs" />
-    <Compile Include="Deprecated\S_BendingNormalCurved.cs" />
-    <Compile Include="Deprecated\S_Shear.cs" />
-    <Compile Include="Deprecated\C_BoltS2T.cs" />
-    <Compile Include="Deprecated\C_BoltT2T.cs" />
-    <Compile Include="Deprecated\C_InclinedScrew.cs" />
-    <Compile Include="Deprecated\C_NailT2T.cs" />
-    <Compile Include="Deprecated\S_PerpCompression.cs" />
-    <Compile Include="Deprecated\C_ScrewS2T.cs" />
-    <Compile Include="Deprecated\C_ScrewT2T.cs" />
-    <Compile Include="Deprecated\ReadFromCSV.cs" />
     <Compile Include="BeaverInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Deprecated\C_BrittleFailure.cs" />
-    <Compile Include="Deprecated\S_Torsion.cs" />
     <Compile Include="Components\InteropComponents\KarambatoBeaver.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -124,13 +120,19 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="ClassDiagram1.cd" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\3.10.bmp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,13 +176,13 @@ Erase "$(TargetPath)"</PostBuildEvent>
     <StartAction>Program</StartAction>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="..\packages\RhinoCommon.6.34.21034.7001\build\net45\RhinoCommon.targets" Condition="Exists('..\packages\RhinoCommon.6.34.21034.7001\build\net45\RhinoCommon.targets')" />
+  <Import Project="..\packages\RhinoCommon.7.0.20314.3001\build\RhinoCommon.targets" Condition="Exists('..\packages\RhinoCommon.7.0.20314.3001\build\RhinoCommon.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\RhinoCommon.6.34.21034.7001\build\net45\RhinoCommon.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RhinoCommon.6.34.21034.7001\build\net45\RhinoCommon.targets'))" />
-    <Error Condition="!Exists('..\packages\Grasshopper.6.34.21034.7001\build\net45\Grasshopper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Grasshopper.6.34.21034.7001\build\net45\Grasshopper.targets'))" />
+    <Error Condition="!Exists('..\packages\RhinoCommon.7.0.20314.3001\build\RhinoCommon.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RhinoCommon.7.0.20314.3001\build\RhinoCommon.targets'))" />
+    <Error Condition="!Exists('..\packages\Grasshopper.7.0.20314.3001\build\Grasshopper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Grasshopper.7.0.20314.3001\build\Grasshopper.targets'))" />
   </Target>
-  <Import Project="..\packages\Grasshopper.6.34.21034.7001\build\net45\Grasshopper.targets" Condition="Exists('..\packages\Grasshopper.6.34.21034.7001\build\net45\Grasshopper.targets')" />
+  <Import Project="..\packages\Grasshopper.7.0.20314.3001\build\Grasshopper.targets" Condition="Exists('..\packages\Grasshopper.7.0.20314.3001\build\Grasshopper.targets')" />
 </Project>
