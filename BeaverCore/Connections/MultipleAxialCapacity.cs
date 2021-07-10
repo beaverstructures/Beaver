@@ -6,5 +6,11 @@ namespace BeaverCore.Connections
 {
     class MultipleAxialCapacity
     {
+
+
+
+
+
+
     }
 }

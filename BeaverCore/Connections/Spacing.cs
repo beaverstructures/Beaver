@@ -175,12 +175,19 @@ namespace BeaverCore.Connections
         /// <summary>
         /// Creates a generic AxialSpacing object based on spacing parameters.
         /// </summary>
-        public AxialSpacing(double a1, double a2, double a1CG, double a2CG, int npar, int npep)
+        /// 
+
+        /// $$$ across & e were added in accordance to ETA-110024 (Eurotech) & ETA-110030 (Rothoblaas)
+        
+
+        public AxialSpacing(double a1, double a2, double a1CG, double a2CG, double across, double e, int npar, int npep)
         {
             this.a1 = a1;
             this.a2 = a2;
             this.a1CG = a1CG;
             this.a1CG = a1CG;
+            this.across = across;
+            this.e=e;
             this.npar = npar;
             this.npep = npep;
         }
@@ -203,6 +210,8 @@ namespace BeaverCore.Connections
             {
                 this.a1 = 7 * d;
                 this.a2 = 5 * d;
+                this.across = 1.5*d;
+                this.e=3.5*d;
                 this.a1CG = 10 * d;
                 this.a2CG = 4 * d;
             }
