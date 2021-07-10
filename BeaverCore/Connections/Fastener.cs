@@ -19,12 +19,25 @@ namespace BeaverCore.Connections
         public Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
         {
             d = D;
+            ds = D;
             dh = Dh;
             l = L;
             fu = Fu;
             type = fastenerType;
             smooth = Smooth;
         }
+
+        public Fastener(string fastenerType, double D, double Ds, double Dh, double L, bool Smooth, double Fu)
+        {
+            d = D;
+            ds = Ds;
+            dh = Dh;
+            l = L;
+            fu = Fu;
+            type = fastenerType;
+            smooth = Smooth;
+        }
+
     }
 
     public class FastenerForce
