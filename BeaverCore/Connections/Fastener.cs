@@ -10,6 +10,7 @@ namespace BeaverCore.Connections
     public class Fastener
     {
         public double d;
+        public double ds;
         public double dh;
         public double l;
         public double fu;

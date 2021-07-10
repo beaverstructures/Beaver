@@ -79,7 +79,7 @@ namespace BeaverCore.Connections
             double cosAlfa = Math.Cos(inRad);
             double sinAlfa = Math.Sin(inRad);
             
-             if (preDrilled = false) 
+             if (preDrilled == false) 
              {
                 if (pk <= 420 && ds <= 6)
                 {
@@ -118,7 +118,7 @@ namespace BeaverCore.Connections
                 }
 
              }
-            else if (preDrilled = true)
+            else if (preDrilled == true)
             {
                 if (ds < 5) this.a4t = (3 + 2 * sinAlfa) * ds;
                 else if (ds >= 5) this.a4t = (3 + 4 * sinAlfa) * ds;
