@@ -169,6 +169,8 @@ namespace BeaverCore.Connections
         public double a2;
         public double a1CG;
         public double a2CG;
+        public double across;
+        public double e;
         public int npar;
         public int npep;
 
