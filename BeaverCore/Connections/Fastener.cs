@@ -55,7 +55,7 @@ namespace BeaverCore.Connections
             fu = Fu;
             type = fastenerType;
             smooth = Smooth;
-        }
+        }bolt
 
         //screw
         public Fastener(string fastenerType, double D, double Ds, double Dh, double L, double Fu)
