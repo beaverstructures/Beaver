@@ -175,8 +175,6 @@ namespace BeaverCore.Connections
         double e;
 
         public int npar;
-        public double across;
-        public double e;
         public int nperp;
 
         /// <summary>

@@ -140,7 +140,6 @@
       <Name>BeaverCore</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\AxialConnection.svg" />
   </ItemGroup>

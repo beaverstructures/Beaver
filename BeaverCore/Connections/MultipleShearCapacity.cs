@@ -20,7 +20,7 @@ namespace BeaverCore.Connections
 
         public MultipleShearFastenerCapacity(List<SingleFastenerCapacity> fastener_capacities, ShearSpacing spacing)
         {
-            if (fastener_capacities.Count != spacing.npar * spacing.npep)
+            if (fastener_capacities.Count != spacing.npar * spacing.nperp)
             {
                 throw new ArgumentException("The number of fastener shear_capacities does not match with the spacing array (npar*npep)");
             }
@@ -58,8 +58,8 @@ namespace BeaverCore.Connections
         {
             SingleFastenerCapacity capacity = fastener_capacities[0];
             int npar = spacing.npar;
-            int npep = spacing.npep;
-            double n = npar * npep;
+            int nperp = spacing.nperp;
+            double n = npar * nperp;
             double nef = Nef();
             double alpha = capacity.alfa1;
             double nalpha;
@@ -91,8 +91,8 @@ namespace BeaverCore.Connections
         {
             List<DictResults> result_list = new List<DictResults>();
             int npar = spacing.npar;
-            int npep = spacing.npep;
-            double n = npar * npep;
+            int nperp = spacing.nperp;
+            double n = npar * nperp;
             double nef = Nef();
             foreach (SingleFastenerCapacity capacity in fastener_capacities)
             {
@@ -127,7 +127,7 @@ namespace BeaverCore.Connections
             double nef = 0;
             double a1 = spacing.a1;
             double npar = spacing.npar;
-            double npep = spacing.npep;
+            double nperp = spacing.nperp;
 
             if (type == "nail" || (type == "screw" & d < 6))
             {
@@ -149,14 +149,14 @@ namespace BeaverCore.Connections
                 {
                     kef = 1;
                 }
-                nef = (Math.Pow(npar, kef)) * npep;
+                nef = (Math.Pow(npar, kef)) * nperp;
             }
             if (type == "bolt" || (type == "screw" & d >= 6) || type == "dowel")
             {
-                if (npar * npep == 1) { nef = 1; }
+                if (npar * nperp == 1) { nef = 1; }
                 else
                 {
-                    nef = Math.Min(npar * npep, Math.Pow(npar, 0.9) * Math.Pow(a1 / (13 * d), 0.25)) * npep;
+                    nef = Math.Min(npar * nperp, Math.Pow(npar, 0.9) * Math.Pow(a1 / (13 * d), 0.25)) * nperp;
                 }
             }
             return nef;

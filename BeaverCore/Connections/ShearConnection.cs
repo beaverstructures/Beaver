@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Schema;
 using BeaverCore.Misc;
+using BeaverCore.Connections;
 
 namespace BeaverCore.Connections
 {

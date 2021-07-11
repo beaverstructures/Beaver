@@ -35,4 +35,5 @@ namespace BeaverCore.Connections
             List<List<double>> utilization = new List<List<double>>();
             List<List<string>> failure_mode = new List<List<string>>();
         }
+    }
 }
