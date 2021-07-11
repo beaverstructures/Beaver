@@ -19,17 +19,23 @@ namespace BeaverCore.Connections
         public string connectorMaterial;
         public bool preDrilled;
         public double pk1;
+
         public int sheartype; //1 for single shear, 2 for double shear
-        public Dictionary<string, double> capacities;
-        public double critical_capacity;
-        public string critical_failure_mode;
+        public Dictionary<string, double> shear_capacities;
+        public double shear_crictical_capacity;
+        public string shear_critical_failure_mode;
+
+        public Dictionary<string, double> axial_capacities;
+        public double axial_crictical_capacity;
+        public string axial_critical_failure_mode;
         public bool rope_effect;
+
         public string analysisType;
 
         public void GetFvk()
         {
-            if (sheartype == 1) capacities = FvkSingleShear();
-            else if (sheartype == 2) capacities = FvkDoubleShear();
+            if (sheartype == 1) shear_capacities = FvkSingleShear();
+            else if (sheartype == 2) shear_capacities = FvkDoubleShear();
         }
 
         public abstract Dictionary<string, double> FvkSingleShear();
@@ -64,14 +70,23 @@ namespace BeaverCore.Connections
 
         public void SetCriticalCapacity()
         {
-            /// Finds and updates the critical capacity from the capacities variable
-            critical_capacity = 9999999;
-            foreach(var keyValuePair in capacities)
+            /// Finds and updates the critical capacity from the shear_capacities variable
+            shear_crictical_capacity = 9999999;
+            axial_crictical_capacity = 9999999;
+            foreach (var keyValuePair in shear_capacities)
             {
-                if (keyValuePair.Value < critical_capacity)
+                if (keyValuePair.Value < shear_crictical_capacity)
                 {
-                    critical_capacity = keyValuePair.Value;
-                    critical_failure_mode = keyValuePair.Key;
+                    shear_crictical_capacity = keyValuePair.Value;
+                    shear_critical_failure_mode = keyValuePair.Key;
+                }
+            }
+            foreach (var keyValuePair in axial_capacities)
+            {
+                if (keyValuePair.Value < axial_crictical_capacity)
+                {
+                    axial_crictical_capacity = keyValuePair.Value;
+                    axial_critical_failure_mode = keyValuePair.Key;
                 }
             }
         }

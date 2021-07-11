@@ -142,38 +142,48 @@ namespace BeaverCore.Connections
         public override Dictionary<string, double> Faxk()
         {
             // Calculates the axial force acting on each screw by decomposing V and N into the local axis of the fastener
-            switch (this.fastener.type)
+            Fastener f = fastener;
+            switch (f.type)
             {
-                case "Screw":
-                    // EC5, SECTION 8.7.2 AXIALLY LOADED SCREWS
-                    capacities.Add("Faxrd, EC5 Eq. 8.38", this.variables.Faxrk);
-                    capacities.Add("Faxrd, EC5 Eq. 8.40b", 0); //***!Missing
-                    capacities.Add("Faxrd, EC5 Eq. 8.40c", 0); //***!Missing
-                    break;
                 case "Nail":
-                    if (this.fastener.smooth)
+                    // EC5, SECTION 8.3.2 AXIALLY LOADED NAILS
+                    if (f.smooth)
                     {
-                        capacities.Add("Faxrd, EC5 Eq. 8.23a", 0); //***!Missing
-                        capacities.Add("Faxrd, EC5 Eq. 8.23b", 0); //***!Missing
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.24a", f.faxk*f.d*f.tpen);
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.24b", f.fheadk*f.d*f.t + f.fheadk*f.dh*f.dh);
                     }
                     else
                     {
-                        capacities.Add("Faxrd, EC5 Eq. 8.24a", 0); //***!Missing
-                        capacities.Add("Faxrd, EC5 Eq. 8.24b", 0); //***!Missing
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.23a", f.faxk * f.d * f.tpen);
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.23b", f.fheadk * Math.Pow(f.dh, 2));
                     }
                     break;
                 case "Dowel":
-                    double faxrd = 0.9 * fastener.fu * Math.Pow(fastener.d,2)/4;
-                    capacities.Add("Faxrd", 0.9*fastener.fu); //***!Missing
-                    break;
+                    throw new ArgumentException("Dowel does not support Axial loading");
                 case "Bolted":
-                    capacities.Add("Faxrd", 0); //***!Missing
+                    // EC5, SECTION 8.5.2 AXIALLY LOADED BOLTS
+                    double faxrd = 0.9 * f.fu * Math.Pow(f.d, 2) / 4 * 1.25 / 1.25; //***!Needs review
+                    axial_capacities.Add("Faxrd, EC5, 8.5.2", faxrd);
+                    break;
+                case "Screw":
+                    // EC5, SECTION 8.7.2 AXIALLY LOADED SCREWS
+                    if(f.d>6 & f.d < 12)
+                    {
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.38", variables.Faxrk);
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40b", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40c", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
+                    }
+                    else
+                    {
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40a", variables.Faxrk*Math.Pow(f.rhok/f.rhoa,0.8));
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40b", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40c", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
+                    }
                     break;
                 default:
-                    throw new ArgumentException("Timber material type not found");
+                    throw new ArgumentException("Fastener type not found");
             } 
-            capacities.Add("Fax",variables.Faxrk);
-            return capacities;
+            return axial_capacities;
         }
     
 

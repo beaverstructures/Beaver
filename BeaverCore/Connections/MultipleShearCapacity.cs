@@ -22,12 +22,12 @@ namespace BeaverCore.Connections
         {
             if (fastener_capacities.Count != spacing.npar * spacing.npep)
             {
-                throw new ArgumentException("The number of fastener capacities does not match with the spacing array (npar*npep)");
+                throw new ArgumentException("The number of fastener shear_capacities does not match with the spacing array (npar*npep)");
             }
             if (fastener_capacities.Any(x => (x.fastener.type != fastener_capacities[0].fastener.type &&
                                                   x.fastener.d != fastener_capacities[0].fastener.d)))
             {
-                throw new ArgumentException("There are different fastener types inputed. Diameter and type of fastener must be the same for all fastener capacities");
+                throw new ArgumentException("There are different fastener types inputed. Diameter and type of fastener must be the same for all fastener shear_capacities");
             }
             this.fastener_capacities = fastener_capacities;
             this.spacing = spacing;
@@ -78,8 +78,8 @@ namespace BeaverCore.Connections
 
             
             double Util = 0;
-            DictResults result = new DictResults(capacity.capacities);
-            foreach (string failure in capacity.capacities.Keys.ToList())
+            DictResults result = new DictResults(capacity.shear_capacities);
+            foreach (string failure in capacity.shear_capacities.Keys.ToList())
             {
                 result[failure] *= nalpha;
             }
@@ -110,8 +110,8 @@ namespace BeaverCore.Connections
                     nalpha = (alpha / (Math.PI / 2)) * (n - nef) + nef;
                 }
 
-                DictResults result = new DictResults(capacity.capacities);
-                foreach (string failure in capacity.capacities.Keys.ToList())
+                DictResults result = new DictResults(capacity.shear_capacities);
+                foreach (string failure in capacity.shear_capacities.Keys.ToList())
                 {
                     result[failure] *= nalpha/n;
                 }
