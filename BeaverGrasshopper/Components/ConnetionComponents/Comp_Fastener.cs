@@ -100,7 +100,7 @@ namespace BeaverGrasshopper.Components.ConnetionComponents
                 DA.GetData(4, ref L);
                 DA.GetData(5, ref Fu);
                 fastener = new Fastener(Ftype, D, Ds, Dh, Fu);
-                DA.SetData(0, new GH_Fastener](fastener));
+                DA.SetData(0, new GH_Fastener(fastener));
             }
             else if (Ftype == "bolt")
             {
