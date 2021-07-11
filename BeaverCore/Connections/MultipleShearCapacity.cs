@@ -10,6 +10,7 @@ using System.Text;
 namespace BeaverCore.Connections
 {
     using DictResults = Dictionary<string, double>;
+    [Serializable]
     public class MultipleShearFastenerCapacity
     {
         public List<SingleFastenerCapacity> fastener_capacities;

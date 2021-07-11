@@ -9,6 +9,7 @@ using Comb = Combinatorics.Collections;
 
 namespace BeaverCore.Actions
 {
+    [Serializable]
     public class SLSCombinations
     {
         /// <summary>

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaverGrasshopper", "Beaver
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeaverCore", "BeaverCore\BeaverCore.csproj", "{9B2C6917-9D8B-43A5-9027-5DA19E7C4857}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaverTest", "BeaverTest\BeaverTest.csproj", "{4A89F604-83C5-4B8A-9C06-DD77925D5ABF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeaverTest", "BeaverTest\BeaverTest.csproj", "{4A89F604-83C5-4B8A-9C06-DD77925D5ABF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

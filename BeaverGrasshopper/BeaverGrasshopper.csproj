@@ -66,12 +66,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="karambaCommon">
-      <HintPath>.\karambaCommon.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="karamba">
-      <HintPath>.\karamba.gha</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\..\..\..\Program Files\Rhino 7\Plug-ins\Karamba\karambaCommon.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Rhino.UI, Version=7.0.20314.3000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
@@ -88,11 +83,14 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\ConnetionComponents\Comp_Fastener.cs" />
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
+    <Compile Include="Components\InteropComponents\KarambatoBeaver.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
+    <Compile Include="Components\PropertiesComponents\Comp_Materiall.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
     <Compile Include="CoreWrappers\GH_Fastener.cs" />
@@ -109,7 +107,6 @@
     </Compile>
     <Compile Include="BeaverInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Components\InteropComponents\KarambatoBeaver.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -136,10 +133,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\3.10.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\3.10.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BeaverCore\BeaverCore.csproj">
@@ -148,6 +141,102 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\AxialConnection.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Bolt.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CrossSection.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Deformations.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Dowel.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ExportMaterialtoKaramba.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ImportMaterial.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\KarambaToTimberFrames.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Material.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Nail.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Screw.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ShearConnection.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SLSResults.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Spacing.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TimberFrame.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ULSResults.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AxialConnection.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Bolt.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CrossSection.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Deformations.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Dowel.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ExportMaterialtoKaramba.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ImportMaterial.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\KarambaToTimberFrames.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Material.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Nail.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Screw.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ShearConnection.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SLSResults.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Spacing.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TimberFrame.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ULSResults.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

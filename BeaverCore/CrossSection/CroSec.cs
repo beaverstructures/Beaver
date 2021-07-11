@@ -8,6 +8,7 @@ using BeaverCore.Misc;
 
 namespace BeaverCore.CrossSection
 {
+    [Serializable]
     public abstract class CroSec
     {
 
@@ -19,7 +20,7 @@ namespace BeaverCore.CrossSection
         public double Wz;
         public double ry;
         public double rz;
-        public Material Mat;
+        public Material material;
 
         public abstract double GetsigMcrit(double lef,double E05,double G05);
 

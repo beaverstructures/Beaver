@@ -2,14 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BeaverCore.Materials;
 
 namespace BeaverCore.CrossSection
 {
+    [Serializable]
     public class CroSec_Rect : CroSec
     {
         public double b;
         public double h;
-        public CroSec_Rect(double height, double width)
+        public CroSec_Rect(double height, double width,Material material)
         {
             b = width;
             h = height;
@@ -21,6 +23,7 @@ namespace BeaverCore.CrossSection
             Wz = Iz * (2 / b);
             ry = Math.Sqrt(Iy / A);
             rz = Math.Sqrt(Iz / A);
+            this.material = material;
         }
 
         public double GetIt()

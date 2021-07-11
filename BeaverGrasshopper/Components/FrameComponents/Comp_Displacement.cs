@@ -4,8 +4,7 @@ using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 
-namespace BeaverGrasshopper.Components.FrameComponents
-{
+namespace BeaverGrasshopper { 
     public class Comp_Displacement : GH_Component
     {
         /// <summary>
@@ -65,7 +64,7 @@ namespace BeaverGrasshopper.Components.FrameComponents
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.Screw;
             }
         }
 

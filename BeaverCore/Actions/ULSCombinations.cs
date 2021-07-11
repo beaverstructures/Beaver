@@ -15,6 +15,8 @@ namespace BeaverCore.Actions
     /// <summary>
     /// Defines the array of combinated forces according to Eurocode 0, Annex A1
     /// </summary>
+    /// 
+    [Serializable]
     public class ULSCombinations
     {
         public Force[] DesignForces;                          // List of design forces

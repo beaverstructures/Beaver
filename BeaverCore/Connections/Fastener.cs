@@ -7,17 +7,45 @@ using BeaverCore.Geometry;
 
 namespace BeaverCore.Connections
 {
+    [Serializable]
     public class Fastener
     {
         public double d;
+        public double ds;
         public double dh;
         public double l;
         public double fu;
         public string type;
         public bool smooth;
+        public double ds;
 
         public Fastener() { }
 
+        //dowel
+        public Fastener(string fastenerType, double D, double L, double Fu)
+        {
+            d = D;
+            ds = D;
+            dh = D;
+            l = L;
+            fu = Fu;
+            type = fastenerType;
+            smooth = true;
+        }
+
+        //bolt
+        public Fastener(string fastenerType, double D, double Dh, double L, double Fu)
+        {
+            d = D;
+            ds = D;
+            dh = Dh;
+            l = L;
+            fu = Fu;
+            type = fastenerType;
+            smooth = true;
+        }
+
+        //nail
         public Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
         {
             d = D;
@@ -27,9 +55,10 @@ namespace BeaverCore.Connections
             fu = Fu;
             type = fastenerType;
             smooth = Smooth;
-        }
+        }bolt
 
-        public Fastener(string fastenerType, double D, double Ds, double Dh, double L, bool Smooth, double Fu)
+        //screw
+        public Fastener(string fastenerType, double D, double Ds, double Dh, double L, double Fu)
         {
             d = D;
             ds = Ds;
@@ -37,7 +66,7 @@ namespace BeaverCore.Connections
             l = L;
             fu = Fu;
             type = fastenerType;
-            smooth = Smooth;
+            smooth = true;
         }
 
     }

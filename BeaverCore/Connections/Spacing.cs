@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeaverCore.Connections
 {
-
+    [Serializable]
     public class Spacing
     {
         public ShearSpacing shear_spacing;
@@ -175,6 +175,8 @@ namespace BeaverCore.Connections
         double e;
 
         public int npar;
+        public double across;
+        public double e;
         public int nperp;
 
         /// <summary>
