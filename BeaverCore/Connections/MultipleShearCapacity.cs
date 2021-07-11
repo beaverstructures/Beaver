@@ -77,7 +77,6 @@ namespace BeaverCore.Connections
             
 
             
-            double Util = 0;
             DictResults result = new DictResults(capacity.shear_capacities);
             foreach (string failure in capacity.shear_capacities.Keys.ToList())
             {
