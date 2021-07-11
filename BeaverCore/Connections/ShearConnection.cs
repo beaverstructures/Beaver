@@ -23,7 +23,7 @@ namespace BeaverCore.Connections
         public List<Point2D> fastener_coordinates;
         public List<Force> connection_forces;
         public List<List<FastenerForce>> fastener_forces;
-        public List<MultipleShearFastenerCapacity> fastener_capacities;
+        public List<ConnectionShearFastenerCapacity> fastener_capacities;
         ConnectionType connection_type;
         ShearSpacing spacing;
         ULSCombinations ULScombinations;
@@ -125,7 +125,7 @@ namespace BeaverCore.Connections
 
                     forces.Add(new FastenerForce(fastener_force_vector.Magnitude(), alpha, fastener_force_vector,force.duration));
                 }
-                MultipleShearFastenerCapacity connection_capacity = new MultipleShearFastenerCapacity(single_capacities, spacing);
+                ConnectionShearFastenerCapacity connection_capacity = new ConnectionShearFastenerCapacity(single_capacities, spacing);
                 fastener_capacities.Add(connection_capacity);
                 fastener_forces.Add(forces);
             }
@@ -140,7 +140,7 @@ namespace BeaverCore.Connections
                 List<double> load_case_utilization = new List<double>();
                 List<string> load_case_failure_mode = new List<string>();
                 List<FastenerForce> forces = fastener_forces[i];
-                MultipleShearFastenerCapacity capacities = fastener_capacities[i];
+                ConnectionShearFastenerCapacity capacities = fastener_capacities[i];
                 for (int j = 0; j < forces.Count; j++)
                 {
                     FastenerForce force = forces[j];

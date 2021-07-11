@@ -12,10 +12,13 @@ namespace BeaverCore.Connections
 {
     public class AxialConnection
     {
+        // Calculates the utilization of the fasteners
+        // Has to account for fastener inclination: Nsd = N*sen(alpha) + V*cos(alpha)
+
         public List<Point2D> fastener_coordinates;
         public List<Force> connection_forces;
         public List<Force> fastener_forces;
-        public List<MultipleShearFastenerCapacity> fastener_capacities;
+        public List<ConnectionShearFastenerCapacity> fastener_capacities;
         ConnectionType connection_type;
         AxialSpacing spacing;
         ULSCombinations ULScombinations;

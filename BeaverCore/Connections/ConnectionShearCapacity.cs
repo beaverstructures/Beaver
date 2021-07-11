@@ -11,14 +11,14 @@ namespace BeaverCore.Connections
 {
     using DictResults = Dictionary<string, double>;
     [Serializable]
-    public class MultipleShearFastenerCapacity
+    public class ConnectionShearFastenerCapacity
     {
         public List<SingleFastenerCapacity> fastener_capacities;
         public ShearSpacing spacing;
         public Fastener fastener;
         bool isMultiple;
 
-        public MultipleShearFastenerCapacity(List<SingleFastenerCapacity> fastener_capacities, ShearSpacing spacing)
+        public ConnectionShearFastenerCapacity(List<SingleFastenerCapacity> fastener_capacities, ShearSpacing spacing)
         {
             if (fastener_capacities.Count != spacing.npar * spacing.nperp)
             {
@@ -34,7 +34,7 @@ namespace BeaverCore.Connections
             isMultiple = true;
         }
 
-        public MultipleShearFastenerCapacity(SingleFastenerCapacity fastener_Cap, ShearSpacing spacing)
+        public ConnectionShearFastenerCapacity(SingleFastenerCapacity fastener_Cap, ShearSpacing spacing)
         {
             this.fastener_capacities = new List<SingleFastenerCapacity>() { fastener_Cap };
             this.spacing = spacing;

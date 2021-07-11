@@ -15,6 +15,8 @@ namespace BeaverCore.Connections
         public double dh;   // Head Diameter
         public double l;    
         public double lpen; // Penetration length of fastener
+        public double lth;  // Threaded Length
+        public double offset; // Offset from timber face
         public double tpen; // Penetration length of threaded part
         public double fu;   // Ultimate Strength of fastener
         public double t;    // Thickness of the headside member
@@ -22,15 +24,26 @@ namespace BeaverCore.Connections
         public bool smooth;
         public double alpha; // angle between fastener and timber grain
 
+        public bool predrilled1;
+        public bool predrilled2;
+
+        public double t1; 
+        public double t2;
+        public double ts;
+
+        public double b1;   // Thickness of timber element 1
+        public double b2;   // Thickness of timber element 2
+
+
         // Fastener properties according to EN 14592
-        public double faxk; 
-        public double fheadk;
-        public double rhoa;
-        public double rhok; // Characteristic density in kg/m³
+        public double faxk;     // characteristic pointside withdrawal strength
+        public double fheadk;   // Characteristic headside pull-through strength
+        public double rhoa;     // 
+        public double rhok;     // Characteristic timber density in kg/m³
 
         public Fastener() { }
 
-        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0, double L = 0, double Fu = 0, bool Smooth = true, double faxk=0,double fheadk=0)
+        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0, double L = 0, double Fu = 800000000, bool Smooth = true, double faxk=0,double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0)
         {
             switch (fastenerType)
             {
@@ -81,6 +94,13 @@ namespace BeaverCore.Connections
                 default:
                     throw new ArgumentException("Fasterner type not found");
             }
+
+            t1 = b1 - offset;
+            t2 = l - t1;
+            lpen = Math.Min(t1, t2);
+            double tpen2 = t2 > lth ? lth : t2;
+            double tpen1 = t2 > lth ? 0 : lth - t2;
+
         }
     }
     public class FastenerForce

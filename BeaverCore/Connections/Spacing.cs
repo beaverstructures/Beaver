@@ -200,7 +200,7 @@ namespace BeaverCore.Connections
         //EC5 Section 8.7.2
         /// <summary>
         /// Construct the minimum requirements AxialSpacing object
-        /// for provided fastenern.
+        /// for provided fastener.
         /// This is used later to define the acceptance of the spacing of
         /// the current connection.
         /// </summary>
