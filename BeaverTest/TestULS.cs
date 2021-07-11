@@ -29,9 +29,9 @@ namespace BeaverTest
             Force force = new Force(28, 3, 2, 0.2, 1.5, 0.4, "QA");
             List<Force> forces = new List<Force>() { force };
 
-            CroSec crosec = new CroSec_Rect(15, 15);
+           
             Material mat = new Material("C18", "Solid", 1.8, 1, 0.04, 1.8, 0.22, 0.34, 900, 600, 56, 30, 1.3); // kN/cm^2, EN 338:2016
-            crosec.material = mat;
+            CroSec crosec = new CroSec_Rect(15, 15,mat);
 
             TimberFramePoint element = new TimberFramePoint(forces, disps, crosec, 1, 205, 205, 205, 0.7);
             TimberFrameULSResult result = element.ULSUtilization();

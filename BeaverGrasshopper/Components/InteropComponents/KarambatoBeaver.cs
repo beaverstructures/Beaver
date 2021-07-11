@@ -10,6 +10,7 @@ using Karamba.GHopper.Models;
 
 using BeaverCore.Frame;
 using Karamba.Elements;
+using Karamba.Results;
 
 namespace BeaverGrasshopper
 {
@@ -51,9 +52,11 @@ namespace BeaverGrasshopper
             GH_Model gh_model = new GH_Model();
             DA.GetData(0, ref gh_model);
             Model model = gh_model.Value;
-            List<ModelElement> elements = model.elems;
-            List<ModelBeam> beams = (List<ModelBeam>)elements.Where(element => element is ModelBeam);
-            int i = 0;
+            List<List<List<List<double>>>> results = BeamForces.solve(model,)
+            foreach (ModelBeam beam in beams)
+            {
+                beam.
+            }
         }
 
         /// <summary>

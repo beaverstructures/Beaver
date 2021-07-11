@@ -173,8 +173,6 @@ namespace BeaverCore.Connections
         public double e;
         public int npar;
         public int npep;
-        public double across;
-        public double e;
 
         /// <summary>
         /// Creates a generic AxialSpacing object based on spacing parameters.
