@@ -20,7 +20,7 @@ namespace BeaverCore.Connections
 
         public Fastener() { }
 
-        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0, double L = 0, double Fu = 0, bool Smooth = true)
+        public Fastener(string fastenerType = "", double D = 0, double Ds = 0, double Dh = 0, double L = 0, double Fu = 0, bool Smooth = true)
         {
             switch (fastenerType)
             {
@@ -63,8 +63,8 @@ namespace BeaverCore.Connections
                 default:
                     throw new ArgumentException("Fasterner type not found");
             }
+        }
     }
-
     public class FastenerForce
     {
         public double f = 0;
@@ -72,14 +72,14 @@ namespace BeaverCore.Connections
         public double alpha = 0;
         public string duration;
 
-        public FastenerForce(double f, double alpha,string duration)
+        public FastenerForce(double f, double alpha, string duration)
         {
             this.f = f;
             this.alpha = alpha;
             this.duration = duration;
         }
 
-        public FastenerForce(double f, double alpha,Vector2D force_vector,string duration)
+        public FastenerForce(double f, double alpha, Vector2D force_vector, string duration)
         {
             this.f = f;
             this.alpha = alpha;
@@ -87,4 +87,5 @@ namespace BeaverCore.Connections
             this.duration = duration;
         }
     }
+
 }
