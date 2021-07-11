@@ -87,7 +87,6 @@
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
-    <Compile Include="Components\InteropComponents\KarambatoBeaver.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Materiall.cs" />
@@ -235,6 +234,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ULSResults.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\InteropComponents\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
