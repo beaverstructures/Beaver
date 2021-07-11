@@ -99,8 +99,14 @@ namespace BeaverCore.Connections
 
             return capacities;
         }
-
-
+        /// <summary>
+        /// $$$ lembrar de deletar isso aqui em baixo
+        /// </summary>
+        /// <returns></returns>
+        public override Dictionary<string, double>  Faxk()
+        {
+            return new Dictionary<string, double>();
+        }
         public override Dictionary<string, double> FvkDoubleShear()
         {
             double maxFaxrk = this.FaxrkUpperLimitValue();
