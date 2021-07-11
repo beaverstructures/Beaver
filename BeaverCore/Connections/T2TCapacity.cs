@@ -72,34 +72,34 @@ namespace BeaverCore.Connections
             double rope_effect_contribution;
 
             //1st Failure Mode (a)
-            capacities.Add("a", Fh1k * t1 * this.fastener.d);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.6a", Fh1k * t1 * this.fastener.d);
 
             //2nd Failure Mode (b)
-            capacities.Add("b", Fh2k * t2 * this.fastener.d);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.6b", Fh2k * t2 * this.fastener.d);
 
             //3rd Failure Mode (c)
             double Fyrk3 = ((Fh1k * t1 * this.fastener.d) / (1 + Beta))
                 * (Math.Sqrt(Beta + 2 * Math.Pow(Beta, 2) * (1 + (t2 / t1) + Math.Pow(t2 / t1, 2)) + Math.Pow(Beta, 3) * Math.Pow(t2 / t1, 2)) - Beta * (1 + (t2 / t1)));
             rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk*Fyrk3) : 0;
-            capacities.Add("c", Fyrk3 + rope_effect_contribution);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.6c", Fyrk3 + rope_effect_contribution);
 
             //4th Failure Mode (d)
             double Fyk4 = ((1.05 * Fh1k * t1 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d))) - Beta);
             rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk*Fyk4) : 0;
-            capacities.Add("d", Fyk4 + rope_effect_contribution);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.6d", Fyk4 + rope_effect_contribution);
 
             //5th Failure Mode (e)
             double Fyk5 = ((1.05 * Fh2k * t2 * this.fastener.d) / (2 + Beta))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + ((4 * Beta * (2 + Beta) * Mryk) / (Fh2k * Math.Pow(t2, 2) * this.fastener.d))) - Beta);
             rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk5) : 0;
-            capacities.Add("e", Fyk5 + rope_effect_contribution);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.6e", Fyk5 + rope_effect_contribution);
 
             //6th Failure Mode (f)
             double Fyk6 = 1.15 * Math.Sqrt((2 * Beta) / (1 + Beta))
                 * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d);
             rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk6) : 0;
-            capacities.Add("f", Fyk6 + rope_effect_contribution);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.6f", Fyk6 + rope_effect_contribution);
 
             return capacities;
         }
@@ -120,21 +120,21 @@ namespace BeaverCore.Connections
             double rope_effect_contribution;
 
             // 1st Failure Mode (g)
-            capacities.Add("g", Fh1k * t1 * this.fastener.d);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.7g", Fh1k * t1 * this.fastener.d);
 
             // 2nd Failure Mode (h)
-            capacities.Add("h", 0.5 * Fh2k * t2 * this.fastener.d);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.7h", 0.5 * Fh2k * t2 * this.fastener.d);
 
             // 3rd Failure Mode (j)
             double Fyk3 = (1.05 * ((Fh1k * t1 * this.fastener.d) / (2 * Beta)))
                 * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Mryk) / (Fh1k * Math.Pow(t1, 2) * this.fastener.d)) - Beta);
             rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk3) : 0;
-            capacities.Add("j", Fyk3 + rope_effect_contribution);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.7j", Fyk3 + rope_effect_contribution);
 
             // 4th Failure Mode (k)
             double Fyk4 = (1.15 * Math.Sqrt((2 * Beta) / (1 + Beta)) * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d));
             rope_effect_contribution = rope_effect ? Math.Min(Faxrk / 4, maxFaxrk * Fyk4) : 0;
-            capacities.Add("k", Fyk4 + rope_effect_contribution);
+            capacities.Add("EC5, Section 8.2.2, Eq. 8.7k", Fyk4 + rope_effect_contribution);
 
             return capacities;
         }
@@ -145,18 +145,35 @@ namespace BeaverCore.Connections
             switch (this.fastener.type)
             {
                 case "Screw":
-                    capacities.Add("Faxrd", 0); //***!Missing
+                    // EC5, SECTION 8.7.2 AXIALLY LOADED SCREWS
+                    capacities.Add("Faxrd, EC5 Eq. 8.38", this.variables.Faxrk);
+                    capacities.Add("Faxrd, EC5 Eq. 8.40b", 0); //***!Missing
+                    capacities.Add("Faxrd, EC5 Eq. 8.40c", 0); //***!Missing
                     break;
                 case "Nail":
-                    capacities.Add("Faxrd", 0); //***!Missing
+                    if (this.fastener.smooth)
+                    {
+                        capacities.Add("Faxrd, EC5 Eq. 8.23a", 0); //***!Missing
+                        capacities.Add("Faxrd, EC5 Eq. 8.23b", 0); //***!Missing
+                    }
+                    else
+                    {
+                        capacities.Add("Faxrd, EC5 Eq. 8.24a", 0); //***!Missing
+                        capacities.Add("Faxrd, EC5 Eq. 8.24b", 0); //***!Missing
+                    }
                     break;
                 case "Dowel":
+                    double faxrd = 0.9 * fastener.fu * Math.Pow(fastener.d,2)/4;
+                    capacities.Add("Faxrd", 0.9*fastener.fu); //***!Missing
+                    break;
+                case "Bolted":
                     capacities.Add("Faxrd", 0); //***!Missing
                     break;
                 default:
                     throw new ArgumentException("Timber material type not found");
             } 
             capacities.Add("Fax",variables.Faxrk);
+            return capacities;
         }
     
 

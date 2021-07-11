@@ -80,6 +80,8 @@ namespace BeaverGrasshopper.Components.ConnetionComponents
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            double D 
+            D = L==0 ? x : y 
 
             Fastener fastener = new Fastener();
             string Ftype = "none";

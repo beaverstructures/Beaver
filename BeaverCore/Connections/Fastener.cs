@@ -11,64 +11,58 @@ namespace BeaverCore.Connections
     public class Fastener
     {
         public double d;
-        public double ds;
-        public double dh;
+        public double ds; // Shank diameter
+        public double dh; // Head Diameter
         public double l;
-        public double fu;
+        public double fu; // Ultimate Strength of fastener
         public string type;
         public bool smooth;
-        public double ds;
 
         public Fastener() { }
 
-        //dowel
-        public Fastener(string fastenerType, double D, double L, double Fu)
+        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0, double L = 0, double Fu = 0, bool Smooth = true)
         {
-            d = D;
-            ds = D;
-            dh = D;
-            l = L;
-            fu = Fu;
-            type = fastenerType;
-            smooth = true;
-        }
-
-        //bolt
-        public Fastener(string fastenerType, double D, double Dh, double L, double Fu)
-        {
-            d = D;
-            ds = D;
-            dh = Dh;
-            l = L;
-            fu = Fu;
-            type = fastenerType;
-            smooth = true;
-        }
-
-        //nail
-        public Fastener(string fastenerType, double D, double Dh, double L, bool Smooth, double Fu)
-        {
-            d = D;
-            ds = D;
-            dh = Dh;
-            l = L;
-            fu = Fu;
-            type = fastenerType;
-            smooth = Smooth;
-        }bolt
-
-        //screw
-        public Fastener(string fastenerType, double D, double Ds, double Dh, double L, double Fu)
-        {
-            d = D;
-            ds = Ds;
-            dh = Dh;
-            l = L;
-            fu = Fu;
-            type = fastenerType;
-            smooth = true;
-        }
-
+            switch (fastenerType)
+            {
+                case "Dowel":
+                    d = D;
+                    ds = D;
+                    dh = D;
+                    l = L;
+                    fu = Fu;
+                    type = fastenerType;
+                    smooth = true;
+                    break;
+                case "Screw":
+                    d = D;
+                    ds = Ds;
+                    dh = Dh;
+                    l = L;
+                    fu = Fu;
+                    type = fastenerType;
+                    smooth = true;
+                    break;
+                case "Bolt":
+                    d = D;
+                    ds = D;
+                    dh = Dh;
+                    l = L;
+                    fu = Fu;
+                    type = fastenerType;
+                    smooth = true;
+                    break;
+                case "Nail":
+                    d = D;
+                    ds = D;
+                    dh = Dh;
+                    l = L;
+                    fu = Fu;
+                    type = fastenerType;
+                    smooth = Smooth;
+                    break;
+                default:
+                    throw new ArgumentException("Fasterner type not found");
+            }
     }
 
     public class FastenerForce
