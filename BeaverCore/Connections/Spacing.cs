@@ -20,6 +20,7 @@ namespace BeaverCore.Connections
             axial_spacing = axial;
         }
     }
+
     public class ShearSpacing
     {
         public double a1;
@@ -29,12 +30,12 @@ namespace BeaverCore.Connections
         public double a4t;
         public double a4c;
         public int npar;
-        public int npep;
+        public int nperp;
 
         /// <summary>
         /// Creates a generic ShearSpacing object based on spacing parameters.
         /// </summary>
-        public ShearSpacing(double a1, double a2, double a3t, double a3c, double a4t, double a4c, int npar, int npep)
+        public ShearSpacing(double a1, double a2, double a3t, double a3c, double a4t, double a4c, int npar, int nperp)
         {
             this.a1 = a1;
             this.a2 = a2;
@@ -43,7 +44,7 @@ namespace BeaverCore.Connections
             this.a4t = a4t;
             this.a4c = a4c;
             this.npar = npar;
-            this.npep = npep;
+            this.nperp = nperp;
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace BeaverCore.Connections
             double cosAlfa = Math.Cos(inRad);
             double sinAlfa = Math.Sin(inRad);
             
-             if (preDrilled = false) 
+             if (preDrilled == false) 
              {
                 if (pk <= 420 && ds <= 6)
                 {
@@ -118,7 +119,7 @@ namespace BeaverCore.Connections
                 }
 
              }
-            else if (preDrilled = true)
+            else if (preDrilled == true)
             {
                 if (ds < 5) this.a4t = (3 + 2 * sinAlfa) * ds;
                 else if (ds >= 5) this.a4t = (3 + 4 * sinAlfa) * ds;
@@ -169,8 +170,12 @@ namespace BeaverCore.Connections
         public double a2;
         public double a1CG;
         public double a2CG;
+
+        double across;
+        double e;
+
         public int npar;
-        public int npep;
+        public int nperp;
 
         /// <summary>
         /// Creates a generic AxialSpacing object based on spacing parameters.
@@ -180,7 +185,7 @@ namespace BeaverCore.Connections
         /// $$$ across & e were added in accordance to ETA-110024 (Eurotech) & ETA-110030 (Rothoblaas)
         
 
-        public AxialSpacing(double a1, double a2, double a1CG, double a2CG, double across, double e, int npar, int npep)
+        public AxialSpacing(double a1, double a2, double a1CG, double a2CG, double across, double e, int npar, int nperp)
         {
             this.a1 = a1;
             this.a2 = a2;
@@ -189,7 +194,7 @@ namespace BeaverCore.Connections
             this.across = across;
             this.e=e;
             this.npar = npar;
-            this.npep = npep;
+            this.nperp = nperp;
         }
 
         //EC5 Section 8.7.2

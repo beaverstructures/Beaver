@@ -130,9 +130,9 @@ namespace BeaverCore.Connections
 
         }
 
-        public ConnectionUtilization Util()
+        public ShearConnectionUtilization Util()
         {
-            ConnectionUtilization utilizations = new ConnectionUtilization();
+            ShearConnectionUtilization utilizations = new ShearConnectionUtilization();
             for (int i = 0; i < fastener_forces.Count; i++)
             {
                 List<double> load_case_utilization = new List<double>();
@@ -158,12 +158,12 @@ namespace BeaverCore.Connections
 
     }
 
-    public class ConnectionUtilization
+    public class ShearConnectionUtilization
     {
         List<List<double>> utilization = new List<List<double>>();
         List<List<string>> failure_mode = new List<List<string>>();
 
-        public ConnectionUtilization()
+        public ShearConnectionUtilization()
         {
 
         }

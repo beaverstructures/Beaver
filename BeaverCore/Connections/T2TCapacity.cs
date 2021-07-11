@@ -139,6 +139,25 @@ namespace BeaverCore.Connections
             return capacities;
         }
 
+        public override Dictionary<string, double> Faxk()
+        {
+            // Calculates the axial force acting on each screw by decomposing V and N into the local axis of the fastener
+            switch (this.fastener.type)
+            {
+                case "Screw":
+                    capacities.Add("Faxrd", 0); //***!Missing
+                    break;
+                case "Nail":
+                    capacities.Add("Faxrd", 0); //***!Missing
+                    break;
+                case "Dowel":
+                    capacities.Add("Faxrd", 0); //***!Missing
+                    break;
+                default:
+                    throw new ArgumentException("Timber material type not found");
+            } 
+            capacities.Add("Fax",variables.Faxrk);
+        }
     
 
 
