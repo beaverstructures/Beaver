@@ -36,7 +36,6 @@ namespace BeaverTest
             
             Material mat = new Material("ita", "Glulam", 5.5, 5, 0, 4.5, 0.2, 0.65, 1550, 1250, 106, 80,1.25);
             CroSec crosec = new CroSec_Rect(15, 15,mat);
-            crosec.material = mat;
             TimberFramePoint timber = new TimberFramePoint(forces, disps, crosec, 2, 228.5, 228.5, 228.5, 0.9,SpanType.CantileverSpan);
             List<string> combinations = new List<string>();
             foreach (Action a in timber.ULSComb.DesignForces)

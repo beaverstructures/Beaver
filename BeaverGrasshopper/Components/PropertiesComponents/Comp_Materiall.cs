@@ -35,7 +35,7 @@ namespace BeaverGrasshopper
             //6
             pManager.AddNumberParameter("Perpendicular Compression Resistence", "fc90k", "Perpendicular Characteristic Compression Resistance in [kN/cm²]", GH_ParamAccess.item, 0.27);
             //7
-            pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [kN/cm²]", GH_ParamAccess.item, 0.27);
+            pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [kN/cm²]", GH_ParamAccess.item, 0.4);
             //8
             pManager.AddNumberParameter("Mean modulus of elasticity parallel", "E0mean", "Mean modulus of elasticity parallel to grain [GPa]", GH_ParamAccess.item, 1160);
             //9
@@ -98,8 +98,8 @@ namespace BeaverGrasshopper
 
             DA.GetData(12, ref Ym);
 
-
-            Material mat = new Material(name, type, fmk, ft0k, ft90k, fc0k, fc90k, fvk, E0mean, E05, E90mean, Gmean, Ym);
+            double G05 = 54;
+            Material mat = new Material(name, type, fmk * 1e7, ft0k * 1e7, ft90k * 1e7, fc0k * 1e7, fc90k * 1e7, fvk * 1e7, E0mean * 1e7, E05 * 1e7, E90mean * 1e7, Gmean * 1e7, G05 * 1e7, Ym);
 
             DA.SetData(0, new GH_Material(mat));
         }

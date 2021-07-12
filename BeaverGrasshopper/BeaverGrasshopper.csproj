@@ -38,7 +38,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
+    <OutputPath>..\..\..\..\..\Program Files\Rhino 7\Plug-ins\Karamba\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -104,6 +104,7 @@
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Materiall.cs" />
+    <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
     <Compile Include="CoreWrappers\GH_Fastener.cs" />
@@ -148,101 +149,75 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="Resources\AxialConnection.svg" />
+    <None Include="Resources\AxialConnection.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Bolt.svg" />
+    <None Include="Resources\Bolt.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\CrossSection.svg" />
+    <None Include="Resources\ConnectionView.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Deformations.svg" />
+    <None Include="Resources\ConnectionView2.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Dowel.svg" />
+    <None Include="Resources\ConnectonResults.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ExportMaterialtoKaramba.svg" />
+    <None Include="Resources\CrossSection.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ImportMaterial.svg" />
+    <None Include="Resources\Deformations.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\KarambaToTimberFrames.svg" />
+    <None Include="Resources\Displacements.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Material.svg" />
+    <None Include="Resources\Dowel.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Nail.svg" />
+    <None Include="Resources\ExportMaterialtoKaramba.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Screw.svg" />
+    <None Include="Resources\Force.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ShearConnection.svg" />
+    <None Include="Resources\ImportMaterial.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SLSResults.svg" />
+    <None Include="Resources\KarambaToTimberFrames.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Spacing.svg" />
+    <None Include="Resources\Material.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TimberFrame.svg" />
+    <None Include="Resources\Nail.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ULSResults.svg" />
+    <None Include="Resources\Screw.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\AxialConnection.jpg" />
+    <None Include="Resources\ShearConnection.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Bolt.jpg" />
+    <None Include="Resources\SLSResults.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\CrossSection.jpg" />
+    <None Include="Resources\Spacing.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Deformations.jpg" />
+    <None Include="Resources\TimberFrame.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Dowel.jpg" />
+    <None Include="Resources\TimberFramePoint.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ExportMaterialtoKaramba.jpg" />
+    <None Include="Resources\TimberFrameResults.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ImportMaterial.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\KarambaToTimberFrames.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Material.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Nail.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Screw.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ShearConnection.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SLSResults.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Spacing.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TimberFrame.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ULSResults.jpg" />
+    <None Include="Resources\ULSResults.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

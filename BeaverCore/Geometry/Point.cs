@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BeaverCore.Geometry
 {
+    [Serializable]
     public class Point2D
     {
         public double x;
@@ -19,7 +20,7 @@ namespace BeaverCore.Geometry
             return new List<double>() { x, y };
         }
     }
-
+    [Serializable]
     public class Vector2D
     {
         public double x;
@@ -114,7 +115,7 @@ namespace BeaverCore.Geometry
             return new List<double>() { x, y };
         }
     }
-
+    [Serializable]
     public class Point3D
     {
         public double x;
@@ -161,7 +162,7 @@ namespace BeaverCore.Geometry
             return result;
         }
     }
-
+    [Serializable]
     public class Line
     {
         public Point3D start;

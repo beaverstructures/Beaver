@@ -267,7 +267,7 @@ namespace BeaverCore.Frame
                 UtilZ3 = Math.Abs(Sigvz) / fvd;
 
                 //4 EC5 Section 6.1.8 Torsion
-                Util4 = Math.Abs(SigMt) / (kshape / fvd);
+                Util4 = Math.Abs(SigMt) / (kshape * fvd);
 
                 //5 EC5 Section 6.2.3 Combined Bending and Axial Tension
                 if (sigN < 0) UtilY5 = UtilZ5 = 0;
@@ -324,8 +324,6 @@ namespace BeaverCore.Frame
             TimberFrameULSResult Result = new TimberFrameULSResult(Info, AllUtilsY, AllUtilsZ, Sectiondata);
 
             return Result;
-
-
 
         }
 
@@ -413,10 +411,10 @@ namespace BeaverCore.Frame
 
     public class TimberFrameSLSResult
     {
-        string[] Info;
-        List<double> InstUtils;
-        List<double> NetFinUtils;
-        List<double> FinUtils;
+        public string[] Info;
+        public List<double> InstUtils;
+        public List<double> NetFinUtils;
+        public List<double> FinUtils;
 
         public TimberFrameSLSResult() { }
 

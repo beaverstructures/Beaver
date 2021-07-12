@@ -30,7 +30,7 @@ namespace BeaverTest
             List<Force> forces = new List<Force>() { force };
 
            
-            Material mat = new Material("C18", "Solid", 1.8, 1, 0.04, 1.8, 0.22, 0.34, 900, 600, 56, 30, 1.3); // kN/cm^2, EN 338:2016
+            Material mat = new Material("C18", "Glulam", 1.8, 1, 0.04, 1.8, 0.22, 0.34, 900, 600, 56, 30, 1.3); // kN/cm^2, EN 338:2016
             CroSec crosec = new CroSec_Rect(15, 15,mat);
 
             TimberFramePoint element = new TimberFramePoint(forces, disps, crosec, 1, 205, 205, 205, 0.7);

@@ -102,7 +102,7 @@ namespace BeaverGrasshopper
             DA.GetData(12, ref Ym);
 
 
-            Material mat = new Material(type, name, fmk, ft0k, ft90k, fc0k, fc90k, fvk, E0mean, E05, E90mean, Gmean, Ym);
+            Material mat = new Material(type, name, fmk*1e7, ft0k * 1e7, ft90k * 1e7, fc0k * 1e7, fc90k * 1e7, fvk * 1e7, E0mean * 1e7, E05 * 1e7, E90mean * 1e7, Gmean * 1e7, Ym);
 
             DA.SetData(0, new GH_Material(mat));
         }

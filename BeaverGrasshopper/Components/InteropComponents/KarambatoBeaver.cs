@@ -16,6 +16,7 @@ using Karamba.Geometry;
 using Karamba.CrossSections;
 using BeaverCore.Materials;
 using static Karamba.Elements.BuilderElementStraightLine;
+using System.Threading.Tasks;
 
 namespace BeaverGrasshopper
 {
@@ -41,7 +42,7 @@ namespace BeaverGrasshopper
             pManager.AddParameter(new Param_Material(), "Beaver Material", "Mat",
                         "Timber Material", GH_ParamAccess.item);
             pManager.AddTextParameter("Beam Identifiers", "BeamsIds", "Beam ID", GH_ParamAccess.list);
-            pManager.AddIntegerParameter("Number of results per beam element", "NRes", "Element nodal subdivision", GH_ParamAccess.list);
+            pManager.AddIntegerParameter("Number of results per beam element", "NRes", "Element nodal subdivision", GH_ParamAccess.item);
             pManager.AddTextParameter("LoadCase Type", "LCType", "Load Case Type", GH_ParamAccess.list);
         }
 
@@ -66,53 +67,59 @@ namespace BeaverGrasshopper
             GH_Material gh_material = new GH_Material();
             DA.GetData(0, ref gh_model);
             DA.GetData(1, ref gh_material);
-            DA.GetData(2, ref sub_div);
-            DA.GetDataList(3, beam_id);
+            DA.GetDataList(2, beam_id);
+            DA.GetData(3, ref sub_div);
             DA.GetDataList(4, lc_types);
             Model model = gh_model.Value;
             Material material = gh_material.Value;
             List<List<List<List<double>>>> force_results = new List<List<List<List<double>>>>();
             List<List<List<Vector3>>> trans_displacement_results = new List<List<List<Vector3>>>();
             List<List<List<Vector3>>> rot_displacement_results = new List<List<List<Vector3>>>();
-            BeamForces.solve(model, beam_id, -1, 100000, sub_div,out force_results);
-            BeamDisplacements.solve(model, beam_id, -1, 100000, sub_div, out trans_displacement_results, out rot_displacement_results);
-            List<List<List<Force>>> elements_forces = new List<List<List<Force>>>(force_results[0].Count);
-            List<List<List<Displacement>>> elements_displacements = new List<List<List<Displacement>>>(force_results[0].Count);
+            BeamForces.solve(model, beam_id, -1, 100000, sub_div+1, out force_results);
+            BeamDisplacements.solve(model, beam_id, -1, 100000, sub_div+1, out trans_displacement_results, out rot_displacement_results);
             List<ModelElement> beams = model.elementsByID(beam_id);
+            List<Force>[,] elements_forces = new List<Force>[beams.Count, sub_div + 1];
+            List<Displacement>[,] elements_displacements = new List<Displacement>[beams.Count, sub_div + 1];
             for (int i = 0; i < force_results.Count; i++)
             {
-                for (int j = 0; j < force_results[i].Count; j++)
+                Parallel.For(0, force_results[i].Count, j=>
                 {
                     for (int k = 0; k < force_results[i][j].Count; k++)
                     {
-                        Force force = new Force(force_results[i][j][k], lc_types[i]);
+                        if (elements_forces[j,k] is null) elements_forces[j,k] = new List<Force>();
+                        if (elements_displacements[j,k] is null) elements_displacements[j,k] = new List<Displacement>();
+                        Force force = new Force(force_results[i][j][k], lc_types[i],1000);
                         Vector3 displacement_vec = trans_displacement_results[i][j][k];
                         Displacement displacement = new Displacement(displacement_vec.X, displacement_vec.Y, displacement_vec.Z, lc_types[i]);
-                        elements_forces[j][k].Add(force);
-                        elements_displacements[j][k].Add(displacement);
+                        elements_forces[j,k].Add(force);
+                        elements_displacements[j,k].Add(displacement);
                     }
-                }
+                });
             }
-            List<TimberFrame> timber_frames = new List<TimberFrame>();
-            for (int i = 0; i < elements_forces.Count; i++)
+            List<GH_TimberFrame> timber_frames = CreateList<GH_TimberFrame>(beams.Count);
+            Parallel.For(0, beams.Count, new ParallelOptions
+            {
+                // multiply the count because a processor has 2 cores
+                MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling((Environment.ProcessorCount * 0.75) * 2.0))
+            }, i =>
             {
                 Dictionary<double, TimberFramePoint> TFPoints = new Dictionary<double, TimberFramePoint>();
                 ModelBeam beam = (ModelBeam)beams[i];
                 CroSec crosec = beam.crosec;
                 BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambatoBeaver(beam.crosec, material);
-                double rel_pos_step = beam.elementLength(model) / elements_forces[i].Count;
+                double rel_pos_step = beam.elementLength(model) / (sub_div);
                 BeaverCore.Geometry.Point3D node1 = PointKarambatoBeaver(model.nodes[beam.node_inds[0]].pos);
                 BeaverCore.Geometry.Point3D node2 = PointKarambatoBeaver(model.nodes[beam.node_inds[1]].pos);
                 BeaverCore.Geometry.Line beaver_line = new BeaverCore.Geometry.Line(node1, node2);
-                for (int j = 0; j < elements_forces[i].Count; j++)
+                for (int j = 0; j < sub_div + 1; j++)
                 {
-                    TimberFramePoint TFPoint = new TimberFramePoint(elements_forces[i][j], elements_displacements[i][j], beaver_crosec,
+                    TimberFramePoint TFPoint = new TimberFramePoint(elements_forces[i, j], elements_displacements[i, j], beaver_crosec,
                         2, beam.buckling_length(BucklingDir.bklY), beam.buckling_length(BucklingDir.bklZ), beam.elementLength(model), 0.9);
-                    TFPoints[j*rel_pos_step] = TFPoint;
+                    TFPoints[j * rel_pos_step] = TFPoint;
                 }
                 TimberFrame timber_frame = new TimberFrame(TFPoints, beaver_line);
-                timber_frames.Add(timber_frame);
-            }
+                timber_frames[i] = new GH_TimberFrame(timber_frame);
+            });
             DA.SetDataList(0, timber_frames);
         }
 
@@ -128,7 +135,7 @@ namespace BeaverGrasshopper
             else if (karamba_crosec is CroSec_Circle)
             {
                 CroSec_Circle circle_crosec = (CroSec_Circle)karamba_crosec;
-                BeaverCore.CrossSection.CroSec beaver_crosec = new BeaverCore.CrossSection.CroSec_Circ(circle_crosec.getHeight(),material);
+                BeaverCore.CrossSection.CroSec beaver_crosec = new BeaverCore.CrossSection.CroSec_Circ(circle_crosec.getHeight(), material);
                 return beaver_crosec;
             }
             else
@@ -137,9 +144,14 @@ namespace BeaverGrasshopper
             }
         }
 
-       BeaverCore.Geometry.Point3D PointKarambatoBeaver(Point3 karamba_point)
+        BeaverCore.Geometry.Point3D PointKarambatoBeaver(Point3 karamba_point)
         {
             return new BeaverCore.Geometry.Point3D(karamba_point.X, karamba_point.Y, karamba_point.Z);
+        }
+
+        private static List<T> CreateList<T>(int capacity)
+        {
+            return Enumerable.Repeat(default(T), capacity).ToList();
         }
 
         /// <summary>
