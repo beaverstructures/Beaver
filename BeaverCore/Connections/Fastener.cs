@@ -11,18 +11,18 @@ namespace BeaverCore.Connections
     public class Fastener
     {
         public double d;
-        public double ds;   // Shank diameter
-        public double dh;   // Head Diameter
+        public double ds;       // Shank diameter
+        public double dh;       // Head Diameter
         public double l;    
-        public double lpen; // Penetration length of fastener
-        public double lth;  // Threaded Length
-        public double offset; // Offset from timber face
-        public double tpen; // Penetration length of threaded part
-        public double fu;   // Ultimate Strength of fastener
-        public double t;    // Thickness of the headside member
+        public double lpen;     // Penetration length of fastener
+        public double lth;      // Threaded Length
+        public double offset;   // Offset from timber face
+        public double tpen;     // Penetration length of threaded part
+        public double fu;       // Ultimate Strength of fastener
+        public double t;        // Thickness of the headside member
         public string type;
         public bool smooth;
-        public double alpha; // angle between fastener and timber grain
+        public double alpha;    // angle between fastener and timber grain
 
         public bool predrilled1;
         public bool predrilled2;
@@ -31,8 +31,8 @@ namespace BeaverCore.Connections
         public double t2;
         public double ts;
 
-        public double b1;   // Thickness of timber element 1
-        public double b2;   // Thickness of timber element 2
+        public double b1;       // Thickness of timber element 1
+        public double b2;       // Thickness of timber element 2
 
 
         // Fastener properties according to EN 14592
@@ -95,7 +95,10 @@ namespace BeaverCore.Connections
                     throw new ArgumentException("Fasterner type not found");
             }
 
-            t1 = b1 - offset;
+            double sin = Math.Sin(Math.PI / 180 * alpha);
+            double cos = Math.Cos(Math.PI / 180 * alpha);
+
+            t1 = b1 - sin*offset;
             t2 = l - t1;
             lpen = Math.Min(t1, t2);
             double tpen2 = t2 > lth ? lth : t2;

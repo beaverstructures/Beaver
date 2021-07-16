@@ -61,13 +61,13 @@ namespace BeaverCore.Connections
             int nperp = spacing.nperp;
             double n = npar * nperp;
             double nef = Nef();
-            double alpha = capacity.alfa1;
+            double alpha = capacity.alpha1;
             double nalpha;
             if (capacity is T2TCapacity)
             {
                 T2TCapacity t2tfast = (T2TCapacity)capacity;
                 double nalpha1 = (alpha / (Math.PI / 2)) * (n - nef) + nef;
-                double nalpha2 = (t2tfast.alfa2 / (Math.PI / 2)) * (n - nef) + nef;
+                double nalpha2 = (t2tfast.alpha2 / (Math.PI / 2)) * (n - nef) + nef;
                 nalpha = Math.Min(nalpha1, nalpha2);
             }
             else
@@ -95,13 +95,13 @@ namespace BeaverCore.Connections
             double nef = Nef();
             foreach (SingleFastenerCapacity capacity in fastener_capacities)
             {
-                double alpha = capacity.alfa1;
+                double alpha = capacity.alpha1;
                 double nalpha;
                 if (capacity is T2TCapacity)
                 {
                     T2TCapacity t2tfast = (T2TCapacity)capacity;
                     double nalpha1 = (alpha / (Math.PI / 2)) * (n - nef) + nef;
-                    double nalpha2 = (t2tfast.alfa2 / (Math.PI / 2)) * (n - nef) + nef;
+                    double nalpha2 = (t2tfast.alpha2 / (Math.PI / 2)) * (n - nef) + nef;
                     nalpha = Math.Min(nalpha1, nalpha2);
                 }
                 else
