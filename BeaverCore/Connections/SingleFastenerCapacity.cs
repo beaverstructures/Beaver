@@ -83,6 +83,34 @@ namespace BeaverCore.Connections
             return 1;
         }
 
+        public static double CalcKser(Fastener fastener, Material mat1, Material mat2)
+        {
+            // calculates Kser for the fastener
+            // EC5 SECTION 7.1 TABLE 7.1
+            double kser;
+            double pm = Math.Sqrt(mat1.pk * mat2.pk);
+            switch (fastener.type)
+            {
+                case "Dowel":
+                    kser = Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
+                    break;
+                case "Nail":
+                    kser = fastener.predrilled1 ?
+                        Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23
+                        : Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 30;
+                    break;
+                case "Screw":
+                    kser = Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
+                    break;
+                case "Staples":
+                    kser = Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 80;
+                    break;
+                default:
+                    throw new ArgumentException("Could not find connection type");
+            }
+            return kser;
+        }
+
         public void SetCriticalCapacity()
         {
             /// Finds and updates the critical capacity from the shear_capacities variable
@@ -340,9 +368,59 @@ namespace BeaverCore.Connections
                 double faxrk;
                 // EC5 SECTION 8.3.2
                 // EQ 8.25
-                double fpaxk = CalcNailfaxk(tpen, fastener.d, pk, fastener.smooth);
-                // EQ 8.26
-                double fhaxk = CalcNailfaxk(t1, fastener.d, pk, fastener.smooth);
+                // EC5 SECTION 8.3.2 EQ. 8.23 fpaxk
+                double faxk = 20 * Math.Pow(10, -6) * Math.Pow(pk, 2);
+                double coef = 1;
+                if (fastener.smooth == true)
+                {
+                    if (tpen < 8 * fastener.d)
+                    {
+                        coef = 0;
+                    }
+                    else if (tpen > 8 * fastener.d && tpen < 12 * fastener.d)
+                    {
+                        coef = tpen / (4 * fastener.d - 2);
+                    }
+
+                    else
+                    {
+                        if (tpen < 6 * fastener.d)
+                        {
+                            coef = 0;
+                        }
+                        else if (tpen > 6 * fastener.d && tpen < 8 * fastener.d)
+                        {
+                            coef = tpen / (2 * fastener.d - 3);
+                        }
+                    }
+                }
+                double fpaxk = coef * faxk;
+                // EQ 8.26 fhaxk
+                if (fastener.smooth == true)
+                {
+                    if (t1 < 8 * fastener.d)
+                    {
+                        coef = 0;
+                    }
+                    else if (t1 > 8 * fastener.d && t1 < 12 * fastener.d)
+                    {
+                        coef = t1 / (4 * fastener.d - 2);
+                    }
+
+                    else
+                    {
+                        if (t1 < 6 * fastener.d)
+                        {
+                            coef = 0;
+                        }
+                        else if (t1 > 6 * fastener.d && t1 < 8 * fastener.d)
+                        {
+                            coef = t1 / (2 * fastener.d - 3);
+                        }
+                    }
+                }
+                double fhaxk = coef * faxk;
+
                 double fheadk = 70 * Math.Pow(10, -6) * Math.Pow(pk, 2);
 
                 faxrk = Math.Min(
@@ -359,13 +437,26 @@ namespace BeaverCore.Connections
             }
             else if (fastener.type == "Screw")
             {
-                double l_ef2 = tpen <= t_thread ?
-                tpen - fastener.d :
-                t_thread - fastener.d;
-                double f_ax_k = 0.52 * Math.Pow(fastener.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);
-                double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2));
-                double F_1_ax_alpha_k = fastener.d * l_ef2 * f_ax_alpha_k * Math.Min(fastener.d / 8, 1);
-                value = F_1_ax_alpha_k;
+                // EC5 SECTION 8.7.2
+                bool SECTION_8_7_2_item4 = fastener.d > 6 ^ fastener.d < 12 ? true : false;
+                double nef = 1; // must be accounted later in AxialConnection.cs
+
+                if (SECTION_8_7_2_item4)
+                {
+                    double l_ef2 = tpen <= t_thread ? (tpen - fastener.d) : (t_thread - fastener.d);
+                    double f_ax_k = 0.52 * Math.Pow(fastener.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);      // EQ 8.39
+                    double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2)); // EQ 8.40
+                    double F_1_ax_alpha_k = nef*fastener.d * l_ef2 * f_ax_alpha_k * Math.Min(fastener.d / 8, 1);        // EQ 8.38
+                    value = F_1_ax_alpha_k;
+                }
+                else
+                {
+                    double l_ef2 = tpen <= t_thread ? (tpen - fastener.d) : (t_thread - fastener.d);
+                    double f_ax_k = 0.52 * Math.Pow(fastener.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);      // EQ 8.39
+                    double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2)); // EQ 8.40
+                    double F_1_ax_alpha_k = nef*fastener.d * l_ef2 * f_ax_alpha_k * Math.Pow(pk/385,0.8);               // EQ 8.40a // 385= rho a
+                    value = F_1_ax_alpha_k;
+                }
             }
             else if (fastener.type == "Bolt")
             {
@@ -379,63 +470,6 @@ namespace BeaverCore.Connections
             return value;
         }
 
-        public static double CalcNailfaxk(double tpen, double d, double pk, bool smooth)
-        {
-            // EC5 SECTION 8.3.2 EQ. 8.23
-            double faxk = 20 * Math.Pow(10, -6) * Math.Pow(pk, 2);
-            double coef = 1;
-            if (smooth == true)
-            {
-                if (tpen < 8 * d)
-                {
-                    coef = 0;
-                }
-                else if (tpen > 8 * d && tpen < 12 * d)
-                {
-                    coef = tpen / (4 * d - 2);
-                }
-
-                else
-                {
-                    if (tpen < 6 * d)
-                    {
-                        coef = 0;
-                    }
-                    else if (tpen > 6 * d && tpen < 8 * d)
-                    {
-                        coef = tpen / (2 * d - 3);
-                    }
-                }
-            }
-            return coef * faxk;
-        }
-
-        public static double CalcKser(Fastener fastener, Material mat1, Material mat2)
-        {
-            // calculates Kser for the fastener
-            // EC5 SECTION 7.1 TABLE 7.1
-            double kser;
-            double pm = Math.Sqrt(mat1.pk * mat2.pk);
-            switch (fastener.type)
-            {
-                case "Dowel":
-                    kser = Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
-                    break;
-                case "Nail":
-                    kser = fastener.predrilled1 ?
-                        Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23
-                        : Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 30;
-                    break;
-                case "Screw":
-                    kser = Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
-                    break;
-                case "Staples":
-                    kser = Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 80;
-                    break;
-                default:
-                    throw new ArgumentException("Could not find connection type");
-            }
-            return kser;
-        }
+        
     }
 }
