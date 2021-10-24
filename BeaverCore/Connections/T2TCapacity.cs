@@ -40,7 +40,7 @@ namespace BeaverCore.Connections
             fh2k = CalcFhk(preDrilled2, fastener, mat2.pk, alpha2, mat2.type);
             beta = fh2k / fh1k;
             tpen = GetTpen(fastener, t1, t2);
-            Faxrk = git(mat1.pk, fastener, t1, this.tpen, alphafast, fastener.lth);
+            Faxrk = CalcFaxrk(mat1.pk, fastener, t1, this.tpen, alphafast, fastener.lth);
             kser = CalcKser(fastener, mat1, mat2);
         }
 
