@@ -360,6 +360,12 @@ namespace BeaverCore.Connections
             return fhk;
         }
 
+        public static double CalcFtens(double ds, double fu, double Ymsteel)
+        {
+            return (Math.PI * Math.Pow(ds, 2) / 4) * fu / Ymsteel;
+        }
+
+
         public static double CalcFaxrk(double pk, Fastener fastener, double t1, double tpen, double alpha, double t_thread)
         {
             double value = 0;
@@ -458,6 +464,7 @@ namespace BeaverCore.Connections
                     value = F_1_ax_alpha_k;
                 }
             }
+            // EC5 SECTION 8.5.2
             else if (fastener.type == "Bolt")
             {
                 double fc90k = t_thread;

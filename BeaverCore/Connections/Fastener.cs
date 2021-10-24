@@ -24,6 +24,8 @@ namespace BeaverCore.Connections
         public bool smooth;
         public double alpha;    // angle between fastener and timber grain
 
+        public double Ymsteel;
+
         public bool predrilled1;
         public bool predrilled2;
 
@@ -43,7 +45,9 @@ namespace BeaverCore.Connections
 
         public Fastener() { }
 
-        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0, double L = 0, double Fu = 800000000, bool Smooth = true, double faxk=0,double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0)
+        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0,
+            double L = 0, double Fu = 4000000000, bool Smooth = true, double faxk=0,
+            double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05)
         {
             switch (fastenerType)
             {
@@ -57,6 +61,7 @@ namespace BeaverCore.Connections
                     smooth = true;
                     this.faxk = faxk;
                     this.fheadk = fheadk;
+                    this.Ymsteel = Ymsteel;
                     break;
                 case "Screw":
                     d = D;
@@ -68,6 +73,7 @@ namespace BeaverCore.Connections
                     smooth = true;
                     this.faxk = faxk;
                     this.fheadk = fheadk;
+                    this.Ymsteel = Ymsteel;
                     break;
                 case "Bolt":
                     d = D;
@@ -79,6 +85,7 @@ namespace BeaverCore.Connections
                     smooth = true;
                     this.faxk = faxk;
                     this.fheadk = fheadk;
+                    this.Ymsteel = Ymsteel;
                     break;
                 case "Nail":
                     d = D;
@@ -90,6 +97,7 @@ namespace BeaverCore.Connections
                     smooth = Smooth;
                     this.faxk = faxk;
                     this.fheadk = fheadk;
+                    this.Ymsteel = Ymsteel;
                     break;
                 default:
                     throw new ArgumentException("Fasterner type not found");
