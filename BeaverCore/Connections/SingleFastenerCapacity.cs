@@ -420,7 +420,6 @@ namespace BeaverCore.Connections
                     }
                 }
                 double fhaxk = coef * faxk;
-
                 double fheadk = 70 * Math.Pow(10, -6) * Math.Pow(pk, 2);
 
                 faxrk = Math.Min(
@@ -438,7 +437,9 @@ namespace BeaverCore.Connections
             else if (fastener.type == "Screw")
             {
                 // EC5 SECTION 8.7.2
-                bool SECTION_8_7_2_item4 = fastener.d > 6 ^ fastener.d < 12 ? true : false;
+                bool condition1 = fastener.d > 6 || fastener.d < 12;
+                bool condition2 = fastener.d / fastener.ds > 0.6 || fastener.d / fastener.ds < 0.75;
+                bool SECTION_8_7_2_item4 = condition1 && condition2;
                 double nef = 1; // must be accounted later in AxialConnection.cs
 
                 if (SECTION_8_7_2_item4)
@@ -465,11 +466,7 @@ namespace BeaverCore.Connections
                 double areadw = Math.Pow(fastener.dh, 2) * Math.PI / 4;
                 value = Math.Min(3 * fc90k * (areadw - aread), fastener.fu * aread);
             }
-
-
             return value;
         }
-
-        
     }
 }
