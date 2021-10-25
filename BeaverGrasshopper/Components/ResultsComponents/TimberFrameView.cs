@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using BeaverCore.Actions;
+using BeaverCore.Misc;
 
 namespace BeaverGrasshopper.Components.ResultsComponents
 {
@@ -46,6 +47,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             pManager.AddMeshParameter("Mesh", "M", "Mesh", GH_ParamAccess.list);
             pManager.AddTextParameter("Legend T", "T", "Legend T", GH_ParamAccess.list);
             pManager.AddColourParameter("Legend C", "C", "Legend C", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Maximum Utilization", "MaxUtil", "Maximum Utilization", GH_ParamAccess.item);
         }
         UtilizationType util_type = UtilizationType.All;
         SLSOptions sls_options = SLSOptions.Inst;
@@ -126,14 +128,15 @@ namespace BeaverGrasshopper.Components.ResultsComponents
 
                 }
             }
-            
+            double max_util = 0;
             foreach (GH_TimberFrame gh_timber_frame in gh_timber_frames)
             {
                 TimberFrame timber_frame = gh_timber_frame.Value;
-                Mesh mesh = MeshfromTimberFrame(timber_frame, util_type, uls_dir, sls_options, loadcase_index);
+                Mesh mesh = MeshfromTimberFrame(timber_frame, util_type, uls_dir, sls_options, loadcase_index,ref max_util);
                 meshes.Add(mesh);
             }
             DA.SetDataList(0, meshes);
+            DA.SetData(3, max_util);
 
         }
 
@@ -185,6 +188,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             NetFin
         }
         #region COLORMESHING
+
         Color getColorfromValue(double minV, double maxV, double V)
         {
             Color c = new Color();
@@ -225,8 +229,23 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             return c;
         }
 
-        public Mesh MeshfromTimberFrame(TimberFrame timber_frame, UtilizationType util_type, ULSDirection dir, SLSOptions sls, int loadcase_index)
+        Color getColorfromValue(double minV, double maxV, double V, List<Color> colors)
         {
+            double value = (V - minV) / (maxV - minV);
+            return Utils.colorInterpolation(colors, value);
+        }
+
+        public Mesh MeshfromTimberFrame(TimberFrame timber_frame, UtilizationType util_type, ULSDirection dir, SLSOptions sls, int loadcase_index,ref double max_util)
+        {
+            List<Color> colors = new List<Color>() {
+                Color.FromArgb(165, 0, 38), Color.FromArgb(215,48,39),
+                Color.FromArgb(244,109,67), Color.FromArgb(253,174,97),
+                Color.FromArgb(254,224,144), Color.FromArgb(255,255,191),
+                Color.FromArgb(224,243,248), Color.FromArgb(171,217,233),
+                Color.FromArgb(116,173,209), Color.FromArgb(69,117,180),
+                Color.FromArgb(49,54,149) };
+            colors.Reverse();
+            double new_max_util = 0;
             Point3d point_0 = new Point3d(timber_frame.FrameAxis.start.x, timber_frame.FrameAxis.start.y, timber_frame.FrameAxis.start.z);
             Point3d point_1 = new Point3d(timber_frame.FrameAxis.end.x, timber_frame.FrameAxis.end.y, timber_frame.FrameAxis.end.z);
             Line frame_line = new Line(point_0, point_1);
@@ -266,7 +285,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     Point3d[] crosec_points = crosec_curve.ToArray();
                     UtilizationResult util_result = RetrieveUtilization(frame_point, ref util_type, dir, sls, loadcase_index);
                     double util = util_result.util;
-                    Color color = getColorfromValue(0, 1, util);
+                    if (util > new_max_util) new_max_util = util;
+                    Color color = getColorfromValue(0, 1, util,colors);
                     CroSecPoints cs_points = new CroSecPoints(crosec_points, color);
 
                     foreach (Point3d point in crosec_points)
@@ -300,6 +320,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
 
                 }
             }
+            if (max_util < new_max_util) max_util = new_max_util;
             return output;
         }
 
@@ -732,9 +753,10 @@ namespace BeaverGrasshopper.Components.ResultsComponents
 
 
             //throw new NotImplementedException();
-            GH_Document document = Grasshopper.Instances.ActiveCanvas.Document;
-            if (document != null)
+            
+            if (Grasshopper.Instances.ActiveCanvas.Document != null)
             {
+                GH_Document document = Grasshopper.Instances.ActiveCanvas.Document;
                 if (util_type != UtilizationType.All)
                 {
                     if (update_field_2)

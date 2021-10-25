@@ -75,8 +75,8 @@ namespace BeaverGrasshopper
             List<List<List<List<double>>>> force_results = new List<List<List<List<double>>>>();
             List<List<List<Vector3>>> trans_displacement_results = new List<List<List<Vector3>>>();
             List<List<List<Vector3>>> rot_displacement_results = new List<List<List<Vector3>>>();
-            BeamForces.solve(model, beam_id, -1, 100000, sub_div+1, out force_results);
-            BeamDisplacements.solve(model, beam_id, -1, 100000, sub_div+1, out trans_displacement_results, out rot_displacement_results);
+            BeamForces.solve(model, beam_id, null, 100000, sub_div+1, out force_results);
+            BeamDisplacements.solve(model, beam_id, null, 100000, sub_div+1, out trans_displacement_results, out rot_displacement_results);
             List<ModelElement> beams = model.elementsByID(beam_id);
             List<Force>[,] elements_forces = new List<Force>[beams.Count, sub_div + 1];
             List<Displacement>[,] elements_displacements = new List<Displacement>[beams.Count, sub_div + 1];
@@ -104,17 +104,29 @@ namespace BeaverGrasshopper
             }, i =>
             {
                 Dictionary<double, TimberFramePoint> TFPoints = new Dictionary<double, TimberFramePoint>();
-                ModelBeam beam = (ModelBeam)beams[i];
+                ModelBeam modelBeam = beams[i] as ModelBeam;
+                BuilderElement beam = modelBeam.BuilderElement();
+                double spanLength = modelBeam.elementLength(model);
+                try
+                {
+                    spanLength = (double)beam.UserData["SpanLength"];
+                }
+                catch
+                {
+                    if (!beam.UserData.ContainsKey("SpanLenght")) AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
+                                          "Beam does not contain span lenght data. Element lenght will be used");
+                    else if (!(beam.UserData["SpanLenght"] is double)) throw new Exception("SpanLenght values must be double");
+                }
                 CroSec crosec = beam.crosec;
                 BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambatoBeaver(beam.crosec, material);
-                double rel_pos_step = beam.elementLength(model) / (sub_div);
-                BeaverCore.Geometry.Point3D node1 = PointKarambatoBeaver(model.nodes[beam.node_inds[0]].pos);
-                BeaverCore.Geometry.Point3D node2 = PointKarambatoBeaver(model.nodes[beam.node_inds[1]].pos);
+                double rel_pos_step = modelBeam.elementLength(model) / (sub_div);
+                BeaverCore.Geometry.Point3D node1 = PointKarambatoBeaver(model.nodes[modelBeam.node_inds[0]].pos);
+                BeaverCore.Geometry.Point3D node2 = PointKarambatoBeaver(model.nodes[modelBeam.node_inds[1]].pos);
                 BeaverCore.Geometry.Line beaver_line = new BeaverCore.Geometry.Line(node1, node2);
                 for (int j = 0; j < sub_div + 1; j++)
                 {
                     TimberFramePoint TFPoint = new TimberFramePoint(elements_forces[i, j], elements_displacements[i, j], beaver_crosec,
-                        2, beam.buckling_length(BucklingDir.bklY), beam.buckling_length(BucklingDir.bklZ), beam.elementLength(model), 0.9);
+                        2, modelBeam.buckling_length(BucklingDir.bklY), modelBeam.buckling_length(BucklingDir.bklZ), spanLength, 0.9);
                     TFPoints[j * rel_pos_step] = TFPoint;
                 }
                 TimberFrame timber_frame = new TimberFrame(TFPoints, beaver_line);
