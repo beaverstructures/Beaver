@@ -162,7 +162,6 @@ namespace BeaverCore.Frame
             double ry = CS.ry;
             double rz = CS.rz;
 
-            double Km = 0.7;
             double Ym = CS.material.Ym;
             double fc0k = CS.material.fc0k;
             double ft0k = CS.material.ft0k;
@@ -171,6 +170,12 @@ namespace BeaverCore.Frame
             double E05 = CS.material.E05;
             double G05 = CS.material.G05;
             double Bc = CS.material.Bc;
+
+
+            //Define EC5 Section 6.1.6 Bending Coefficients
+            double Km = 1;
+            if (CS is CroSec_Rect) { Km = 0.7; };
+            if (CS is CroSec_Circ) { Km = 1; }; 
 
             //Define EC5 Section 6.1.7 Shear Coefficients
             double kcrit = 0.67;
