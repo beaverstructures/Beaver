@@ -20,13 +20,13 @@ using System.Threading.Tasks;
 
 namespace BeaverGrasshopper
 {
-    public class KarambatoBeaver : GH_Component
+    public class KarambaToBeaver : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the KarambatoBeaver class.
+        /// Initializes a new instance of the KarambaToBeaver class.
         /// </summary>
-        public KarambatoBeaver()
-          : base("KarambatoBeaver", "Karamba",
+        public KarambaToBeaver()
+          : base("KarambaToBeaver", "Karamba",
               "Retrieves TimberFrames from Karamba beams",
               "Beaver", "External")
         {
@@ -118,10 +118,10 @@ namespace BeaverGrasshopper
                     else if (!(beam.UserData["SpanLenght"] is double)) throw new Exception("SpanLenght values must be double");
                 }
                 CroSec crosec = beam.crosec;
-                BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambatoBeaver(beam.crosec, material);
+                BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambaToBeaver(beam.crosec, material);
                 double rel_pos_step = modelBeam.elementLength(model) / (sub_div);
-                BeaverCore.Geometry.Point3D node1 = PointKarambatoBeaver(model.nodes[modelBeam.node_inds[0]].pos);
-                BeaverCore.Geometry.Point3D node2 = PointKarambatoBeaver(model.nodes[modelBeam.node_inds[1]].pos);
+                BeaverCore.Geometry.Point3D node1 = PointKarambaToBeaver(model.nodes[modelBeam.node_inds[0]].pos);
+                BeaverCore.Geometry.Point3D node2 = PointKarambaToBeaver(model.nodes[modelBeam.node_inds[1]].pos);
                 BeaverCore.Geometry.Line beaver_line = new BeaverCore.Geometry.Line(node1, node2);
                 for (int j = 0; j < sub_div + 1; j++)
                 {
@@ -135,7 +135,7 @@ namespace BeaverGrasshopper
             DA.SetDataList(0, timber_frames);
         }
 
-        BeaverCore.CrossSection.CroSec CroSecKarambatoBeaver(CroSec karamba_crosec, Material material)
+        BeaverCore.CrossSection.CroSec CroSecKarambaToBeaver(CroSec karamba_crosec, Material material)
         {
             if (karamba_crosec is CroSec_Trapezoid)
             {
@@ -156,7 +156,7 @@ namespace BeaverGrasshopper
             }
         }
 
-        BeaverCore.Geometry.Point3D PointKarambatoBeaver(Point3 karamba_point)
+        BeaverCore.Geometry.Point3D PointKarambaToBeaver(Point3 karamba_point)
         {
             return new BeaverCore.Geometry.Point3D(karamba_point.X, karamba_point.Y, karamba_point.Z);
         }

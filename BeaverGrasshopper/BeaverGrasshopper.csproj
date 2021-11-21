@@ -63,19 +63,17 @@
       <HintPath>..\packages\Grasshopper.7.10.21256.17001\lib\net48\Grasshopper.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="karamba">
-      <HintPath>..\..\..\..\..\Program Files\Rhino 7\Plug-ins\Karamba\karamba.gha</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="karambaCommon">
-      <HintPath>..\..\..\..\..\Program Files\Rhino 7\Plug-ins\Karamba\karambaCommon.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Rhino.UI, Version=7.10.21256.17000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
       <HintPath>..\packages\RhinoCommon.7.10.21256.17001\lib\net48\Rhino.UI.dll</HintPath>
     </Reference>
     <Reference Include="RhinoCommon, Version=7.10.21256.17000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
       <HintPath>..\packages\RhinoCommon.7.10.21256.17001\lib\net48\RhinoCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="karambaCommon">
+      <HintPath>..\packages\Karamba\karambaCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="karamba">
+      <HintPath>..\packages\Karamba\karamba.gha</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -95,7 +93,8 @@
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
-    <Compile Include="Components\InteropComponents\KarambatoBeaver.cs" />
+    <Compile Include="Components\InteropComponents\LinesToBKBeam.cs" />
+    <Compile Include="Components\InteropComponents\KarambaToBeaver.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Materiall.cs" />
