@@ -24,7 +24,9 @@ namespace BeaverCore.Connections
         public bool smooth;
         public double alpha;    // angle between fastener and timber grain
 
+        // Recently added properties
         public double Ymsteel;
+        public Vector2D vector;
 
         public bool predrilled1;
         public bool predrilled2;
@@ -105,6 +107,7 @@ namespace BeaverCore.Connections
 
             double sin = Math.Sin(Math.PI / 180 * alpha);
             double cos = Math.Cos(Math.PI / 180 * alpha);
+            vector = new Vector2D(sin, cos);
 
             t1 = b1 - sin*offset;
             t2 = l - t1;
@@ -116,23 +119,17 @@ namespace BeaverCore.Connections
     }
     public class FastenerForce
     {
-        public double f = 0;
+        public double Faxd = 0;
+        public double Fvd = 0;
         public Vector2D force_vector;
         public double alpha = 0;
         public string duration;
 
-        public FastenerForce(double f, double alpha, string duration)
+        public FastenerForce(double faxd=0, double fvd=0, double alpha=0, string duration ="")
         {
-            this.f = f;
+            Faxd = faxd;
+            Fvd = fvd;
             this.alpha = alpha;
-            this.duration = duration;
-        }
-
-        public FastenerForce(double f, double alpha, Vector2D force_vector, string duration)
-        {
-            this.f = f;
-            this.alpha = alpha;
-            this.force_vector = force_vector;
             this.duration = duration;
         }
     }

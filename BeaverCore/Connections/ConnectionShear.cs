@@ -10,6 +10,13 @@ using System.Text;
 namespace BeaverCore.Connections
 {
     using DictResults = Dictionary<string, double>;
+
+    public enum ConnectionType
+    {
+        TimbertoTimber,
+        TimbertoSteel
+    }
+
     [Serializable]
     public class ConnectionShearFastenerCapacity
     {
@@ -61,7 +68,7 @@ namespace BeaverCore.Connections
             int nperp = spacing.nperp;
             double n = npar * nperp;
             double nef = Nef();
-            double alpha = capacity.alpha1;
+            double alpha = capacity.fastener.alpha;
             double nalpha;
             if (capacity is T2TCapacity)
             {
@@ -95,7 +102,7 @@ namespace BeaverCore.Connections
             double nef = Nef();
             foreach (SingleFastenerCapacity capacity in fastener_capacities)
             {
-                double alpha = capacity.alpha1;
+                double alpha = capacity.fastener.alpha;
                 double nalpha;
                 if (capacity is T2TCapacity)
                 {

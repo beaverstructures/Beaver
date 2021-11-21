@@ -176,6 +176,7 @@ namespace BeaverCore.Connections
 
         public int npar;
         public int nperp;
+        public int n;
 
         /// <summary>
         /// Creates a generic AxialSpacing object based on spacing parameters.
@@ -195,6 +196,7 @@ namespace BeaverCore.Connections
             this.e=e;
             this.npar = npar;
             this.nperp = nperp;
+            n = npar * nperp;
         }
 
         //EC5 Section 8.7.2

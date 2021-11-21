@@ -41,6 +41,12 @@ namespace BeaverCore.Connections
 
         public SingleFastenerCapacity() { }
 
+        public enum ConnectionType
+        {
+            TimbertoTimber,
+            TimbertoSteel
+        }
+
         // CONSTRUCTORS
 
         public void GetFvk()
