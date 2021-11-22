@@ -113,9 +113,9 @@ namespace BeaverGrasshopper
                 }
                 catch
                 {
-                    if (!beam.UserData.ContainsKey("SpanLenght")) AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
-                                          "Beam does not contain span lenght data. Element lenght will be used");
-                    else if (!(beam.UserData["SpanLenght"] is double)) throw new Exception("SpanLenght values must be double");
+                    if (!beam.UserData.ContainsKey("SpanLength")) AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
+                                          "Beam does not contain span length data. Element length will be used");
+                    else if (!(beam.UserData["SpanLengtht"] is double)) throw new Exception("SpanLength values must be double");
                 }
                 CroSec crosec = beam.crosec;
                 BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambaToBeaver(beam.crosec, material);

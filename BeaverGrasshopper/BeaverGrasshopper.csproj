@@ -95,6 +95,7 @@
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
     <Compile Include="Components\InteropComponents\LinesToBKBeam.cs" />
     <Compile Include="Components\InteropComponents\KarambaToBeaver.cs" />
+    <Compile Include="Components\InteropComponents\KarambaAddBeaverParams.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_Materiall.cs" />
