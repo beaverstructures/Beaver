@@ -19,7 +19,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public KarambaAddBeaverParams()
-          : base("KarambaAddBeaverParams", "AddLength",
+          : base("Karamba add beaver parameters", "AddBeaverParams",
               "Adds Beaver parameters to a Karamba Beam Element for performing ULS and SLS checks in Beaver",
               "Category", "Subcategory")
         {
