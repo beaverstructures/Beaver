@@ -408,7 +408,6 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             ULSDirection dir = ULSDirection.All, SLSOptions sls = SLSOptions.All, int load_case_index = -1)
         {
             UtilizationResult max_result = new UtilizationResult();
-            double max_util = 0;
             if (util_type == UtilizationType.All)
             {
                 List<double[]> utilsUY = RetrieveULSUtilization(frame_point, ULSDirection.Y);

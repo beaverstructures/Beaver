@@ -192,7 +192,6 @@ namespace BeaverCore.Actions
             {
                 List<double> force_list = force.ToList();
                 force_lists.Add(force_list);
-                int idx = 0;
                 double fkmod = Utils.KMOD(SC, force.duration);
                 for (int i = 0; i < 6; i++)
                 {

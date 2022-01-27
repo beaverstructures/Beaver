@@ -6,49 +6,48 @@ using BeaverCore.Materials;
 
 namespace BeaverGrasshopper
 {
-    class Comp_Material : GH_Component
+    public class Comp_Material : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the MyComponent1 class.
+        /// Initializes a new instance of the Comp_Materiall class.
         /// </summary>
         public Comp_Material()
-          : base("Material", "Mat",
-              "Create a timber material",
-              "Beaver", "1.Frame")
+          : base("Comp_Materiall", "Nickname",
+              "Description",
+              "Beaver", "Subcategory")
         {
         }
 
-        /// <summary>
-        /// Registers all the input parameters for this component.
-        /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             //0
-            pManager.AddTextParameter("Name", "Name", "Material Name. Perferably use material class e.g. C24 or GL24c", GH_ParamAccess.item,"GL24c");
+            pManager.AddTextParameter("Name", "Name", "Material Name. Perferably use material class e.g. C24 or GL24c. Default is set to GL24c.", GH_ParamAccess.item, "GL24c");
             //1
-            pManager.AddTextParameter("Type", "Type", "Input a text with Material type according to EC5 Table 3.2. Acceptable values: \nSolid Timber \nGluelam \nLVL", GH_ParamAccess.item,"Glulam");
+            pManager.AddTextParameter("Type", "Type", "Input a text with Material type according to EC5 Table 3.2. Acceptable values: \nSolid Timber \nGluelam \nLVL. Default is set to Gluelam.", GH_ParamAccess.item, "Glulam");
             //2
-            pManager.AddNumberParameter("Bending Resistance", "fmk", "Bending Characteristic Resistance in [kN/cm²]", GH_ParamAccess.item, 2.4);
+            pManager.AddNumberParameter("Bending Resistance", "fmk", "Bending Characteristic Resistance in [kN/cm²]. Default is set to 2.4 kN/cm².", GH_ParamAccess.item, 2.4);
             //3
-            pManager.AddNumberParameter("Parallel Tension Resistence", "ft0k", "Parallel Characteristic Tension Resistance in [kN/cm²]", GH_ParamAccess.item, 1.65);
+            pManager.AddNumberParameter("Parallel Tension Resistence", "ft0k", "Parallel Characteristic Tension Resistance in [kN/cm²]. Default is set to 1.65 kN/cm².", GH_ParamAccess.item, 1.65);
             //4
-            pManager.AddNumberParameter("Perpendicular Tension Resistence", "ft90k", "Perpendicular Characteristic Tension Resistance in [kN/cm²]", GH_ParamAccess.item, 0.04);
+            pManager.AddNumberParameter("Perpendicular Tension Resistence", "ft90k", "Perpendicular Characteristic Tension Resistance in [kN/cm²]. Default is set to 0.04 kN/cm².", GH_ParamAccess.item, 0.04);
             //5
-            pManager.AddNumberParameter("Palallel Compression Resistence", "fc0k", "Palallel Characteristic Compression Resistance in [kN/cm²]", GH_ParamAccess.item, 2.4);
+            pManager.AddNumberParameter("Palallel Compression Resistence", "fc0k", "Palallel Characteristic Compression Resistance in [kN/cm²]. Default is set to 2.40 kN/cm².", GH_ParamAccess.item, 2.4);
             //6
-            pManager.AddNumberParameter("Perpendicular Compression Resistence", "fc90k", "Perpendicular Characteristic Compression Resistance in [kN/cm²]", GH_ParamAccess.item, 0.27);
+            pManager.AddNumberParameter("Perpendicular Compression Resistence", "fc90k", "Perpendicular Characteristic Compression Resistance in [kN/cm²]. Default is set to 0.27 kN/cm².", GH_ParamAccess.item, 0.27);
             //7
-            pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [kN/cm²]", GH_ParamAccess.item,0.27);
+            pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [kN/cm²]. Default is set to 0.4 kN/cm².", GH_ParamAccess.item, 0.4);
             //8
-            pManager.AddNumberParameter("Mean modulus of elasticity parallel", "E0mean", "Mean modulus of elasticity parallel to grain [GPa]", GH_ParamAccess.item,1160);
+            pManager.AddNumberParameter("Mean modulus of elasticity parallel", "E0mean", "Mean modulus of elasticity parallel to grain [GPa]. Default is set to 1160 GPa.", GH_ParamAccess.item, 1160);
             //9
-            pManager.AddNumberParameter("5% modulus of elasticity parallel", "E05", "5% modulus of elasticity parallel to grain [GPa]", GH_ParamAccess.item,940);
+            pManager.AddNumberParameter("5% modulus of elasticity parallel", "E05", "5% modulus of elasticity parallel to grain [GPa]. Default is set to 940 GPa.", GH_ParamAccess.item, 940);
             //10
-            pManager.AddNumberParameter("Mean modulus of elasticity perpendicular", "E90mean", "Mean modulus of elasticity perpendiculat to grain [GPa]", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Mean modulus of elasticity perpendicular", "E90mean", "Mean modulus of elasticity perpendiculat to grain [GPa]. Default is set to 0 GPa.", GH_ParamAccess.item, 0);
             //11
-            pManager.AddNumberParameter("Mean modulus of elasticity shear", "E0mean", "Mean modulus of elasticity shear to grain [GPa]", GH_ParamAccess.item,58.75);
+            pManager.AddNumberParameter("Mean modulus of elasticity shear", "Gmean", "Mean modulus of elasticity shear to grain [GPa]. Default is set to 58.75 GPa.", GH_ParamAccess.item, 58.75);
             //12
-            pManager.AddNumberParameter("Material Coefficient", "γm", "Material Coefficient. If no value is provided, Beaver will calculate it according to EC5, 2.4.1, Tab. 2.3.", GH_ParamAccess.item,1.25);
+            pManager.AddNumberParameter("5% modulus of elasticity shear", "G05", "5th-percentile modulus of elasticity shear to grain [GPa]. Default is set to 54 GPa.", GH_ParamAccess.item, 54);
+            //13
+            pManager.AddNumberParameter("Material Coefficient", "γm", "Material Coefficient. If no value is provided, Beaver will calculate it according to EC5, 2.4.1, Tab. 2.3.", GH_ParamAccess.item, 1.25);
         }
 
         /// <summary>
@@ -78,6 +77,7 @@ namespace BeaverGrasshopper
             double E05 = 0;
 
             double Gmean = 0;
+            double G05 = 0;
             double E90mean = 0;
 
             double Ym = 0;
@@ -98,11 +98,12 @@ namespace BeaverGrasshopper
 
             DA.GetData(10, ref E90mean);
             DA.GetData(11, ref Gmean);
+            DA.GetData(12, ref G05);
 
-            DA.GetData(12, ref Ym);
+            DA.GetData(13, ref Ym);
 
-
-            Material mat = new Material(type, name, fmk*1e7, ft0k * 1e7, ft90k * 1e7, fc0k * 1e7, fc90k * 1e7, fvk * 1e7, E0mean * 1e7, E05 * 1e7, E90mean * 1e7, Gmean * 1e7, Ym);
+            
+            Material mat = new Material(name, type, fmk * 1e7, ft0k * 1e7, ft90k * 1e7, fc0k * 1e7, fc90k * 1e7, fvk * 1e7, E0mean * 1e7, E05 * 1e7, E90mean * 1e7, Gmean * 1e7, G05 * 1e7, Ym);
 
             DA.SetData(0, new GH_Material(mat));
         }
@@ -116,7 +117,7 @@ namespace BeaverGrasshopper
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.Material;
             }
         }
 
@@ -125,7 +126,7 @@ namespace BeaverGrasshopper
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("45F35C03-D837-4CB8-92AE-442CE621AD9D"); }
+            get { return new Guid("ff7ec815-f3cd-4c53-878f-e32bc33ae53f"); }
         }
     }
 }

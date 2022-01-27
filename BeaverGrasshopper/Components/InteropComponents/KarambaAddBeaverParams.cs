@@ -103,7 +103,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("fe2a3ffb-9774-43b9-8785-78683c8617ce"); }
+            get { return new Guid("c8376373-268e-471f-ac61-933b148a1fd8"); }
         }
     }
 }
