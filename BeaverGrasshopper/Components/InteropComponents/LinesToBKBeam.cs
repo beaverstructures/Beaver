@@ -18,8 +18,10 @@ using Karamba.Utilities;
 using Rhino.Geometry;
 namespace BeaverGrasshopper
 {
+    /*
     public class AddSpanLengthToKaramba : GH_Component
     {
+        
         private static readonly bool default_remove_dup = true;
         private static readonly bool default_bending = true;
         private static readonly bool default_set_bkl_len = true;
@@ -30,7 +32,7 @@ namespace BeaverGrasshopper
         private static readonly double default_ToPolyline_Tolerance = 0.01;
         private static readonly double default_ToPolyline_minEdgeLength = 0.25;
         private static Vector3d default_z_axis = new Vector3d(0.0, 0.0, 1.0);
-
+        
         /// <summary>
         /// Initializes a new instance of the AddSpanLengthToKaramba class.
         /// </summary>
@@ -77,6 +79,7 @@ namespace BeaverGrasshopper
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+
             UnitConversion base_length = UnitsConversionFactory.Conv().base_length;
 		List<GH_Curve> list = new List<GH_Curve>();
 		List<GH_Point> list2 = new List<GH_Point>();
@@ -153,6 +156,7 @@ namespace BeaverGrasshopper
 		DA.SetDataList(0, (IEnumerable)ToGH.Values(out_beams));
 		DA.SetDataList(1, (IEnumerable)ToGH.Values(out_points));
 		DA.SetData(2, (object)new GH_String(info));
+ 
         }
 
         /// <summary>
@@ -173,7 +177,7 @@ namespace BeaverGrasshopper
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("4d798265-19cd-4524-8b9a-2f36f6994d81"); }
+            get { return new Guid("873af011-f8c1-4295-ae0a-50676ec0447a"); }
         }
-    }
+    }*/
 }

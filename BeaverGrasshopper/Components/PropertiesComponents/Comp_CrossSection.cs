@@ -14,7 +14,7 @@ namespace BeaverGrasshopper
     {
 
         string crosec_type = "rectangular";
-        bool updated = false;
+        // bool updated = false;
 
         /// <summary>
         /// Initializes a new instance of the Comp_CrossSection class.

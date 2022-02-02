@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 
 namespace BeaverCore.Materials
 {
@@ -35,7 +30,9 @@ namespace BeaverCore.Materials
 
         public Material() { }
 
-        public Material(string _name, string _type, double _fmk, double _ft0k, double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, double _E05, double _E90mean, double _Gmean,double G05, double _ym=0)
+        public Material(string _name, string _type, double _fmk, double _ft0k, 
+            double _ft90k, double _fc0k, double _fc90k, double _fvk, double _E0mean, 
+            double _E05, double _E90mean, double _Gmean,double G05, double pk , double _ym=0)
         {
             name = _name;
             type = _type;
@@ -50,59 +47,29 @@ namespace BeaverCore.Materials
             E05 = _E05;
             E90mean = _E90mean;
             Gmean = _Gmean;
-            Ym = _ym == 0 ? _ym : GetYm(type);
+            this.pk = pk;
+            Ym = (_ym == 0) ? GetYm(type): _ym;
             Bc = GetBc(type);
         }
-        public Material(string _type)
+
+        public void defaultMaterial()
         {
-            string text = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString();
-            var reader = new StreamReader(File.OpenRead(text + "\\Beaver\\MATERIALPROP.csv"));
-            bool stop = false;
-            while (!reader.EndOfStream || stop == false)
-            {
-                var line = reader.ReadLine();
-                var values = line.Split(',');
-                if (values[0] == _type)
-                {
-                    fc0k = Double.Parse(values[1]);
-                    ft0k = Double.Parse(values[2]);
-                    fmk = Double.Parse(values[3]);
-                    fc90k = Double.Parse(values[4]);
-                    ft90k = Double.Parse(values[5]);
-                    fvk = Double.Parse(values[6]);
-                    pk = 100 * Double.Parse(values[7]);
-                    E0mean = Double.Parse(values[8]);
-                    E05 = Double.Parse(values[9]);
-                    G05 = Double.Parse(values[10]);
-                    Ym = Double.Parse(values[12]);
-                    name = values[13];
-                    Bc = GetBc(type);
-
-                    stop = true;
-                }
-            }
-        }
-
-        public static List<string> GetTypesNames()
-        {
-
-            List<string> names = new List<string>();
-            string text = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString();
-            var reader = new StreamReader(File.OpenRead(text + "\\Beaver\\MATERIALPROP.csv"));
-            bool cont = false;
-            bool stop = false;
-            var line = reader.ReadLine();
-            while (!reader.EndOfStream || stop == false)
-            {
-                if (cont == false) { cont = true; }
-                else {
-                    var values = line.Split(',');
-                    names.Add(values[0]); }
-                line = reader.ReadLine();
-                if (line == "END") { stop = true; }
-
-            }
-            return names;
+            name = "GL24c";
+            type = "Glulam c";
+            fmk = 24;
+            ft0k = 17;
+            ft90k = 0.5;
+            fc0k = 21.5;
+            fc90k = 2.5;
+            fvk = 3.5;
+            E0mean = 11000;
+            G05 = 250;
+            E05 = 9100;
+            E90mean = 300;
+            Gmean = 650;
+            pk = 365;
+            Ym = 1.3;
+            Bc = 0.2;
         }
 
         public void Setkdef(int SC)
@@ -111,6 +78,8 @@ namespace BeaverCore.Materials
             switch (type)
             {
                 case "Solid Timber":
+                case "Softwood":
+                case "Hardwood":
                     switch (SC) {
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
@@ -118,6 +87,8 @@ namespace BeaverCore.Materials
                     }
                     break;
                 case "Glulam":
+                case "Gluelam c":
+                case "Gluelam h":
                     switch (SC) {
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
@@ -143,8 +114,12 @@ namespace BeaverCore.Materials
             switch (type)
             {
                 case "Solid Timber":
+                case "Softwood":
+                case "Hardwood":
                     return 0.2;
                 case "Glulam":
+                case "Glulam c":
+                case "Glulam h":
                     return 0.1;
                 case "LVL":
                     return 0.1;
@@ -159,8 +134,12 @@ namespace BeaverCore.Materials
             switch (type)
             {
                 case "Solid Timber":
+                case "Softwood":
+                case "Hardwood":
                     return 1.3;
                 case "Glulam":
+                case "Glulam c":
+                case "Glulam h":
                     return 1.25;
                 case "LVL":
                     return 1.2;

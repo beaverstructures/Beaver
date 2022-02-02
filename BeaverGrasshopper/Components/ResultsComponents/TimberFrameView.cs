@@ -99,7 +99,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             sls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].SLSComb;
             DA.GetData(1, ref type);
             UtilizationType new_util_type = (UtilizationType)Enum.Parse(typeof(UtilizationType), type, true);
-            if (update_util(util_type,new_util_type))
+            if (Update_util(util_type, new_util_type))
             {
                 update_field_2 = true;
                 update_field_3 = true;
@@ -124,7 +124,14 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                         uls_dir = new_uls_dir;
                     }
                     DA.GetData(3, ref loadcase_string);
-                    loadcase_index = Int32.Parse(loadcase_string);
+                    try
+                    {
+                        loadcase_index = Int32.Parse(loadcase_string);
+                    }
+                    catch
+                    {
+                    }
+
 
                 }
             }
@@ -132,12 +139,29 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             foreach (GH_TimberFrame gh_timber_frame in gh_timber_frames)
             {
                 TimberFrame timber_frame = gh_timber_frame.Value;
-                Mesh mesh = MeshfromTimberFrame(timber_frame, util_type, uls_dir, sls_options, loadcase_index,ref max_util);
+                Mesh mesh = MeshfromTimberFrame(timber_frame, util_type, uls_dir, sls_options, loadcase_index, ref max_util);
                 meshes.Add(mesh);
             }
-            DA.SetDataList(0, meshes);
-            DA.SetData(3, max_util);
 
+            DA.SetDataList(0, meshes);
+
+            List<String> legend = new List<String>() {
+                "0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%",">100%"
+            };
+            DA.SetDataList(1, legend);
+
+            List<Color> colors = new List<Color>() {
+                Color.Black,
+                Color.FromArgb(165, 0, 38), Color.FromArgb(215,48,39),
+                Color.FromArgb(244,109,67), Color.FromArgb(253,174,97),
+                Color.FromArgb(254,224,144), Color.FromArgb(255,255,191),
+                Color.FromArgb(224,243,248), Color.FromArgb(171,217,233),
+                Color.FromArgb(116,173,209), Color.FromArgb(69,117,180),
+                Color.FromArgb(49,54,149) };
+            colors.Reverse();
+            DA.SetDataList(2, colors);
+
+            DA.SetData(3, max_util);
         }
 
 
@@ -189,7 +213,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         }
         #region COLORMESHING
 
-        Color getColorfromValue(double minV, double maxV, double V)
+        Color GetColorfromValue(double minV, double maxV, double V)
         {
             Color c = new Color();
             double crange = (maxV - minV) / 4;
@@ -229,13 +253,14 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             return c;
         }
 
-        Color getColorfromValue(double minV, double maxV, double V, List<Color> colors)
+        Color GetColorfromValue(double minV, double maxV, double V, List<Color> colors)
         {
             double value = (V - minV) / (maxV - minV);
             return Utils.colorInterpolation(colors, value);
         }
 
-        public Mesh MeshfromTimberFrame(TimberFrame timber_frame, UtilizationType util_type, ULSDirection dir, SLSOptions sls, int loadcase_index,ref double max_util)
+        public Mesh MeshfromTimberFrame(TimberFrame timber_frame, UtilizationType util_type, ULSDirection dir, 
+            SLSOptions sls, int loadcase_index,ref double max_util)
         {
             List<Color> colors = new List<Color>() {
                 Color.FromArgb(165, 0, 38), Color.FromArgb(215,48,39),
@@ -286,7 +311,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     UtilizationResult util_result = RetrieveUtilization(frame_point, ref util_type, dir, sls, loadcase_index);
                     double util = util_result.util;
                     if (util > new_max_util) new_max_util = util;
-                    Color color = getColorfromValue(0, 1, util,colors);
+                    Color color = GetColorfromValue(0, 1, util,colors);
                     CroSecPoints cs_points = new CroSecPoints(crosec_points, color);
 
                     foreach (Point3d point in crosec_points)
@@ -301,11 +326,13 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     }
                     else
                     {
-                        List<MeshFace> meshfaces = new List<MeshFace>();
-                        meshfaces.Add(new MeshFace(4 * (i - 1), 4 * i, 4 * i + 1, 4 * (i - 1) + 1));
-                        meshfaces.Add(new MeshFace(4 * (i - 1) + 1, 4 * i + 1, 4 * i + 2, 4 * (i - 1) + 2));
-                        meshfaces.Add(new MeshFace(4 * (i - 1) + 2, 4 * i + 2, 4 * i + 3, 4 * (i - 1) + 3));
-                        meshfaces.Add(new MeshFace(4 * (i - 1) + 3, 4 * i + 3, 4 * i, 4 * (i - 1)));
+                        List<MeshFace> meshfaces = new List<MeshFace>
+                        {
+                            new MeshFace(4 * (i - 1), 4 * i, 4 * i + 1, 4 * (i - 1) + 1),
+                            new MeshFace(4 * (i - 1) + 1, 4 * i + 1, 4 * i + 2, 4 * (i - 1) + 2),
+                            new MeshFace(4 * (i - 1) + 2, 4 * i + 2, 4 * i + 3, 4 * (i - 1) + 3),
+                            new MeshFace(4 * (i - 1) + 3, 4 * i + 3, 4 * i, 4 * (i - 1))
+                        };
                         output.Faces.AddFaces(meshfaces);
 
                         if (i == rel_pos.Count)
@@ -338,7 +365,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             }
         }
         
-        public bool update_util(UtilizationType util_type, UtilizationType new_util_type)
+        public bool Update_util(UtilizationType util_type, UtilizationType new_util_type)
         {
             if (util_type == UtilizationType.All) { 
                 if (new_util_type != UtilizationType.All) return true;
@@ -408,13 +435,12 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             ULSDirection dir = ULSDirection.All, SLSOptions sls = SLSOptions.All, int load_case_index = -1)
         {
             UtilizationResult max_result = new UtilizationResult();
-            double max_util = 0;
             if (util_type == UtilizationType.All)
             {
                 List<double[]> utilsUY = RetrieveULSUtilization(frame_point, ULSDirection.Y);
                 List<double[]> utilsUZ = RetrieveULSUtilization(frame_point, ULSDirection.Z);
-                UtilizationResult max_result_y = maxULSUtilization(utilsUY, util_type, load_case_index);
-                UtilizationResult max_result_z = maxULSUtilization(utilsUZ, util_type, load_case_index);
+                UtilizationResult max_result_y = MaxULSUtilization(utilsUY, util_type, load_case_index);
+                UtilizationResult max_result_z = MaxULSUtilization(utilsUZ, util_type, load_case_index);
                 if (max_result_y.util > max_result_z.util)
                 {
                     max_result = max_result_y;
@@ -427,7 +453,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     dir = ULSDirection.Z;
                     util_type = UtilizationType.AllULS;
                 }
-                UtilizationResult sls_result = maxSLSUtilizations(frame_point, sls, load_case_index);
+                UtilizationResult sls_result = MaxSLSUtilizations(frame_point, sls, load_case_index);
                 if (max_result.util < sls_result.util)
                 {
                     max_result = sls_result;
@@ -436,7 +462,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             }
             else if (util_type == UtilizationType.SLS)
             {
-                max_result = maxSLSUtilizations(frame_point, sls, load_case_index);
+                max_result = MaxSLSUtilizations(frame_point, sls, load_case_index);
             }
             else
             {
@@ -444,8 +470,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                 {
                     List<double[]> utilsUY = RetrieveULSUtilization(frame_point, ULSDirection.Y);
                     List<double[]> utilsUZ = RetrieveULSUtilization(frame_point, ULSDirection.Z);
-                    UtilizationResult max_result_y = maxULSUtilization(utilsUY, util_type, load_case_index);
-                    UtilizationResult max_result_z = maxULSUtilization(utilsUZ, util_type, load_case_index);
+                    UtilizationResult max_result_y = MaxULSUtilization(utilsUY, util_type, load_case_index);
+                    UtilizationResult max_result_z = MaxULSUtilization(utilsUZ, util_type, load_case_index);
                     if (max_result_y.util > max_result_z.util)
                     {
                         max_result = max_result_y;
@@ -460,13 +486,13 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                 else
                 {
                     List<double[]> utilsU = RetrieveULSUtilization(frame_point, dir);
-                    max_result = maxULSUtilization(utilsU, util_type, load_case_index);
+                    max_result = MaxULSUtilization(utilsU, util_type, load_case_index);
                 }
             }
             return max_result;
         }
 
-        UtilizationResult maxULSUtilization(List<double[]> utilsU, UtilizationType util_type, int load_case_index)
+        UtilizationResult MaxULSUtilization(List<double[]> utilsU, UtilizationType util_type, int load_case_index)
         {
             double max_util = 0;
             int load_index = -1;
@@ -611,7 +637,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             return new UtilizationResult(max_util, load_index, util_index);
         }
 
-        UtilizationResult maxSLSUtilization(List<double> utilsS, int load_case_index)
+        UtilizationResult MaxSLSUtilization(List<double> utilsS, int load_case_index)
         {
             int loadcase_count = 0;
             int load_index = -1;
@@ -629,7 +655,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             return new UtilizationResult(max_util, load_case_index, 0);
         }
 
-        UtilizationResult maxSLSUtilizations(TimberFramePoint frame_point, SLSOptions sls, int load_case_index)
+        UtilizationResult MaxSLSUtilizations(TimberFramePoint frame_point, SLSOptions sls, int load_case_index)
         {
             UtilizationResult result = new UtilizationResult();
             List<double> UtilS = new List<double>();
@@ -637,12 +663,12 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             {
                 case SLSOptions.All:
                     UtilS = RetrieveSLSUtilization(frame_point, SLSOptions.Inst);
-                    UtilizationResult result_inst = maxSLSUtilization(UtilS, load_case_index);
+                    UtilizationResult result_inst = MaxSLSUtilization(UtilS, load_case_index);
                     UtilS = RetrieveSLSUtilization(frame_point, SLSOptions.Fin);
-                    UtilizationResult result_fin = maxSLSUtilization(UtilS, load_case_index);
+                    UtilizationResult result_fin = MaxSLSUtilization(UtilS, load_case_index);
                     result_fin.util_index = 1;
                     UtilS = RetrieveSLSUtilization(frame_point, SLSOptions.NetFin);
-                    UtilizationResult result_netfin = maxSLSUtilization(UtilS, load_case_index);
+                    UtilizationResult result_netfin = MaxSLSUtilization(UtilS, load_case_index);
                     result_netfin.util_index = 2;
                     List<UtilizationResult> results = new List<UtilizationResult>() { result_inst, result_fin, result_netfin };
                     result = results.OrderByDescending(item => item.util).FirstOrDefault();
@@ -650,16 +676,16 @@ namespace BeaverGrasshopper.Components.ResultsComponents
 
                 case SLSOptions.Inst:
                     UtilS = RetrieveSLSUtilization(frame_point, sls);
-                    result = maxSLSUtilization(UtilS, load_case_index);
+                    result = MaxSLSUtilization(UtilS, load_case_index);
                     break;
                 case SLSOptions.Fin:
                     UtilS = RetrieveSLSUtilization(frame_point, sls);
-                    result = maxSLSUtilization(UtilS, load_case_index);
+                    result = MaxSLSUtilization(UtilS, load_case_index);
                     result.util_index = 1;
                     break;
                 case SLSOptions.NetFin:
                     UtilS = RetrieveSLSUtilization(frame_point, sls);
-                    result = maxSLSUtilization(UtilS, load_case_index);
+                    result = MaxSLSUtilization(UtilS, load_case_index);
                     result.util_index = 2;
                     break;
             }
@@ -750,9 +776,6 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             //This method will be called when a closely related set of variable parameter operations completes. 
             //This would be a good time to ensure all Nicknames and parameter properties are correct. This method will also be 
             //called upon IO operations such as Open, Paste, Undo and Redo.
-
-
-            //throw new NotImplementedException();
             
             if (Grasshopper.Instances.ActiveCanvas.Document != null)
             {

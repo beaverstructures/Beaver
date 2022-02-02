@@ -73,6 +73,16 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Beaver_Param {
+            get {
+                object obj = ResourceManager.GetObject("Beaver_Param", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Bolt {
             get {
                 object obj = ResourceManager.GetObject("Bolt", resourceCulture);
