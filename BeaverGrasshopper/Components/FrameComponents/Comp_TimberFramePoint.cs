@@ -30,7 +30,7 @@ namespace BeaverGrasshopper
 
             //instantiate new value list
             var cro_sec = new Comp_CrossSection();
-            var material = new Comp_Materiall();
+            var material = new BeaverMaterial();
             var force = new Comp_Force();
             var displacement = new Comp_Displacement();
 
@@ -65,8 +65,9 @@ namespace BeaverGrasshopper
         pManager.AddNumberParameter("Buckling Lenght Y", "bL_y", "Normal force at point", GH_ParamAccess.item, 3);
         pManager.AddNumberParameter("Buckling Lenght Z", "bL_s", "Normal force at point", GH_ParamAccess.item, 3);
         pManager.AddNumberParameter("Span lenght", "sL", "Normal force at point", GH_ParamAccess.item, 3);
-        pManager.AddNumberParameter("Pre camber", "Pcamber", "Pre camber", GH_ParamAccess.item, 0);
-        pManager.AddTextParameter("Span Type", "Stype", "Simple span or cantilever", GH_ParamAccess.item, "SimpleSpan");
+        pManager.AddNumberParameter("Pre camber", "Pcamber", "Pre camber displacement in meters", GH_ParamAccess.item, 0);
+        pManager.AddBooleanParameter("Cantilever", "Stype", 
+            "False for a simple span beam, true for a cantilevered beam. Default value is assigned to false.", GH_ParamAccess.item, false);
         pManager.AddNumberParameter("Span Limit Range", "Srange",
             "Parameter in domain [0-1] to set limits between range defined in EC5 Table 7.2", GH_ParamAccess.item, 0.5);
         pManager.AddIntegerParameter("Service Class", "SC", "Service Class according to EC5", GH_ParamAccess.item, 0);
@@ -93,7 +94,7 @@ namespace BeaverGrasshopper
         double bl_z = 0;
         double sl = 0;
         double pre_camber = 0;
-        string span_Type = "";
+        bool cantilever = false;
         double span_range = 0;
         int service_class = 0;
         DA.GetData(0, ref ghcrosec);
@@ -103,7 +104,7 @@ namespace BeaverGrasshopper
         DA.GetData(4, ref bl_z);
         DA.GetData(5, ref sl);
         DA.GetData(6, ref pre_camber);
-        DA.GetData(7, ref span_Type);
+        DA.GetData(7, ref cantilever);
         DA.GetData(8, ref span_range);
         DA.GetData(9, ref service_class);
         CroSec crosec = ghcrosec.Value;
@@ -117,7 +118,7 @@ namespace BeaverGrasshopper
             displacements.Add(disp);
         }
         //Think of ways of simplifying this input, it still needs span type and span limits
-        TimberFramePoint timber_frame_point = new TimberFramePoint(forces, displacements, crosec, service_class, bl_y, bl_z, sl, 0.9);
+        TimberFramePoint timber_frame_point = new TimberFramePoint(forces, displacements, crosec, service_class, bl_y, bl_z, sl, 0.9, cantilever);
 
         DA.SetData(0, new GH_TimberFramePoint(timber_frame_point));
     }

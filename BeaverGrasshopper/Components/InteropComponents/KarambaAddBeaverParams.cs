@@ -2,6 +2,7 @@
 using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Karamba.GHopper;
 using Karamba.Elements;
@@ -19,7 +20,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public KarambaAddBeaverParams()
-          : base("Karamba add beaver parameters", "AddBeaverParams",
+          : base("Karamba add beaver parameters", "B2KBeams",
               "Adds Beaver parameters to a Karamba Beam Element for performing ULS and SLS checks in Beaver",
               "Category", "Subcategory")
         {
@@ -30,12 +31,14 @@ namespace BeaverGrasshopper.Components.InteropComponents
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddParameter(new Karamba.GHopper.Elements.Param_Element(), "Beam", "Beam","Karamba Beam element to be Modified", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Span Length", "SpanL", "Span distance for SLS check of beam", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Buckling Length Y" , "BklLenY", "Buckling length of element in local Y-direction if > 0.", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Buckling Length Z" , "BklLenZ", "Buckling length of element in local Z - direction if > 0.", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Buckling Length LT", "BklLenLT", "Buckling length of element for lateral torsional buckling if > 0.", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Cantilever", "Cantilever", "Boolean parameter describing whether the beam is cantilevered. By default is set to False", GH_ParamAccess.item);
+            pManager.AddParameter(new Karamba.GHopper.Elements.Param_Element(), "Beam", "Beam","Karamba Beam element to be Modified", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Span Length", "SpanL", "Span distance for SLS check of beam", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Buckling Length Y" , "BklLenY", "Buckling length of element in local Y-direction if > 0.", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Buckling Length Z" , "BklLenZ", "Buckling length of element in local Z - direction if > 0.", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Buckling Length LT", "BklLenLT", "Buckling length of element for lateral torsional buckling if > 0.", GH_ParamAccess.list);
+            pManager.AddBooleanParameter("Cantilever", "Cantilever", "Boolean parameter describing whether the beam is cantilevered. By default is set to False", GH_ParamAccess.list, false);
+            pManager.AddIntegerParameter("Service Class", "SC", "Service Class from 1 to 3 regarding the timber element. By default is set to 2", GH_ParamAccess.list,2);
+            pManager.AddNumberParameter("Precamber", "Pcamber", "Precamber of beam elements in meters. Default is set to 0", GH_ParamAccess.list, 0);
         }
 
         /// <summary>
@@ -60,23 +63,38 @@ namespace BeaverGrasshopper.Components.InteropComponents
             List<double> bklY = new List<double>();
             List<double> bklZ = new List<double>();
             List<double> bklLT = new List<double>();
-            
+            List<int> serviceClasses = new List<int>();
+            List<double> precambers = new List<double>();
+
             DA.GetDataList(0, beams);
             DA.GetDataList(1, spans);
             DA.GetDataList(2, bklY);
             DA.GetDataList(3, bklZ);
             DA.GetDataList(4, bklLT);
             DA.GetDataList(5, cantilevers);
+            DA.GetDataList(6, serviceClasses);
+            DA.GetDataList(7, precambers);
+
+            // generates list of values if only one value is provided.
+            cantilevers = (cantilevers.Count > 1) ? 
+                cantilevers : Enumerable.Repeat(cantilevers[0], beams.Count).ToList();
+            serviceClasses = (serviceClasses.Count > 1) ? 
+                serviceClasses : Enumerable.Repeat(serviceClasses[0], beams.Count).ToList();
+            precambers = (precambers.Count > 1) ?
+                precambers : Enumerable.Repeat(precambers[0], beams.Count).ToList();
 
             for (int i = 0; i < beams.Count; i++)
             {
                 BuilderElementStraightLine beam = beams[i].Value as BuilderElementStraightLine;
-                beam.UserData.Add("SpanLength", spans[i]);
+
+                beam.UserData["SpanLength"] = spans[i];
+                beam.UserData["Cantilever"] = cantilevers[i];
+                beam.UserData["ServiceClass"] = serviceClasses[i];
+                beam.UserData["Precamber"] = precambers[i];
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklY, bklY[i]);
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklZ, bklZ[i]);
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklLT, bklLT[i]);
-                beam.UserData.Add("Cantilever", spans[i]);
-
+                
                 out_beams.Add(new Karamba.GHopper.Elements.GH_Element(beam));
             }
 
@@ -92,9 +110,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         {
             get
             {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.Beaver_Param;
             }
         }
 

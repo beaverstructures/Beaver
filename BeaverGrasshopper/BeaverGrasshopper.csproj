@@ -115,11 +115,14 @@
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
+    <Compile Include="Components\InteropComponents\BeaverToKarambaMaterial.cs" />
+    <Compile Include="Components\InteropComponents\InteropUtils.cs" />
     <Compile Include="Components\InteropComponents\LinesToBKBeam.cs" />
     <Compile Include="Components\InteropComponents\KarambaToBeaver.cs" />
     <Compile Include="Components\InteropComponents\KarambaAddBeaverParams.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
-    <Compile Include="Components\PropertiesComponents\Comp_Material.cs" />
+    <Compile Include="Components\PropertiesComponents\Comp_ImportCSVMaterials.cs" />
+    <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />
     <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
@@ -250,6 +253,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ULSResults.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BeaverParam.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Beaver Param.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

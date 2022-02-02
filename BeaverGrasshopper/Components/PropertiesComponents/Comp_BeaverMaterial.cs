@@ -6,15 +6,15 @@ using BeaverCore.Materials;
 
 namespace BeaverGrasshopper
 {
-    public class Comp_Material : GH_Component
+    public class BeaverMaterial : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the Comp_Materiall class.
+        /// Initializes a new instance of the BeaverMateriall class.
         /// </summary>
-        public Comp_Material()
-          : base("Comp_Materiall", "Nickname",
-              "Description",
-              "Beaver", "Subcategory")
+        public BeaverMaterial()
+          : base("Material", "BMat",
+              "Creates a Beaver Material with properties needed to ULS checks",
+              "Beaver", "Properties")
         {
         }
 
@@ -103,7 +103,21 @@ namespace BeaverGrasshopper
             DA.GetData(13, ref Ym);
 
             
-            Material mat = new Material(name, type, fmk * 1e7, ft0k * 1e7, ft90k * 1e7, fc0k * 1e7, fc90k * 1e7, fvk * 1e7, E0mean * 1e7, E05 * 1e7, E90mean * 1e7, Gmean * 1e7, G05 * 1e7, Ym);
+            Material mat = new Material(
+                name, 
+                type,
+                fmk * 1e7, 
+                ft0k * 1e7, 
+                ft90k * 1e7, 
+                fc0k * 1e7, 
+                fc90k * 1e7, 
+                fvk * 1e7, 
+                E0mean * 1e7, 
+                E05 * 1e7, 
+                E90mean * 1e7, 
+                Gmean * 1e7, 
+                G05 * 1e7, 
+                Ym);
 
             DA.SetData(0, new GH_Material(mat));
         }

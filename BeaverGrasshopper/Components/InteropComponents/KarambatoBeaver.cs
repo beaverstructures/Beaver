@@ -26,7 +26,7 @@ namespace BeaverGrasshopper
         /// Initializes a new instance of the KarambaToBeaver class.
         /// </summary>
         public KarambaToBeaver()
-          : base("KarambaToBeaver", "Karamba",
+          : base("KarambaToBeaver", "K2B",
               "Retrieves TimberFrames from Karamba beams",
               "Beaver", "External")
         {
@@ -65,11 +65,13 @@ namespace BeaverGrasshopper
             List<string> lc_types = new List<string>();
             int sub_div = 0;
             GH_Material gh_material = new GH_Material();
+
             DA.GetData(0, ref gh_model);
             DA.GetData(1, ref gh_material);
             DA.GetDataList(2, beam_id);
             DA.GetData(3, ref sub_div);
             DA.GetDataList(4, lc_types);
+
             Model model = gh_model.Value;
             Material material = gh_material.Value;
             List<List<List<List<double>>>> force_results = new List<List<List<List<double>>>>();
@@ -106,6 +108,7 @@ namespace BeaverGrasshopper
                 Dictionary<double, TimberFramePoint> TFPoints = new Dictionary<double, TimberFramePoint>();
                 ModelBeam modelBeam = beams[i] as ModelBeam;
                 BuilderElement beam = modelBeam.BuilderElement();
+
                 double spanLength = modelBeam.elementLength(model);
                 try
                 {
@@ -115,7 +118,17 @@ namespace BeaverGrasshopper
                 {
                     if (!beam.UserData.ContainsKey("SpanLength")) AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
                                           "Beam does not contain span length data. Element length will be used");
-                    else if (!(beam.UserData["SpanLengtht"] is double)) throw new Exception("SpanLength values must be double");
+                    else if (!(beam.UserData["SpanLength"] is double)) throw new Exception("SpanLength values must be double");
+                }
+                int serviceClass = 2;
+                try
+                {
+                    serviceClass = (int)beam.UserData["ServiceClass"];
+                }
+                catch
+                {
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
+                                          "Beam does not contain service class data. Service class 2 will be considered");
                 }
                 CroSec crosec = beam.crosec;
                 BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambaToBeaver(beam.crosec, material);
@@ -126,7 +139,7 @@ namespace BeaverGrasshopper
                 for (int j = 0; j < sub_div + 1; j++)
                 {
                     TimberFramePoint TFPoint = new TimberFramePoint(elements_forces[i, j], elements_displacements[i, j], beaver_crosec,
-                        2, modelBeam.buckling_length(BucklingDir.bklY), modelBeam.buckling_length(BucklingDir.bklZ), spanLength, 0.9);
+                        (int)beam.UserData["ServiceClass"], modelBeam.buckling_length(BucklingDir.bklY), modelBeam.buckling_length(BucklingDir.bklZ), spanLength, 0.9, (bool)beam.UserData["Cantilever"]);
                     TFPoints[j * rel_pos_step] = TFPoint;
                 }
                 TimberFrame timber_frame = new TimberFrame(TFPoints, beaver_line);
@@ -173,8 +186,6 @@ namespace BeaverGrasshopper
         {
             get
             {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
                 return Properties.Resources.KarambaToTimberFrames;
             }
         }

@@ -64,14 +64,14 @@ namespace BeaverCore.Frame
         public ULSCombinations ULSComb;
         public SLSCombinations SLSComb;
         public CroSec CS;
-        public SpanType span_type;
+        public bool cantilever;
         public double ly;
         public double lz;
         public double kflam;
         public double lspan;
-        public double[] inst_deflection_limit;
-        public double[] netfin_deflection_limit;
-        public double[] fin_deflection_limit;
+        public double inst_deflection_limit;
+        public double netfin_deflection_limit;
+        public double fin_deflection_limit;
         public double precamber;
         public string id;
         public string guid;
@@ -80,7 +80,7 @@ namespace BeaverCore.Frame
 
         public TimberFramePoint() { }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam)
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, bool cantilever = false, double precamber = 0)
         {
             Forces = forces;
             Disp = disp;
@@ -93,28 +93,23 @@ namespace BeaverCore.Frame
             this.lz = lz;
             this.kflam = kflam;
             this.lspan = lspan;
-            fin_deflection_limit = new double[] { lspan / 300, lspan / 150 };
-            inst_deflection_limit = new double[] { lspan / 350, lspan / 175 };
-            netfin_deflection_limit = new double[] { lspan / 250, lspan / 125 };
-            span_type = SpanType.Span;
-        }
+            this.cantilever = cantilever;
+            this.precamber = precamber;
+            if (cantilever)
+            {
+                fin_deflection_limit = lspan / 150;
+                inst_deflection_limit = lspan / 175;
+                netfin_deflection_limit = lspan / 125;
+            }
+            else
+            {
+                fin_deflection_limit = lspan / 300;
+                inst_deflection_limit = lspan / 350;
+                netfin_deflection_limit = lspan / 250;
+            }
+            
+            
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, SpanType span_type)
-        {
-            Forces = forces;
-            Disp = disp;
-            this.sc = sc;
-            ULSComb = new ULSCombinations(forces, sc);
-            CS = cs;
-            SLSComb = new SLSCombinations(disp, sc, cs.material);
-            this.ly = ly;
-            this.lz = lz;
-            this.kflam = kflam;
-            this.lspan = lspan;
-            fin_deflection_limit = new double[] { lspan / 300, lspan / 150 };
-            inst_deflection_limit = new double[] { lspan / 350, lspan / 175 };
-            netfin_deflection_limit = new double[] { lspan / 250, lspan / 125 };
-            this.span_type = span_type;
         }
 
         private double Getkcrit(double lam)
@@ -340,24 +335,10 @@ namespace BeaverCore.Frame
             return new TimberFrameSLSResult(Info, InstDisplacementUtil(), NetFinDisplacementUtil(), FinDisplacementUtil());
         }
 
-        private double GetDisplacementLimit(double[] displacement_limit)
-        {
-            double result = 0;
-            if (span_type is SpanType.Span)
-            {
-                result = displacement_limit[0];
-            }
-            else if (span_type is SpanType.CantileverSpan)
-            {
-                result = displacement_limit[1];
-            }
-            return result;
-        }
-
 
         public List<double> InstDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            double deflection_limit = inst_deflection_limit;
             List<double> disps_ratio = new List<double>();
             foreach (Displacement disp in SLSComb.CharacteristicDisplacements)
             {
@@ -369,7 +350,7 @@ namespace BeaverCore.Frame
 
         public List<double> NetFinDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(netfin_deflection_limit);
+            double deflection_limit = netfin_deflection_limit;
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.CreepDisplacements)
             {
@@ -380,7 +361,7 @@ namespace BeaverCore.Frame
 
         public List<double> FinDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(fin_deflection_limit);
+            double deflection_limit = fin_deflection_limit;
             List<double> disps_ratio = new List<double>();
             foreach (var disp in SLSComb.CreepDisplacements)
             {

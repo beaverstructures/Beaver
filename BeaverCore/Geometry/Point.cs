@@ -73,41 +73,51 @@ namespace BeaverCore.Geometry
 
         public static Vector2D operator +(Vector2D v1, Vector2D v2)
         {
-            Vector2D result = new Vector2D();
-            result.x = v1.x + v2.x;
-            result.y = v1.y + v2.y;
+            Vector2D result = new Vector2D
+            {
+                x = v1.x + v2.x,
+                y = v1.y + v2.y
+            };
             return result;
         }
 
         public static Vector2D operator -(Vector2D v1, Vector2D v2)
         {
-            Vector2D result = new Vector2D();
-            result.x = v1.x - v2.x;
-            result.y = v1.y - v2.y;
+            Vector2D result = new Vector2D
+            {
+                x = v1.x - v2.x,
+                y = v1.y - v2.y
+            };
             return result;
         }
 
         public static Vector2D operator *(double s, Vector2D v)
         {
-            Vector2D result = new Vector2D();
-            result.x = s * v.x;
-            result.y = s * v.y;
+            Vector2D result = new Vector2D
+            {
+                x = s * v.x,
+                y = s * v.y
+            };
             return result;
         }
 
         public static Vector2D operator *(Vector2D v, double s)
         {
-            Vector2D result = new Vector2D();
-            result.x = s * v.x;
-            result.y = s * v.y;
+            Vector2D result = new Vector2D
+            {
+                x = s * v.x,
+                y = s * v.y
+            };
             return result;
         }
 
         public static Vector2D operator /(Vector2D v, double s)
         {
-            Vector2D result = new Vector2D();
-            result.x = v.x / s;
-            result.y = v.y / s;
+            Vector2D result = new Vector2D
+            {
+                x = v.x / s,
+                y = v.y / s
+            };
             return result;
         }
         public List<double> ToList()
@@ -137,28 +147,34 @@ namespace BeaverCore.Geometry
 
         public static Point3D operator +(Point3D p1, Point3D p2)
         {
-            Point3D result = new Point3D();
-            result.x = p1.x + p2.x;
-            result.y = p1.y + p2.y;
-            result.z = p1.z + p2.z;
+            Point3D result = new Point3D
+            {
+                x = p1.x + p2.x,
+                y = p1.y + p2.y,
+                z = p1.z + p2.z
+            };
             return result;
         }
 
         public static Point3D operator -(Point3D p1, Point3D p2)
         {
-            Point3D result = new Point3D();
-            result.x = p1.x - p2.x;
-            result.y = p1.y - p2.y;
-            result.z = p1.z - p2.z;
+            Point3D result = new Point3D
+            {
+                x = p1.x - p2.x,
+                y = p1.y - p2.y,
+                z = p1.z - p2.z
+            };
             return result;
         }
 
         public static Point3D operator *(double s, Point3D p)
         {
-            Point3D result = new Point3D();
-            result.x = s * p.x;
-            result.y = s * p.y;
-            result.z = s * p.z;
+            Point3D result = new Point3D
+            {
+                x = s * p.x,
+                y = s * p.y,
+                z = s * p.z
+            };
             return result;
         }
     }
