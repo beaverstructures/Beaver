@@ -66,6 +66,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <WarningLevel>0</WarningLevel>
+    <CodeAnalysisRuleSet>
+    </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
