@@ -115,11 +115,9 @@
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
-    <Compile Include="Components\InteropComponents\BeaverToKarambaMaterial.cs" />
-    <Compile Include="Components\InteropComponents\InteropUtils.cs" />
-    <Compile Include="Components\InteropComponents\LinesToBKBeam.cs" />
-    <Compile Include="Components\InteropComponents\KarambaToBeaver.cs" />
-    <Compile Include="Components\InteropComponents\KarambaAddBeaverParams.cs" />
+    <Compile Include="Components\InteropComponents\Comp_BeaverToKarambaMaterial.cs" />
+    <Compile Include="Components\InteropComponents\Comp_KarambaToBeaver.cs" />
+    <Compile Include="Components\InteropComponents\Comp_KarambaAddBeaverParams.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_ImportCSVMaterials.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />

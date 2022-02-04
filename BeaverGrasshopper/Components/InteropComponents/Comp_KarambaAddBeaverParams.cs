@@ -14,12 +14,12 @@ using BeaverCore.Materials;
 
 namespace BeaverGrasshopper.Components.InteropComponents
 {
-    public class KarambaAddBeaverParams : GH_Component
+    public class Comp_KarambaAddBeaverParams : GH_Component
     {
         /// <summary>
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
-        public KarambaAddBeaverParams()
+        public Comp_KarambaAddBeaverParams()
           : base("Karamba add beaver parameters", "B2KBeams",
               "Adds Beaver parameters to a Karamba Beam Element for performing ULS and SLS checks in Beaver",
               "Category", "Subcategory")
@@ -32,7 +32,9 @@ namespace BeaverGrasshopper.Components.InteropComponents
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddParameter(new Karamba.GHopper.Elements.Param_Element(), "Beam", "Beam","Karamba Beam element to be Modified", GH_ParamAccess.list);
-            pManager.AddNumberParameter("Span Length", "SpanL", "Span distance for SLS check of beam", GH_ParamAccess.list);
+            pManager.AddCurveParameter("Span Line", "SpanLine", 
+                "Span polyline representing the full undeformed length of the beam. This is used for defining local considerations of SLS. " +
+                "If no line is provided, SLS will consider a global displacement", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length Y" , "BklLenY", "Buckling length of element in local Y-direction if > 0.", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length Z" , "BklLenZ", "Buckling length of element in local Z - direction if > 0.", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length LT", "BklLenLT", "Buckling length of element for lateral torsional buckling if > 0.", GH_ParamAccess.list);
@@ -58,7 +60,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
             List<Karamba.GHopper.Elements.GH_Element> beams = new List<Karamba.GHopper.Elements.GH_Element>();
             List<Karamba.GHopper.Elements.GH_Element> out_beams = new List<Karamba.GHopper.Elements.GH_Element>();
 
-            List<double> spans = new List<double>();
+            List<Polyline> spans = new List<Polyline>();
             List<bool> cantilevers = new List<bool>();
             List<double> bklY = new List<double>();
             List<double> bklZ = new List<double>();
@@ -86,8 +88,10 @@ namespace BeaverGrasshopper.Components.InteropComponents
             for (int i = 0; i < beams.Count; i++)
             {
                 BuilderElementStraightLine beam = beams[i].Value as BuilderElementStraightLine;
+                if (!spans[i].IsValid) { spans[i] = new Polyline();  }
 
-                beam.UserData["SpanLength"] = spans[i];
+                beam.UserData["SpanLine"] = spans[i];
+                beam.UserData["SpanLength"] = spans[i].First.DistanceTo(spans[i].Last);
                 beam.UserData["Cantilever"] = cantilevers[i];
                 beam.UserData["ServiceClass"] = serviceClasses[i];
                 beam.UserData["Precamber"] = precambers[i];

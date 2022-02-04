@@ -54,7 +54,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
             while (!reader.EndOfStream)
             {
                 var values = reader.ReadLine().Split(',');
-                
+
                 // ignores csv header
                 if (first)
                 {
@@ -63,29 +63,34 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
                 }
                 string name = values[0];
                 string type = values[1];
-                double fmk = Double.Parse(values[2])*1e6;
-                double ft0k = Double.Parse(values[3])*1e6;
+                double fmk = Double.Parse(values[2]) * 1e6; // MPa to Pa
+                double ft0k = Double.Parse(values[3]) * 1e6;
                 double ft90k = Double.Parse(values[4]) * 1e6;
                 double fc0k = Double.Parse(values[5]) * 1e6;
                 double fc90k = Double.Parse(values[6]) * 1e6;
                 double fvk = Double.Parse(values[7]) * 1e6;
                 double frk = Double.Parse(values[8]) * 1e6;
                 double E0mean = Double.Parse(values[9]) * 1e6;
-                double E0k = Double.Parse(values[10]) * 1e6;
+                double E0_005 = Double.Parse(values[10]) * 1e6;
                 double E90mean = Double.Parse(values[11]) * 1e6;
-                double E90k = Double.Parse(values[12]) * 1e6;
+                double E90_05 = Double.Parse(values[12]) * 1e6;
                 double Gmean = Double.Parse(values[13]) * 1e6;
-                double Gk = Double.Parse(values[14]) * 1e6;
-                double pk = 100 * Double.Parse(values[15]) * 1e6;
-                double pmean = 100 * Double.Parse(values[16]) * 1e6;
-                double Ym = Double.Parse(values[17]) * 1e6;
+                double G05 = Double.Parse(values[14]) * 1e6;
+                double pk = Double.Parse(values[15]) *9.81; // kgf/m³ to N/m³  
+                double pmean = Double.Parse(values[16]) * 9.81;
+                double Ym = Double.Parse(values[17]);
                 Material mat = new Material(
                     name, type,
                     fmk, ft0k, ft90k,
                     fc0k, fc90k, fvk,
-                    E0mean, E0k, E90k,
-                    Gmean, Gk,
+                    E0mean, E0_005, E90mean,
+                    Gmean, G05,
                     pk, Ym);
+                mat.fvk = fvk;
+                mat.frk = frk;
+                mat.E90_05 = E90_05;
+                mat.pmean = pmean;
+
                 gh_mats.Add(new GH_Material(mat));
             }
             DA.SetDataList(0, gh_mats);

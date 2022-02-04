@@ -107,9 +107,6 @@ namespace BeaverCore.Frame
                 inst_deflection_limit = lspan / 350;
                 netfin_deflection_limit = lspan / 250;
             }
-            
-            
-
         }
 
         private double Getkcrit(double lam)

@@ -34,9 +34,9 @@ namespace BeaverTest
             Force force5 = new Force(11.56, 0.48, -0.06,0, 14, 109, "W2");
             List<Force> forces = new List<Force>() { force1, force2, force3, force4, force5 };
             
-            Material mat = new Material("ita", "Glulam", 5.5, 5, 0, 4.5, 0.2, 0.65, 1550, 1250, 106, 80,1.25);
+            Material mat = new Material("ita", "Glulam", 5.5, 5, 0, 4.5, 0.2, 0.65, 1550, 1250, 106, 80,1.25,1.25,1.25);
             CroSec crosec = new CroSec_Rect(15, 15,mat);
-            TimberFramePoint timber = new TimberFramePoint(forces, disps, crosec, 2, 228.5, 228.5, 228.5, 0.9,SpanType.CantileverSpan);
+            TimberFramePoint timber = new TimberFramePoint(forces, disps, crosec, 2, 228.5, 228.5, 228.5, 0.9,false);
             List<string> combinations = new List<string>();
             foreach (Action a in timber.ULSComb.DesignForces)
             {

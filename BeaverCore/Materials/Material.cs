@@ -9,20 +9,26 @@ namespace BeaverCore.Materials
         public string type;
 
         public double fmk;
+
         public double ft0k;
         public double ft90k;
+
         public double fc0k;
         public double fc90k;
+
+        public double frk = 0.8; // !!! to be changed
         public double fvk;
 
         public double E0mean;
         public double E05;
         public double E90mean;
+        public double E90_05;
 
         public double Gmean;
         public double G05;
 
         public double pk;
+        public double pmean;
         public double Ym;
 
         public double kdef;
@@ -50,7 +56,9 @@ namespace BeaverCore.Materials
             this.pk = pk;
             Ym = (_ym == 0) ? GetYm(type): _ym;
             Bc = GetBc(type);
+            pmean = pk; // !!! review
         }
+
 
         public void defaultMaterial()
         {
@@ -84,15 +92,17 @@ namespace BeaverCore.Materials
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
                         case 3: kdef = 2.00; break;
+                        default: throw new ArgumentException("Service class not found");
                     }
                     break;
                 case "Glulam":
-                case "Gluelam c":
-                case "Gluelam h":
+                case "Glulam c":
+                case "Glulam h":
                     switch (SC) {
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
                         case 3: kdef = 2.00; break;
+                        default: throw new ArgumentException("Service class not found");
                     }
                     break;
                 case "LVL":
@@ -101,6 +111,7 @@ namespace BeaverCore.Materials
                         case 1: kdef = 0.60; break;
                         case 2: kdef = 0.80; break;
                         case 3: kdef = 2.00; break;
+                        default: throw new ArgumentException("Service class not found");
                     }
                     break;
                 default:

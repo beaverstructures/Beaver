@@ -25,29 +25,31 @@ namespace BeaverGrasshopper
             //1
             pManager.AddTextParameter("Type", "Type", "Input a text with Material type according to EC5 Table 3.2. Acceptable values: \nSolid Timber \nGluelam \nLVL. Default is set to Gluelam.", GH_ParamAccess.item, "Glulam");
             //2
-            pManager.AddNumberParameter("Bending Resistance", "fmk", "Bending Characteristic Resistance in [kN/cm²]. Default is set to 2.4 kN/cm².", GH_ParamAccess.item, 2.4);
+            pManager.AddNumberParameter("Bending Resistance", "fmk", "Bending Characteristic Resistance in [MPa]. Default is set to 24 MPa.", GH_ParamAccess.item, 24);
             //3
-            pManager.AddNumberParameter("Parallel Tension Resistence", "ft0k", "Parallel Characteristic Tension Resistance in [kN/cm²]. Default is set to 1.65 kN/cm².", GH_ParamAccess.item, 1.65);
+            pManager.AddNumberParameter("Parallel Tension Resistence", "ft0k", "Parallel Characteristic Tension Resistance in [MPa]. Default is set to 17 MPa.", GH_ParamAccess.item, 17);
             //4
-            pManager.AddNumberParameter("Perpendicular Tension Resistence", "ft90k", "Perpendicular Characteristic Tension Resistance in [kN/cm²]. Default is set to 0.04 kN/cm².", GH_ParamAccess.item, 0.04);
+            pManager.AddNumberParameter("Perpendicular Tension Resistence", "ft90k", "Perpendicular Characteristic Tension Resistance in [MPa]. Default is set to 0.5 MPa.", GH_ParamAccess.item, 0.5);
             //5
-            pManager.AddNumberParameter("Palallel Compression Resistence", "fc0k", "Palallel Characteristic Compression Resistance in [kN/cm²]. Default is set to 2.40 kN/cm².", GH_ParamAccess.item, 2.4);
+            pManager.AddNumberParameter("Palallel Compression Resistence", "fc0k", "Palallel Characteristic Compression Resistance in [MPa]. Default is set to 21.5 MPa.", GH_ParamAccess.item, 21.5);
             //6
-            pManager.AddNumberParameter("Perpendicular Compression Resistence", "fc90k", "Perpendicular Characteristic Compression Resistance in [kN/cm²]. Default is set to 0.27 kN/cm².", GH_ParamAccess.item, 0.27);
+            pManager.AddNumberParameter("Perpendicular Compression Resistence", "fc90k", "Perpendicular Characteristic Compression Resistance in [MPa]. Default is set to 2.5 MPa.", GH_ParamAccess.item, 2.5);
             //7
-            pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [kN/cm²]. Default is set to 0.4 kN/cm².", GH_ParamAccess.item, 0.4);
+            pManager.AddNumberParameter("Shear Resistence", "fvk", "Characteristic Shear Resistance in [MPa]. Default is set to 3.5 MPa.", GH_ParamAccess.item, 3.5);
             //8
-            pManager.AddNumberParameter("Mean modulus of elasticity parallel", "E0mean", "Mean modulus of elasticity parallel to grain [GPa]. Default is set to 1160 GPa.", GH_ParamAccess.item, 1160);
+            pManager.AddNumberParameter("Mean modulus of elasticity parallel", "E0mean", "Mean modulus of elasticity parallel to grain [MPa]. Default is set to 11000 MPa.", GH_ParamAccess.item, 11000);
             //9
-            pManager.AddNumberParameter("5% modulus of elasticity parallel", "E05", "5% modulus of elasticity parallel to grain [GPa]. Default is set to 940 GPa.", GH_ParamAccess.item, 940);
+            pManager.AddNumberParameter("5% modulus of elasticity parallel", "E05", "5% modulus of elasticity parallel to grain [MPa]. Default is set to 9100 MPa.", GH_ParamAccess.item, 9100);
             //10
-            pManager.AddNumberParameter("Mean modulus of elasticity perpendicular", "E90mean", "Mean modulus of elasticity perpendiculat to grain [GPa]. Default is set to 0 GPa.", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Mean modulus of elasticity perpendicular", "E90mean", "Mean modulus of elasticity perpendiculat to grain [MPa]. Default is set to 300 MPa.", GH_ParamAccess.item, 300);
             //11
-            pManager.AddNumberParameter("Mean modulus of elasticity shear", "Gmean", "Mean modulus of elasticity shear to grain [GPa]. Default is set to 58.75 GPa.", GH_ParamAccess.item, 58.75);
+            pManager.AddNumberParameter("Mean modulus of elasticity shear", "Gmean", "Mean modulus of elasticity shear to grain [MPa]. Default is set to 650 GPa.", GH_ParamAccess.item, 650);
             //12
-            pManager.AddNumberParameter("5% modulus of elasticity shear", "G05", "5th-percentile modulus of elasticity shear to grain [GPa]. Default is set to 54 GPa.", GH_ParamAccess.item, 54);
+            pManager.AddNumberParameter("5% modulus of elasticity shear", "G05", "5th-percentile modulus of elasticity shear to grain [MPa]. Default is set to 540 MPa.", GH_ParamAccess.item, 540);
             //13
-            pManager.AddNumberParameter("Material Coefficient", "γm", "Material Coefficient. If no value is provided, Beaver will calculate it according to EC5, 2.4.1, Tab. 2.3.", GH_ParamAccess.item, 1.25);
+            pManager.AddNumberParameter("Material Coefficient", "γm", "Material Coefficient. If no value is provided, Beaver will calculate it according to EC5, 2.4.1, Tab. 2.3.", GH_ParamAccess.item);
+
+            pManager[13].Optional = true;
         }
 
         /// <summary>
@@ -106,18 +108,19 @@ namespace BeaverGrasshopper
             Material mat = new Material(
                 name, 
                 type,
-                fmk * 1e7, 
-                ft0k * 1e7, 
-                ft90k * 1e7, 
-                fc0k * 1e7, 
-                fc90k * 1e7, 
-                fvk * 1e7, 
-                E0mean * 1e7, 
-                E05 * 1e7, 
-                E90mean * 1e7, 
-                Gmean * 1e7, 
-                G05 * 1e7, 
+                fmk * 1e6, 
+                ft0k * 1e6, 
+                ft90k * 1e6, 
+                fc0k * 1e6, 
+                fc90k * 1e6, 
+                fvk * 1e6, 
+                E0mean * 1e6, 
+                E05 * 1e6, 
+                E90mean * 1e6, 
+                Gmean * 1e6, 
+                G05 * 1e6, 
                 Ym);
+            mat.pk = 365 *9.81 /1000;
 
             DA.SetData(0, new GH_Material(mat));
         }

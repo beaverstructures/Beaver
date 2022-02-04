@@ -34,7 +34,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new Param_FemMaterial(), "Material", "KMat",
+            pManager.AddParameter(new Param_FemMaterial(), "Karamba Material", "K3DMat",
                         "Converted Karamba Timber Material", GH_ParamAccess.item);
         }
 
@@ -47,33 +47,47 @@ namespace BeaverGrasshopper.Components.InteropComponents
             GH_Material ghBeaverMaterial = new GH_Material();
             DA.GetData(0, ref ghBeaverMaterial);
             Material beaverMaterial = ghBeaverMaterial.Value;
+
             string family = beaverMaterial.type;
             string name = beaverMaterial.name;
-            double E1 = beaverMaterial.E0mean;
-            double E2= beaverMaterial.E90mean;
-            double G12 = beaverMaterial.Gmean;
-            double nue12 = 0.3;// !!! change later
-            double G31 = beaverMaterial.G05;
-            double G32 = beaverMaterial.G05;
-            double gamma = beaverMaterial.pk;
-            double ft1 = beaverMaterial.ft0k;
-            double ft2 = beaverMaterial.ft90k;
-            double fc1 = beaverMaterial.fc0k;
-            double fc2 = beaverMaterial.fc90k;
-            double t12 = beaverMaterial.fvk;
-            double f12 = beaverMaterial.fvk;
-            double alphaT1 = 0.00005; // !!! change later
-            double alphaT2 = 0.00005;// !!! change later
+            double E1 = beaverMaterial.E0mean* 1e-3;     // Pa to kN/m²
+            double E2 = beaverMaterial.E90mean * 1e-3;
+            double G12 = beaverMaterial.Gmean * 1e-3;
+            double nue12 = -1; // !!! change later
+            double G31 = beaverMaterial.G05 * 1e-3;
+            double G32 = beaverMaterial.G05 * 1e-3;
+            double gamma = beaverMaterial.pk * 1e-3;    // N/m³ to kN/m³
+            double ft1 = beaverMaterial.ft0k * 1e-3;
+            double ft2 = beaverMaterial.ft90k * 1e-3;
+            double fc1 = -beaverMaterial.fc0k * 1e-3;
+            double fc2 = -beaverMaterial.fc90k * 1e-3;
+            double t12 = beaverMaterial.fvk * 1e-3;
+            double f12 = beaverMaterial.fvk * 1e-3;
+            
+
+            double alphaT1 = 5E-6; // !!! change later
+            double alphaT2 = 5E-6; // !!! change later
 
             FemMaterial_Orthotropic karambaMaterial = new FemMaterial_Orthotropic(
                 family, name, E1, E2, 
                 G12, nue12, G31, G32, 
                 gamma, ft1, ft2, fc1, fc2, t12, f12,
-                FemMaterial.FlowHypothesisFromString("MISES"), alphaT1, 
+                FemMaterial.FlowHypothesisFromString("RANKINE"), alphaT1, 
                 alphaT2, null);
+
+            karambaMaterial.UserData["fmk"] = beaverMaterial.fmk * 1e-3;    // Pa to kN/m²
+            karambaMaterial.UserData["fvk"] = beaverMaterial.fvk * 1e-3;
+            karambaMaterial.UserData["frk"] = beaverMaterial.frk * 1e-3;
+
+            karambaMaterial.UserData["pmean"] = beaverMaterial.pmean * 1e-3 ; // N/m³ to kN/m³
 
             karambaMaterial.UserData["ym"] = beaverMaterial.Ym;
             karambaMaterial.UserData["Bc"] = beaverMaterial.Bc;
+            karambaMaterial.UserData["kdef"] = beaverMaterial.kdef;
+
+            karambaMaterial.UserData["E05"] = beaverMaterial.E05 * 1e-3;
+            karambaMaterial.UserData["E90_05"] = beaverMaterial.E90_05 * 1e-3;
+
 
             DA.SetData(0, new GH_FemMaterial(karambaMaterial));
         }
