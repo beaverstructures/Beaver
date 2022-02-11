@@ -33,7 +33,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         {
             pManager.AddParameter(new Karamba.GHopper.Elements.Param_Element(), "Beam", "Beam","Karamba Beam element to be Modified", GH_ParamAccess.list);
             pManager.AddCurveParameter("Span Line", "SpanLine", 
-                "Span polyline representing the full undeformed length of the beam. This is used for defining local considerations of SLS. " +
+                "Span polyline or polyline representing the full undeformed length of the beam. This is used for defining local considerations of SLS. " +
                 "If no line is provided, SLS will consider a global displacement", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length Y" , "BklLenY", "Buckling length of element in local Y-direction if > 0.", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length Z" , "BklLenZ", "Buckling length of element in local Z - direction if > 0.", GH_ParamAccess.list);
@@ -41,6 +41,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
             pManager.AddBooleanParameter("Cantilever", "Cantilever", "Boolean parameter describing whether the beam is cantilevered. By default is set to False", GH_ParamAccess.list, false);
             pManager.AddIntegerParameter("Service Class", "SC", "Service Class from 1 to 3 regarding the timber element. By default is set to 2", GH_ParamAccess.list,2);
             pManager.AddNumberParameter("Precamber", "Pcamber", "Precamber of beam elements in meters. Default is set to 0", GH_ParamAccess.list, 0);
+            pManager.AddBooleanParameter("Local", "Local", "Boolean parameter describing whether the beam should be calculated using global or local SLS analysis. By default is set to False", GH_ParamAccess.list, false);
         }
 
         /// <summary>
@@ -60,13 +61,14 @@ namespace BeaverGrasshopper.Components.InteropComponents
             List<Karamba.GHopper.Elements.GH_Element> beams = new List<Karamba.GHopper.Elements.GH_Element>();
             List<Karamba.GHopper.Elements.GH_Element> out_beams = new List<Karamba.GHopper.Elements.GH_Element>();
 
-            List<Polyline> spans = new List<Polyline>();
+            List<Curve> spans = new List<Curve>();
             List<bool> cantilevers = new List<bool>();
             List<double> bklY = new List<double>();
             List<double> bklZ = new List<double>();
             List<double> bklLT = new List<double>();
             List<int> serviceClasses = new List<int>();
             List<double> precambers = new List<double>();
+            List<bool> local = new List<bool>();
 
             DA.GetDataList(0, beams);
             DA.GetDataList(1, spans);
@@ -76,6 +78,16 @@ namespace BeaverGrasshopper.Components.InteropComponents
             DA.GetDataList(5, cantilevers);
             DA.GetDataList(6, serviceClasses);
             DA.GetDataList(7, precambers);
+            DA.GetDataList(8, local);
+
+            List<Polyline> polylines = new List<Polyline>();
+            foreach (Curve curve in spans)
+            {
+                Polyline pl;
+                if (curve.TryGetPolyline(out pl))
+                    polylines.Add(pl);
+                else throw new ArgumentException("Curve is not a polyline");
+            }
 
             // generates list of values if only one value is provided.
             cantilevers = (cantilevers.Count > 1) ? 
@@ -84,17 +96,30 @@ namespace BeaverGrasshopper.Components.InteropComponents
                 serviceClasses : Enumerable.Repeat(serviceClasses[0], beams.Count).ToList();
             precambers = (precambers.Count > 1) ?
                 precambers : Enumerable.Repeat(precambers[0], beams.Count).ToList();
+            local = (local.Count > 1) ?
+                local : Enumerable.Repeat(local[0], beams.Count).ToList();
 
             for (int i = 0; i < beams.Count; i++)
             {
                 BuilderElementStraightLine beam = beams[i].Value as BuilderElementStraightLine;
-                if (!spans[i].IsValid) { spans[i] = new Polyline();  }
+                if (!polylines[i].IsValid) {
+                    polylines[i] = new Polyline();
+                }
 
-                beam.UserData["SpanLine"] = spans[i];
-                beam.UserData["SpanLength"] = spans[i].First.DistanceTo(spans[i].Last);
+                List<BeaverCore.Geometry.Point3D> pts = new List<BeaverCore.Geometry.Point3D>();
+                foreach (Point3d point in polylines[i].ToList())
+                {
+                    pts.Add(new BeaverCore.Geometry.Point3D(point.X, point.Y, point.Z));
+                }
+                
+                BeaverCore.Geometry.Polyline beaverPoly = new BeaverCore.Geometry.Polyline(pts);
+
+                beam.UserData["SpanLine"] = polylines[i];
+                beam.UserData["SpanLength"] = polylines[i].First.DistanceTo(polylines[i].Last);
                 beam.UserData["Cantilever"] = cantilevers[i];
                 beam.UserData["ServiceClass"] = serviceClasses[i];
                 beam.UserData["Precamber"] = precambers[i];
+                beam.UserData["Local"] = local[i];
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklY, bklY[i]);
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklZ, bklZ[i]);
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklLT, bklLT[i]);

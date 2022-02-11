@@ -177,6 +177,13 @@ namespace BeaverCore.Geometry
             };
             return result;
         }
+        public static double DistanceTo(Point3D startpt, Point3D endpt)
+        {
+            Point3D distance = endpt - startpt;
+            double dist = Math.Sqrt(Math.Pow(distance.x,2) + Math.Pow(distance.y, 2)+ Math.Pow(distance.z, 2));
+            return dist;
+        }
+
     }
     [Serializable]
     public class Line
@@ -194,7 +201,49 @@ namespace BeaverCore.Geometry
         {
             return start + relpos * (end - start);
         }
+    }
 
+    [Serializable]
+    public class Polyline
+    {
 
+        public List<Point3D> pts;
+        public double length=0;
+        public double endptsLength;
+
+        public Polyline() { }
+
+        public Polyline(List<Point3D> pts)
+        {
+            this.pts = pts;
+            SetLength();
+            SetEndptsLength();
+        }
+
+        public void SetLength()
+        {
+            for(int i = 1; i < pts.Count; i++)
+            {
+                length += Point3D.DistanceTo(pts[i - 1], pts[i]);
+            }
+        }
+        public void SetEndptsLength()
+        {
+            endptsLength = Point3D.DistanceTo(pts[0], pts[pts.Count-1]);
+        }
+        public bool IsValid()
+        {
+            if (pts.Count > 0) return true;
+            else return false;
+        }
+
+        public static implicit operator Polyline(Line v)
+        {
+            List<Point3D> pts = new List<Point3D> { 
+                v.start,
+                v.end
+            };
+            return new Polyline(pts);
+        }
     }
 }

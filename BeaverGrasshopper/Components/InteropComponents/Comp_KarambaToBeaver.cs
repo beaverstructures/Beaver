@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Grasshopper.Kernel;
 using Rhino.Geometry;
@@ -10,13 +11,15 @@ using Karamba.GHopper.Models;
 
 using BeaverCore.Frame;
 using BeaverCore.Actions;
+using BeaverCore.Materials;
+
 using Karamba.Elements;
 using Karamba.Results;
 using Karamba.Geometry;
 using Karamba.CrossSections;
-using BeaverCore.Materials;
+
 using static Karamba.Elements.BuilderElementStraightLine;
-using System.Threading.Tasks;
+
 
 namespace BeaverGrasshopper
 {
@@ -79,11 +82,14 @@ namespace BeaverGrasshopper
                 List<List<List<List<double>>>> force_results = new List<List<List<List<double>>>>();
                 List<List<List<Vector3>>> trans_displacement_results = new List<List<List<Vector3>>>();
                 List<List<List<Vector3>>> rot_displacement_results = new List<List<List<Vector3>>>();
-                BeamForces.solve(model, beam_id, null, 100000, sub_div + 1, out force_results);
-                BeamDisplacements.solve(model, beam_id, null, 100000, sub_div + 1, out trans_displacement_results, out rot_displacement_results);
+                Karamba.Results.BeamForces.solve(
+                    model, beam_id, null, 100000, sub_div + 1, out force_results);
+                Karamba.Results.BeamDisplacements.solve(
+                    model, beam_id, null, 100000, sub_div + 1, out trans_displacement_results, out rot_displacement_results);
                 List<ModelElement> beams = model.elementsByID(beam_id);
                 List<Force>[,] elements_forces = new List<Force>[beams.Count, sub_div + 1];
                 List<Displacement>[,] elements_displacements = new List<Displacement>[beams.Count, sub_div + 1];
+
                 for (int i = 0; i < force_results.Count; i++)
                 {
                     if (lc_types.Count - 1 >= i)
@@ -118,12 +124,14 @@ namespace BeaverGrasshopper
                     Dictionary<double, TimberFramePoint> TFPoints = new Dictionary<double, TimberFramePoint>();
                     ModelBeam modelBeam = beams[i] as ModelBeam;
                     BuilderElement beam = modelBeam.BuilderElement();
-                    Material material = MaterialToBeaver(beam.crosec.material);
+                    Material material = MaterialKarambaToBeaver(beam.crosec.material);
 
                     double spanLength = modelBeam.elementLength(model);
+                    bool local = false;
                     try
                     {
                         spanLength = (double)beam.UserData["SpanLength"];
+                        local = true;
                     }
                     catch
                     {
@@ -138,6 +146,7 @@ namespace BeaverGrasshopper
                     }
                     catch
                     {
+                        serviceClass = 2;
                         AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
                                               "Beam does not contain service class data. Service class 2 will be considered");
                     }
@@ -147,13 +156,33 @@ namespace BeaverGrasshopper
                     BeaverCore.Geometry.Point3D node1 = PointKarambaToBeaver(model.nodes[modelBeam.node_inds[0]].pos);
                     BeaverCore.Geometry.Point3D node2 = PointKarambaToBeaver(model.nodes[modelBeam.node_inds[1]].pos);
                     BeaverCore.Geometry.Line beaver_line = new BeaverCore.Geometry.Line(node1, node2);
+
+                    // creates a SpanLine object with correct properties assigned from Karamba
+                    Polyline poly = (Polyline)beam.UserData["SpanLine"];
+                    List<BeaverCore.Geometry.Point3D> pts = new List<BeaverCore.Geometry.Point3D>();
+                    foreach(Point3d pt in poly.ToList())
+                    {
+                        pts.Add(new BeaverCore.Geometry.Point3D(pt.X, pt.Y, pt.Z));
+                    }
+                    BeaverCore.Geometry.Polyline beaver_Polyline = new BeaverCore.Geometry.Polyline(pts);
+                    BeaverCore.Frame.TimberFrame.SpanLine spanLine = ImportSpanLineProperties(beaver_Polyline,model,lc_types);
+
                     for (int j = 0; j < sub_div + 1; j++)
                     {
-                        TimberFramePoint TFPoint = new TimberFramePoint(elements_forces[i, j], elements_displacements[i, j], beaver_crosec,
-                            (int)beam.UserData["ServiceClass"], modelBeam.buckling_length(BucklingDir.bklY), modelBeam.buckling_length(BucklingDir.bklZ), spanLength, 0.9, (bool)beam.UserData["Cantilever"]);
+                        TimberFramePoint TFPoint = new TimberFramePoint(
+                            elements_forces[i, j],
+                            elements_displacements[i, j],
+                            beaver_crosec,
+                            (int)beam.UserData["ServiceClass"],
+                            modelBeam.buckling_length(BucklingDir.bklY),
+                            modelBeam.buckling_length(BucklingDir.bklZ),
+                            spanLength, 0.9,
+                            (bool)beam.UserData["Cantilever"],
+                            local: (bool)beam.UserData["Local"],
+                            _localRefDisps: spanLine.midDisp);
                         TFPoints[j * rel_pos_step] = TFPoint;
                     }
-                    TimberFrame timber_frame = new TimberFrame(TFPoints, beaver_line);
+                    TimberFrame timber_frame = new TimberFrame(TFPoints, beaver_line, spanLine);
                     timber_frames[i] = new GH_TimberFrame(timber_frame);
                 });
             }
@@ -186,17 +215,12 @@ namespace BeaverGrasshopper
             }
         }
 
-        BeaverCore.Geometry.Point3D PointKarambaToBeaver(Point3 karamba_point)
+        public BeaverCore.Geometry.Point3D PointKarambaToBeaver(Point3 karamba_point)
         {
             return new BeaverCore.Geometry.Point3D(karamba_point.X, karamba_point.Y, karamba_point.Z);
         }
 
-        private static List<T> CreateList<T>(int capacity)
-        {
-            return Enumerable.Repeat(default(T), capacity).ToList();
-        }
-
-        private static Material MaterialToBeaver(Karamba.Materials.FemMaterial k3dMaterial)
+        BeaverCore.Materials.Material MaterialKarambaToBeaver(Karamba.Materials.FemMaterial k3dMaterial)
         {
             if (k3dMaterial.HasUserData())
             {
@@ -233,8 +257,56 @@ namespace BeaverGrasshopper
             else
             {
                 throw new Exception("Beaver parameters not set in the Karamba Material. Use the BeaverToKarambaMaterial component.");
-            }            
+            }
         }
+
+        BeaverCore.Frame.TimberFrame.SpanLine ImportSpanLineProperties( BeaverCore.Geometry.Polyline poly, Karamba.Models.Model k3dModel, List<string> lc_types)
+        {
+            // finds node indexes of start and end of the polyline, 
+            // retrieves the nodal displacements and 
+            // returns a SpanLine object with properties assigned
+            
+            Point3 k3dpoint1 = new Point3(
+                poly.pts[0].x, 
+                poly.pts[0].y, 
+                poly.pts[0].z) ;
+            Point3 k3dpoint2 = new Point3(
+                poly.pts[poly.pts.Count - 1].x, 
+                poly.pts[poly.pts.Count - 1].y, 
+                poly.pts[poly.pts.Count - 1].z);
+            List<int> nodeIDs = new List<int>(){
+                k3dModel.NodeInd(k3dpoint1, 0.01),
+                k3dModel.NodeInd(k3dpoint2, 0.01) };
+
+            // List-structure: load-case/node.
+            List <List<Vector3>> vectorsTranslation = new List<List<Vector3>>();
+            List<List<Vector3>> vectorsRotation = new List<List<Vector3>>();
+            TimberFrame.SpanLine spanLine = new TimberFrame.SpanLine(poly);
+
+            Karamba.Results.NodalDisp.solve(k3dModel, null, nodeIDs, out vectorsTranslation, out vectorsRotation);
+            for(int i = 0; i < lc_types.Count; i++)
+            {
+                spanLine.startDisp.Add(new Displacement(
+                    vectorsTranslation[i][0].X,
+                    vectorsTranslation[i][0].Y,
+                    vectorsTranslation[i][0].Z,
+                    lc_types[i]));
+                spanLine.endDisp.Add(new Displacement(
+                    vectorsTranslation[i][1].X, 
+                    vectorsTranslation[i][1].Y, 
+                    vectorsTranslation[i][1].Z, 
+                    lc_types[i]));
+                spanLine.midDisp.Add(
+                    (spanLine.startDisp[i] + spanLine.endDisp[i]) * 0.5);
+            }
+            return spanLine;
+        }
+
+        private static List<T> CreateList<T>(int capacity)
+        {
+            return Enumerable.Repeat(default(T), capacity).ToList();
+        }
+
 
 
         /// <summary>
