@@ -128,6 +128,7 @@
     <Compile Include="Components\PropertiesComponents\Comp_ImportCSVMaterials.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />
     <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
+    <Compile Include="Components\ResultsComponents\VisualizeCriticalCheck.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
     <Compile Include="CoreWrappers\GH_Fastener.cs" />
