@@ -70,6 +70,28 @@ namespace BeaverCore.Actions
             return result;
         }
 
+        public static Displacement operator -(Displacement w1, Displacement w2)
+        {
+            Displacement result = new Displacement(w1.dx - w2.dx,
+                                                    w1.dy - w2.dy,
+                                                    w1.dz - w2.dz,
+                                                    w1.type);
+            if (w1.combination == "")
+            {
+                result.combination = w2.combination;
+            }
+            else if (w2.combination == "")
+            {
+                result.combination = w1.combination;
+            }
+            else
+            {
+                result.combination = w1.combination + "-" + w2.combination;
+
+            }
+            return result;
+        }
+
         public static Displacement operator *(Displacement w1, double s)
         {
             Displacement result = new Displacement(w1.dx * s,

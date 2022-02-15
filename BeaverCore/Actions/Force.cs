@@ -63,6 +63,20 @@ namespace BeaverCore.Actions
             combination = type;
         }
 
+        public Force(List<double> InternalForces, string type, double scale)
+        {
+            N = scale*InternalForces[0];
+            Vy = scale * InternalForces[1];
+            Vz = scale * InternalForces[2];
+            Mt = scale * InternalForces[3];
+            My = scale * InternalForces[4];
+            Mz = scale * InternalForces[5];
+            this.type = type;
+            typeinfo = new TypeInfo(type);
+            duration = typeinfo.duration;
+            combination = type;
+        }
+
         public List<double> ToList()
         {
             List<double> InternalForces = new List<double>() { 

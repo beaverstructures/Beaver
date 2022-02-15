@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -9,8 +10,40 @@ using System.Threading.Tasks;
 namespace BeaverCore.Misc
 {
 
-    class Utils
+    public class Utils
     {
+        /// <summary>
+        /// Retrieves interpolated color from a list of colors and a double between range [0-1].
+        /// If higher than 1, Color is black.
+        /// </summary>
+        /// <param name="colors"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        static public Color colorInterpolation(List<Color> colors, double value)
+        {
+            Color interpolatedColor = Color.Black;
+            int colorCount = colors.Count;
+            double colorInterval = Math.Pow((colorCount - 1),-1);
+            double intervalBottom = 0;
+            double intervalTop = colorInterval;
+            for (int i = 0; i < colorCount - 1; i++)
+            {
+                if (value>=intervalBottom && value <= intervalTop)
+                {
+                    Color bottomColor = colors[i];
+                    Color topColor = colors[i + 1];
+                    int newA = (int)interpolate(value, intervalBottom, intervalTop, bottomColor.A, topColor.A);
+                    int newR = (int)interpolate(value, intervalBottom, intervalTop, bottomColor.R, topColor.R);
+                    int newG = (int)interpolate(value, intervalBottom, intervalTop, bottomColor.G, topColor.G);
+                    int newB = (int)interpolate(value, intervalBottom, intervalTop, bottomColor.B, topColor.B);
+                    interpolatedColor = Color.FromArgb(newA, newR, newG, newB);
+                    break;
+                }
+                intervalBottom += colorInterval;
+                intervalTop += colorInterval;
+            }
+            return interpolatedColor;
+        }
 
         static public double linear(double x, List<double> xd, List<double> yd)
         {

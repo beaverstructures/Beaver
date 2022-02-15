@@ -22,7 +22,6 @@ namespace BeaverCore.Connections
         public double t;        // Thickness of the headside member
         public string type;
         public bool smooth;
-        public double alpha;    // angle between fastener and timber grain
 
         // Recently added properties
         public double Ymsteel;

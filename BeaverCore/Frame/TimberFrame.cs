@@ -35,6 +35,26 @@ namespace BeaverCore.Frame
         /// </summary>
         public Line FrameAxis;
         public string id;
+        public SpanLine spanLine;
+
+        [Serializable]
+        public class SpanLine
+        {
+            public Polyline geom;
+            public List<Displacement> startDisp;
+            public List<Displacement> endDisp;
+            public Line refLine;
+            public List<Displacement> midDisp;
+
+            public SpanLine() { }
+            public SpanLine(Polyline poly)
+            {
+                geom = poly;
+                startDisp = new List<Displacement>();
+                endDisp = new List<Displacement>();
+                midDisp = new List<Displacement>();
+            }
+        }
 
         public TimberFrame()
         {
@@ -50,6 +70,13 @@ namespace BeaverCore.Frame
         {
             TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
             FrameAxis = line;
+            spanLine = new SpanLine(line);
+        }
+        public TimberFrame(Dictionary<double, TimberFramePoint> timberpoints, Line line,SpanLine _spanLine)
+        {
+            TimberPointsMap = new Dictionary<double, TimberFramePoint>(timberpoints);
+            FrameAxis = line;
+            spanLine = _spanLine;
         }
     }
 
@@ -64,57 +91,80 @@ namespace BeaverCore.Frame
         public ULSCombinations ULSComb;
         public SLSCombinations SLSComb;
         public CroSec CS;
-        public SpanType span_type;
+
+        public bool cantilever;
         public double ly;
         public double lz;
         public double kflam;
         public double lspan;
-        public double[] inst_deflection_limit;
-        public double[] netfin_deflection_limit;
-        public double[] fin_deflection_limit;
+        public double inst_deflection_limit;
+        public double netfin_deflection_limit;
+        public double fin_deflection_limit;
         public double precamber;
         public string id;
         public string guid;
         public string parameters;
         public int sc;
 
+        // calculated displacement average of end points of span line for each load case. 
+        // For now it is the same for all timber frame. 
+        // In reality should be an interpolation of the reference line at the position of the timberframepoint
+        public List<Displacement> localRefDisps;
+        public SLSCombinations RefSLSComb;
+        public bool local;
+
         public TimberFramePoint() { }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam)
+        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, bool cantilever = false, double precamber = 0, bool local = false, List<Displacement> _localRefDisps = null )
         {
             Forces = forces;
             Disp = disp;
+            localRefDisps = _localRefDisps;
+
             this.sc = sc;
-            ULSComb = new ULSCombinations(forces, sc);
             CS = cs;
             CS.material.Setkdef(sc);
-            SLSComb = new SLSCombinations(disp, sc, CS.material);
+            
             this.ly = ly;
             this.lz = lz;
             this.kflam = kflam;
             this.lspan = lspan;
-            fin_deflection_limit = new double[] { lspan / 300, lspan / 150 };
-            inst_deflection_limit = new double[] { lspan / 350, lspan / 175 };
-            netfin_deflection_limit = new double[] { lspan / 250, lspan / 125 };
-            span_type = SpanType.Span;
+            this.cantilever = cantilever;
+            this.precamber = precamber;
+            this.local = local;
+            if (cantilever)
+            {
+                fin_deflection_limit = lspan / 150;
+                inst_deflection_limit = lspan / 175;
+                netfin_deflection_limit = lspan / 125;
+            }
+            else
+            {
+                fin_deflection_limit = lspan / 300;
+                inst_deflection_limit = lspan / 350;
+                netfin_deflection_limit = lspan / 250;
+            }
+            SetRefDisp();
+            SetSLSComb();
+            SetULSComb();
         }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, SpanType span_type)
+        public void SetULSComb()
         {
-            Forces = forces;
-            Disp = disp;
-            this.sc = sc;
-            ULSComb = new ULSCombinations(forces, sc);
-            CS = cs;
-            SLSComb = new SLSCombinations(disp, sc, cs.material);
-            this.ly = ly;
-            this.lz = lz;
-            this.kflam = kflam;
-            this.lspan = lspan;
-            fin_deflection_limit = new double[] { lspan / 300, lspan / 150 };
-            inst_deflection_limit = new double[] { lspan / 350, lspan / 175 };
-            netfin_deflection_limit = new double[] { lspan / 250, lspan / 125 };
-            this.span_type = span_type;
+            ULSComb = new ULSCombinations(Forces, sc);
+        }
+
+        public void SetSLSComb()
+        {
+            SLSComb = new SLSCombinations(Disp, sc, CS.material);
+        }
+
+        public void SetRefDisp()
+        {
+            if (local)
+            {
+                RefSLSComb = new SLSCombinations(localRefDisps, sc, CS.material);
+            }
         }
 
         private double Getkcrit(double lam)
@@ -131,7 +181,6 @@ namespace BeaverCore.Frame
             return kcrit;
         }
 
-        // Section Analisys
         public TimberFrameULSResult ULSUtilization()
         {
             string[] Info = new string[] {
@@ -152,8 +201,6 @@ namespace BeaverCore.Frame
                     //7
                     "EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression",
                 };
-
-
 
             //Basic Geometry and Material Values
             double A = CS.A;
@@ -267,7 +314,7 @@ namespace BeaverCore.Frame
                 UtilZ3 = Math.Abs(Sigvz) / fvd;
 
                 //4 EC5 Section 6.1.8 Torsion
-                Util4 = Math.Abs(SigMt) / (kshape / fvd);
+                Util4 = Math.Abs(SigMt) / (kshape * fvd);
 
                 //5 EC5 Section 6.2.3 Combined Bending and Axial Tension
                 if (sigN < 0) UtilY5 = UtilZ5 = 0;
@@ -325,8 +372,6 @@ namespace BeaverCore.Frame
 
             return Result;
 
-
-
         }
 
         public TimberFrameSLSResult SLSUtilization()
@@ -342,51 +387,72 @@ namespace BeaverCore.Frame
             return new TimberFrameSLSResult(Info, InstDisplacementUtil(), NetFinDisplacementUtil(), FinDisplacementUtil());
         }
 
-        private double GetDisplacementLimit(double[] displacement_limit)
-        {
-            double result = 0;
-            if (span_type is SpanType.Span)
-            {
-                result = displacement_limit[0];
-            }
-            else if (span_type is SpanType.CantileverSpan)
-            {
-                result = displacement_limit[1];
-            }
-            return result;
-        }
-
 
         public List<double> InstDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(inst_deflection_limit);
+            double deflection_limit = inst_deflection_limit;
             List<double> disps_ratio = new List<double>();
+            int i = 0;
             foreach (Displacement disp in SLSComb.CharacteristicDisplacements)
             {
-                double abs_displacement = disp.Absolute();
-                disps_ratio.Add(abs_displacement / deflection_limit);
+                if (local)
+                {
+                    /// Local displacements
+                    Displacement localDisp = disp - RefSLSComb.CharacteristicDisplacements[i];
+                    disps_ratio.Add(localDisp.Absolute() / deflection_limit);
+                }
+                else
+                {
+                    /// Global Displacements
+                    disps_ratio.Add(disp.Absolute() / deflection_limit);
+                }
+                i++;
             }
             return disps_ratio;
         }
 
         public List<double> NetFinDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(netfin_deflection_limit);
+            double deflection_limit = netfin_deflection_limit;
             List<double> disps_ratio = new List<double>();
+            int i = 0;
             foreach (var disp in SLSComb.CreepDisplacements)
             {
-                disps_ratio.Add((disp.Absolute() - precamber) / deflection_limit);
+                if (local)
+                {
+                    /// Local displacements
+                    Displacement localDisp = disp - RefSLSComb.CreepDisplacements[i];
+                    disps_ratio.Add(localDisp.Absolute() / deflection_limit);
+                }
+                else
+                {
+                    /// Global Displacements
+                    disps_ratio.Add(disp.Absolute() / deflection_limit);
+                }
+                i++;
             }
             return disps_ratio;
         }
 
         public List<double> FinDisplacementUtil()
         {
-            double deflection_limit = GetDisplacementLimit(fin_deflection_limit);
+            double deflection_limit = fin_deflection_limit;
             List<double> disps_ratio = new List<double>();
+            int i = 0;
             foreach (var disp in SLSComb.CreepDisplacements)
             {
-                disps_ratio.Add((disp.Absolute()) / deflection_limit);
+                if (local)
+                {
+                    /// Local displacements
+                    Displacement localDisp = disp - RefSLSComb.CharacteristicDisplacements[i];
+                    disps_ratio.Add(localDisp.Absolute() / deflection_limit);
+                }
+                else
+                {
+                    /// Global Displacements
+                    disps_ratio.Add(disp.Absolute() / deflection_limit);
+                }
+                i++;
             }
             return disps_ratio;
         }
@@ -413,10 +479,10 @@ namespace BeaverCore.Frame
 
     public class TimberFrameSLSResult
     {
-        string[] Info;
-        List<double> InstUtils;
-        List<double> NetFinUtils;
-        List<double> FinUtils;
+        public string[] Info;
+        public List<double> InstUtils;
+        public List<double> NetFinUtils;
+        public List<double> FinUtils;
 
         public TimberFrameSLSResult() { }
 

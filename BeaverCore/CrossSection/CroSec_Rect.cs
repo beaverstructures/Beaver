@@ -32,14 +32,14 @@ namespace BeaverCore.CrossSection
             List<double> lratio = new List<double>() { 1, 1.5, 2, 2.5, 3, 4, 5, 6, 10, Math.Pow(10, 100) };
             double a = Math.Min(this.b, h);
             double b = Math.Max(this.b, h);
-            double ratio = Math.Min(this.b / h, h / this.b);
+            double ratio = Math.Max(this.b / h, h / this.b);
             double beta = Utils.linear(ratio, lratio, lbeta);
             return beta * a * Math.Pow(b, 3);
         }
 
         public override double GetsigMcrit(double lef, double E05, double G05)
         {
-            return (Math.PI) * Math.Sqrt(E05 * Iz * G05 * It);
+            return (0.78 * Math.Pow(b, 2) / (h * lef)) * E05;
         }
     }
 }

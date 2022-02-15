@@ -73,9 +73,49 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Beaver_Param {
+            get {
+                object obj = ResourceManager.GetObject("Beaver_Param", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Bolt {
             get {
                 object obj = ResourceManager.GetObject("Bolt", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ConnectionView {
+            get {
+                object obj = ResourceManager.GetObject("ConnectionView", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ConnectionView2 {
+            get {
+                object obj = ResourceManager.GetObject("ConnectionView2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ConnectonResults {
+            get {
+                object obj = ResourceManager.GetObject("ConnectonResults", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -103,6 +143,16 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Displacements {
+            get {
+                object obj = ResourceManager.GetObject("Displacements", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Dowel {
             get {
                 object obj = ResourceManager.GetObject("Dowel", resourceCulture);
@@ -116,6 +166,16 @@ namespace BeaverGrasshopper.Properties {
         internal static System.Drawing.Bitmap ExportMaterialtoKaramba {
             get {
                 object obj = ResourceManager.GetObject("ExportMaterialtoKaramba", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Force {
+            get {
+                object obj = ResourceManager.GetObject("Force", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -206,6 +266,26 @@ namespace BeaverGrasshopper.Properties {
         internal static System.Drawing.Bitmap TimberFrame {
             get {
                 object obj = ResourceManager.GetObject("TimberFrame", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TimberFramePoint {
+            get {
+                object obj = ResourceManager.GetObject("TimberFramePoint", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TimberFrameResults {
+            get {
+                object obj = ResourceManager.GetObject("TimberFrameResults", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
