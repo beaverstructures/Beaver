@@ -22,6 +22,7 @@ namespace BeaverCore.Connections
         public double t;        // Thickness of the headside member
         public string type;
         public bool smooth;
+        public double alpha;
 
         // Recently added properties
         public double Ymsteel;

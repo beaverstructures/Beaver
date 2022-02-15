@@ -265,8 +265,10 @@
   <ItemGroup>
     <None Include="Resources\Beaver Param.png" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Components\InteropComponents\" />
+    <Content Include="CriticalChecks.png" />
+    <None Include="Resources\CriticalChecks.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

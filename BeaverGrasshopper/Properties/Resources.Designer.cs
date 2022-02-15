@@ -123,6 +123,16 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CriticalChecks {
+            get {
+                object obj = ResourceManager.GetObject("CriticalChecks", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CrossSection {
             get {
                 object obj = ResourceManager.GetObject("CrossSection", resourceCulture);
