@@ -1,4 +1,4 @@
-﻿using BeaverCore.Actions;
+﻿ using BeaverCore.Actions;
 using BeaverCore.Geometry;
 using BeaverCore.Materials;
 using System;
@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BeaverCore.Connections
 {
-    class ConnectionAxial
+    public class ConnectionAxial
     {
         // Calculates the axial capacity of the connection
         public List<Point2D> fastener_coordinates;
@@ -30,6 +30,8 @@ namespace BeaverCore.Connections
             this.fastener = fastener;
             this.isMultiple = (axialSpacing.npar + axialSpacing.nperp) == 1 ? true : false;
         }
+
+        public ConnectionAxial() { }
 
         public void AxialResistance()
         {          

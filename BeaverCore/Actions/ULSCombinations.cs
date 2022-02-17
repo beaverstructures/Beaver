@@ -19,8 +19,11 @@ namespace BeaverCore.Actions
     [Serializable]
     public class ULSCombinations
     {
-        public Force[] DesignForces;                          // List of design forces
-        public int SC;                              // Service Class 
+        public Force[] DesignForces;                    // List of design forces
+        public int SC;                                  // Service Class 
+        public List<List<double>> CombinatoricsMatrix;  // Combination list contaning list of design forces multipliers
+
+
         public ULSCombinations() { }
 
         public ULSCombinations(List<Force> Sk, int sc)

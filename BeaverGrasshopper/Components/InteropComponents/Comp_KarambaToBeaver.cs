@@ -12,13 +12,15 @@ using Karamba.GHopper.Models;
 using BeaverCore.Frame;
 using BeaverCore.Actions;
 using BeaverCore.Materials;
+using BvGeom = BeaverCore.Geometry;
 
 using Karamba.Elements;
 using Karamba.Results;
 using Karamba.Geometry;
 using Karamba.CrossSections;
-
 using static Karamba.Elements.BuilderElementStraightLine;
+
+using BeaverGrasshopper.Components.InteropComponents;
 
 
 namespace BeaverGrasshopper
@@ -102,7 +104,10 @@ namespace BeaverGrasshopper
                                 if (elements_displacements[j, k] is null) elements_displacements[j, k] = new List<Displacement>();
                                 Force force = new Force(force_results[i][j][k], lc_types[i], 1000);
                                 Vector3 displacement_vec = trans_displacement_results[i][j][k];
-                                Displacement displacement = new Displacement(displacement_vec.X, displacement_vec.Y, displacement_vec.Z, lc_types[i]);
+                                Displacement displacement = new Displacement(displacement_vec.X,
+                                                                             displacement_vec.Y,
+                                                                             displacement_vec.Z,
+                                                                             lc_types[i]);
                                 elements_forces[j, k].Add(force);
                                 elements_displacements[j, k].Add(displacement);
                             }
@@ -114,7 +119,7 @@ namespace BeaverGrasshopper
                     }
 
                 }
-                timber_frames = CreateList<GH_TimberFrame>(beams.Count);
+                timber_frames = ExtendedMethods.CreateList<GH_TimberFrame>(beams.Count);
                 Parallel.For(0, beams.Count, new ParallelOptions
                 {
                     // multiply the count because a processor has 2 cores
@@ -124,7 +129,7 @@ namespace BeaverGrasshopper
                     Dictionary<double, TimberFramePoint> TFPoints = new Dictionary<double, TimberFramePoint>();
                     ModelBeam modelBeam = beams[i] as ModelBeam;
                     BuilderElement beam = modelBeam.BuilderElement();
-                    Material material = MaterialKarambaToBeaver(beam.crosec.material);
+                    Material material = beam.crosec.material.K3DToBeaver();
 
                     double spanLength = modelBeam.elementLength(model);
                     bool local = false;
@@ -151,21 +156,24 @@ namespace BeaverGrasshopper
                                               "Beam does not contain service class data. Service class 2 will be considered");
                     }
                     CroSec crosec = beam.crosec;
-                    BeaverCore.CrossSection.CroSec beaver_crosec = CroSecKarambaToBeaver(beam.crosec, material);
+                    BeaverCore.CrossSection.CroSec beaver_crosec = beam.crosec.K3DToBeaver();
                     double rel_pos_step = modelBeam.elementLength(model) / (sub_div);
-                    BeaverCore.Geometry.Point3D node1 = PointKarambaToBeaver(model.nodes[modelBeam.node_inds[0]].pos);
-                    BeaverCore.Geometry.Point3D node2 = PointKarambaToBeaver(model.nodes[modelBeam.node_inds[1]].pos);
-                    BeaverCore.Geometry.Line beaver_line = new BeaverCore.Geometry.Line(node1, node2);
+                    BvGeom.Point3D node1 = model.nodes[modelBeam.node_inds[0]].pos.K3Dpt2Beaver();
+                    BvGeom.Point3D node2 = model.nodes[modelBeam.node_inds[1]].pos.K3Dpt2Beaver();
+                    BvGeom.Line beaver_line = new BvGeom.Line(node1, node2);
 
                     // creates a SpanLine object with correct properties assigned from Karamba
                     Polyline poly = (Polyline)beam.UserData["SpanLine"];
-                    List<BeaverCore.Geometry.Point3D> pts = new List<BeaverCore.Geometry.Point3D>();
+                    List<BvGeom.Point3D> pts = new List<BvGeom.Point3D>();
                     foreach(Point3d pt in poly.ToList())
                     {
-                        pts.Add(new BeaverCore.Geometry.Point3D(pt.X, pt.Y, pt.Z));
+                        pts.Add(new BvGeom.Point3D(pt.X, pt.Y, pt.Z));
                     }
-                    BeaverCore.Geometry.Polyline beaver_Polyline = new BeaverCore.Geometry.Polyline(pts);
-                    BeaverCore.Frame.TimberFrame.SpanLine spanLine = ImportSpanLineProperties(beaver_Polyline,model,lc_types);
+                    BvGeom.Polyline beaver_Polyline = new BvGeom.Polyline(pts);
+                    BeaverCore.Frame.TimberFrame.SpanLine spanLine = ExtendedMethods.ImportSpanLineProperties(
+                        beaver_Polyline,
+                        model,
+                        lc_types);
 
                     for (int j = 0; j < sub_div + 1; j++)
                     {
@@ -188,127 +196,12 @@ namespace BeaverGrasshopper
             }
             else
             {
-                throw new ArgumentException("Set Run to True for running the algorithm.");
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning,
+                                              "Set Run to True for running the algorithm.");
             }
 
             DA.SetDataList(0, timber_frames);
         }
-
-        BeaverCore.CrossSection.CroSec CroSecKarambaToBeaver(CroSec karamba_crosec, Material material)
-        {
-            if (karamba_crosec is CroSec_Trapezoid)
-            {
-                CroSec_Trapezoid trapezoid_crosec = (CroSec_Trapezoid)karamba_crosec;
-                double width = Math.Min(trapezoid_crosec.lf_width, trapezoid_crosec.uf_width);
-                BeaverCore.CrossSection.CroSec beaver_crosec = new BeaverCore.CrossSection.CroSec_Rect(trapezoid_crosec._height, width, material);
-                return beaver_crosec;
-            }
-            else if (karamba_crosec is CroSec_Circle)
-            {
-                CroSec_Circle circle_crosec = (CroSec_Circle)karamba_crosec;
-                BeaverCore.CrossSection.CroSec beaver_crosec = new BeaverCore.CrossSection.CroSec_Circ(circle_crosec.getHeight(), material);
-                return beaver_crosec;
-            }
-            else
-            {
-                throw new ArgumentException("Karamba to Beaver Conversion only supports Karamba Trapezoid and Circle Cross Sections");
-            }
-        }
-
-        public BeaverCore.Geometry.Point3D PointKarambaToBeaver(Point3 karamba_point)
-        {
-            return new BeaverCore.Geometry.Point3D(karamba_point.X, karamba_point.Y, karamba_point.Z);
-        }
-
-        BeaverCore.Materials.Material MaterialKarambaToBeaver(Karamba.Materials.FemMaterial k3dMaterial)
-        {
-            if (k3dMaterial.HasUserData())
-            {
-                Material beaverMaterial = new Material
-                {
-                    type = k3dMaterial.family,
-                    name = k3dMaterial.name,
-                    fmk = (double)k3dMaterial.UserData["fmk"] * 1e3, // kN/m² to Pa
-                    ft0k = k3dMaterial.ft(0) * 1e3,
-                    ft90k = k3dMaterial.ft(1) * 1e3,
-                    fc0k = k3dMaterial.fc(0) * 1e3,
-                    fc90k = k3dMaterial.fc(1) * 1e3,
-
-                    fvk = (double)k3dMaterial.UserData["fvk"] * 1e3,
-                    frk = (double)k3dMaterial.UserData["frk"] * 1e3,
-
-                    E0mean = k3dMaterial.E(0) * 1e3,
-                    E05 = (double)k3dMaterial.UserData["E05"] * 1e3,
-                    E90mean = k3dMaterial.E(1) * 1e3,
-                    E90_05 = (double)k3dMaterial.UserData["E90_05"] * 1e3,
-                    Gmean = k3dMaterial.G12() * 1e3,
-                    G05 = k3dMaterial.G3() * 1e3,
-
-                    pk = k3dMaterial.gamma(),
-
-                    Ym = (double)k3dMaterial.UserData["ym"],
-                    kdef = (double)k3dMaterial.UserData["kdef"],
-                    Bc = (double)k3dMaterial.UserData["Bc"],
-                    pmean = (double)k3dMaterial.UserData["pmean"] * 1000 // kN/m³ to N/m³
-                };
-                beaverMaterial.pk = (double)k3dMaterial.gamma() * 1000;
-                return beaverMaterial;
-            }
-            else
-            {
-                throw new Exception("Beaver parameters not set in the Karamba Material. Use the BeaverToKarambaMaterial component.");
-            }
-        }
-
-        BeaverCore.Frame.TimberFrame.SpanLine ImportSpanLineProperties( BeaverCore.Geometry.Polyline poly, Karamba.Models.Model k3dModel, List<string> lc_types)
-        {
-            // finds node indexes of start and end of the polyline, 
-            // retrieves the nodal displacements and 
-            // returns a SpanLine object with properties assigned
-            
-            Point3 k3dpoint1 = new Point3(
-                poly.pts[0].x, 
-                poly.pts[0].y, 
-                poly.pts[0].z) ;
-            Point3 k3dpoint2 = new Point3(
-                poly.pts[poly.pts.Count - 1].x, 
-                poly.pts[poly.pts.Count - 1].y, 
-                poly.pts[poly.pts.Count - 1].z);
-            List<int> nodeIDs = new List<int>(){
-                k3dModel.NodeInd(k3dpoint1, 0.01),
-                k3dModel.NodeInd(k3dpoint2, 0.01) };
-
-            // List-structure: load-case/node.
-            List <List<Vector3>> vectorsTranslation = new List<List<Vector3>>();
-            List<List<Vector3>> vectorsRotation = new List<List<Vector3>>();
-            TimberFrame.SpanLine spanLine = new TimberFrame.SpanLine(poly);
-
-            Karamba.Results.NodalDisp.solve(k3dModel, null, nodeIDs, out vectorsTranslation, out vectorsRotation);
-            for(int i = 0; i < lc_types.Count; i++)
-            {
-                spanLine.startDisp.Add(new Displacement(
-                    vectorsTranslation[i][0].X,
-                    vectorsTranslation[i][0].Y,
-                    vectorsTranslation[i][0].Z,
-                    lc_types[i]));
-                spanLine.endDisp.Add(new Displacement(
-                    vectorsTranslation[i][1].X, 
-                    vectorsTranslation[i][1].Y, 
-                    vectorsTranslation[i][1].Z, 
-                    lc_types[i]));
-                spanLine.midDisp.Add(
-                    (spanLine.startDisp[i] + spanLine.endDisp[i]) * 0.5);
-            }
-            return spanLine;
-        }
-
-        private static List<T> CreateList<T>(int capacity)
-        {
-            return Enumerable.Repeat(default(T), capacity).ToList();
-        }
-
-
-
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>

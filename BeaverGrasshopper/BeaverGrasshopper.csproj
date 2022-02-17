@@ -121,12 +121,14 @@
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
+    <Compile Include="Components\InteropComponents\InteropUtils.cs" />
     <Compile Include="Components\InteropComponents\Comp_BeaverToKarambaMaterial.cs" />
     <Compile Include="Components\InteropComponents\Comp_KarambaToBeaver.cs" />
     <Compile Include="Components\InteropComponents\Comp_KarambaAddBeaverParams.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_ImportCSVMaterials.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />
+    <Compile Include="Components\ResultsComponents\ResultUtils.cs" />
     <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
     <Compile Include="Components\ResultsComponents\VisualizeCriticalCheck.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
@@ -134,7 +136,7 @@
     <Compile Include="CoreWrappers\GH_Fastener.cs" />
     <Compile Include="CoreWrappers\GH_Force.cs" />
     <Compile Include="CoreWrappers\GH_Material.cs" />
-    <Compile Include="CoreWrappers\GH_ShearConnection.cs" />
+    <Compile Include="CoreWrappers\GH_AxialConnection.cs" />
     <Compile Include="CoreWrappers\GH_Spacing.cs" />
     <Compile Include="CoreWrappers\GH_TimberFrame.cs" />
     <Compile Include="CoreWrappers\GH_TimberFramePoint.cs" />
@@ -156,7 +158,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -239,9 +240,6 @@
     <None Include="Resources\Screw.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ShearConnection.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\SLSResults.png" />
   </ItemGroup>
   <ItemGroup>
@@ -265,9 +263,10 @@
   <ItemGroup>
     <None Include="Resources\Beaver Param.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="CriticalChecks.png" />
+    <None Include="Resources\ShearConnection.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\CriticalChecks.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

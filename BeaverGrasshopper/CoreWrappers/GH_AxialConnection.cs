@@ -11,16 +11,16 @@ using BeaverCore.Misc;
 
 namespace BeaverGrasshopper
 {
-    public class GH_ShearConnection : GH_Goo<ShearConnection>
+    public class GH_ConnectionAxial : GH_Goo<ConnectionAxial>
     {
-        public GH_ShearConnection()
+        public GH_ConnectionAxial()
         {
-            Value = new ShearConnection();
+            Value = new ConnectionAxial();
         }
 
-        public GH_ShearConnection(ShearConnection connection)
+        public GH_ConnectionAxial(ConnectionAxial connection)
         {
-            Value = connection.DeepClone<ShearConnection>();
+            Value = connection.DeepClone<ConnectionAxial>();
         }
 
         public override bool IsValid
@@ -49,27 +49,27 @@ namespace BeaverGrasshopper
 
         public override IGH_Goo Duplicate()
         {
-            GH_ShearConnection duplicate = new GH_ShearConnection();
+            GH_ConnectionAxial duplicate = new GH_ConnectionAxial();
             duplicate.Value = Value.DeepClone();
             return duplicate;
         }
 
         public override string ToString()
         {
-            string info_string = "ShearConnection ";
+            string info_string = "ConnectionAxial ";
             return info_string;
         }
     }
 
-    public class Param_ShearConnection : GH_Param<GH_CroSec>
+    public class Param_ConnectionAxial : GH_Param<GH_CroSec>
     {
-        public Param_ShearConnection() : base("ShearConnection", "SConnection", "ShearConnection", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_ConnectionAxial() : base("ConnectionAxial", "SConnection", "ConnectionAxial", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {
             get
             {
-                return Properties.Resources.ShearConnection;
+                return Properties.Resources.AxialConnection;
             }
         }
         public override Guid ComponentGuid
