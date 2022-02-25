@@ -88,6 +88,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+
             List<Color> colors = new List<Color>() {
                 Color.Black,
                 Color.FromArgb(165, 0, 38), 
@@ -113,10 +114,13 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             string uls_dir_string = "";
             string loadcase_string = "";
             int loadcase_index = -1;
+
             DA.GetDataList(0, gh_timber_frames);
+            DA.GetData(1, ref type);
+
             uls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].ULSComb;
             sls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].SLSComb;
-            DA.GetData(1, ref type);
+            
             UtilizationType new_util_type = (UtilizationType)Enum.Parse(typeof(UtilizationType), type, true);
             if (Update_util(util_type, new_util_type))
             {
@@ -149,7 +153,6 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     }
                     catch
                     {
-                        throw new NotImplementedException();
                     }
                 }
             }

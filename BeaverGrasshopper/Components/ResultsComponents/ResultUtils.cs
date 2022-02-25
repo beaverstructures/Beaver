@@ -34,7 +34,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             TensionAndBending,
             CompressionAndBending,
             CompressionAndBendingColumn,
-            CompressionAndBendingBeam
+            CompressionAndBendingBeam,
+            TorsionAndShear
         }
 
         public enum SLSOptions
@@ -106,8 +107,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                                                List<Color> colors,
                                                string plotType)
         {
+            Mesh output = new Mesh();
             int info = 99;
-            colors.Reverse();
             double new_max_util = 0;
             Point3d point_0 = new Point3d(timber_frame.FrameAxis.start.x,
                                           timber_frame.FrameAxis.start.y,
@@ -121,7 +122,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             double[] parameters = curv.DivideByCount(timber_frame.TimberPointsMap.Count - 1, true, out point_list);
             Polyline polyline = new Polyline(point_list);
             Curve polyline_curve = polyline.ToPolylineCurve();
-            Mesh output = new Mesh();
+            
             double increment = curv.GetLength() / (point_list.Length - 1);
             if (timber_frame.TimberPointsMap[0].CS is CroSec_Circ)
             {
@@ -159,13 +160,12 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     }
                     Color color = (plotType == "Utilization") ? 
                         GetColorfromValue(0, 1, util, colors) : 
-                        GetColorfromInfo(info, colors);
+                        GetColorfromInfo(util_result.util_index, colors);
                     CroSecPoints cs_points = new CroSecPoints(crosec_points, color);
 
                     foreach (Point3d point in crosec_points)
                     {
                         output.Vertices.Add(point);
-
                         output.VertexColors.Add(color);
                     }
                     if (i == 0)
@@ -173,18 +173,19 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                         MeshFace meshface = new MeshFace(0, 1, 2, 3);
                         output.Faces.AddFace(meshface);
                     }
+
                     else
                     {
                         List<MeshFace> meshfaces = new List<MeshFace>
                         {
-                            new MeshFace(4 * (i - 1), 4 * i, 4 * i + 1, 4 * (i - 1) + 1),
+                            new MeshFace(4 * (i - 1)    , 4 * i    , 4 * i + 1, 4 * (i - 1) + 1),
                             new MeshFace(4 * (i - 1) + 1, 4 * i + 1, 4 * i + 2, 4 * (i - 1) + 2),
                             new MeshFace(4 * (i - 1) + 2, 4 * i + 2, 4 * i + 3, 4 * (i - 1) + 3),
-                            new MeshFace(4 * (i - 1) + 3, 4 * i + 3, 4 * i, 4 * (i - 1))
+                            new MeshFace(4 * (i - 1) + 3, 4 * i + 3, 4 * i    , 4 * (i - 1))
                         };
                         output.Faces.AddFaces(meshfaces);
 
-                        if (i == rel_pos.Count)
+                        if (i == rel_pos.Count-1)
                         {
                             MeshFace meshface = new MeshFace(4 * i, 4 * i + 1, 4 * i + 2, 4 * i + 3);
                             output.Faces.AddFace(meshface);
@@ -196,6 +197,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
 
                 }
             }
+            output.Compact();
             if (max_util < new_max_util) max_util = new_max_util;
             return output;
         }
@@ -299,19 +301,19 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                 {
                     max_result = max_result_y;
                     dir = ULSDirection.Y;
-                    util_type = UtilizationType.AllULS;
+                    // util_type = UtilizationType.AllULS;
                 }
                 else
                 {
                     max_result = max_result_z;
                     dir = ULSDirection.Z;
-                    util_type = UtilizationType.AllULS;
+                    // util_type = UtilizationType.AllULS;
                 }
                 UtilizationResult sls_result = MaxSLSUtilizations(frame_point, sls, load_case_index);
                 if (max_result.util < sls_result.util)
                 {
                     max_result = sls_result;
-                    util_type = UtilizationType.SLS;
+                    // util_type = UtilizationType.SLS;
                 }
             }
             else if (util_type == UtilizationType.SLS)
@@ -480,6 +482,15 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     foreach (double[] utils in utilsU)
                     {
                         if (max_util < utils[8]) { max_util = utils[8]; load_index = loadcase_count; }
+                        loadcase_count++;
+                    }
+                    break;
+                case UtilizationType.TorsionAndShear:
+                    loadcase_count = 0;
+                    util_index = 9;
+                    foreach (double[] utils in utilsU)
+                    {
+                        if (max_util < utils[9]) { max_util = utils[9]; load_index = loadcase_count; }
                         loadcase_count++;
                     }
                     break;

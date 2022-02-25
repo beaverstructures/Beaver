@@ -125,13 +125,17 @@ namespace BeaverCore.Frame
                     "EC5 Section 6.1.8 Torsion",
                     //5
                     "EC5 Section 6.2.3 Combined Tension and Bending",
-                    //6
-                    "EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending",
+                    //6 
+                    "EC5 Section 6.2.4 Combined Bending and Axial Compression",
                     //7
+                    "EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending",
+                    //8
                     "EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression",
+                    //9
+                    "Combined Torsion and Shear",
                 };
 
-            //Basic Geometry and Material Values
+            ///Basic Geometry and Material Values
             double A = CS.A;
             double Wy = CS.Wy;
             double Wz = CS.Wz;
@@ -148,21 +152,21 @@ namespace BeaverCore.Frame
             double Bc = CS.material.Bc;
 
 
-            //Define EC5 Section 6.1.6 Bending Coefficients
+            ///Define EC5 Section 6.1.6 Bending Coefficients
             double Km = 1;
             if (CS is CroSec_Rect) { Km = 0.7; };
             if (CS is CroSec_Circ) { Km = 1; };
-
-            //Define EC5 Section 6.1.7 Shear Coefficients
+            
+            ///Define EC5 Section 6.1.7 Shear Coefficients
             double kcrit = 0.67;
 
-            //Define EC5 Section 6.1.8 Torsion Coefficients
+            ///Define EC5 Section 6.1.8 Torsion Coefficients
             double kshape = 2;
             CroSec_Rect cs = (CroSec_Rect)CS;
             if (CS is CroSec_Rect) { kshape = Math.Min(1 + 0.15 * (cs.h / cs.b), 2); };
             if (CS is CroSec_Circ) { kshape = 1.2; };
 
-            //Define EC5 Section 6.2.3 & 6.3.2 Coefficients
+            ///Define EC5 Section 6.2.3 & 6.3.2 Coefficients
             double lefy = ly * kflam;
             double lefz = lz * kflam;
             double sigMcrity = CS.GetsigMcrit(lefy, E05, G05);
@@ -172,7 +176,7 @@ namespace BeaverCore.Frame
             double kcrity = Getkcrit(lammy);
             double kcritz = Getkcrit(lammz);
 
-            //Define EC5 Section 6.3.2 Coefficients
+            ///Define EC5 Section 6.3.2 Coefficients
             double lamy = (ly) / ry;
             double lamz = (lz) / rz;
             double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
@@ -183,14 +187,14 @@ namespace BeaverCore.Frame
             double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
 
-            //Define Basic Coefficients Output
+            ///Define Basic Coefficients Output
             string Sectiondata = string.Format(
                 "kflam = {0}, kcrit ={1}, kshape = {2}, λy ={3}, λz ={4},λrely ={5}, λrelz ={6}, ky ={7}, kz ={8}, kcy={9}, kcz={10}, σMcrity= {11}, σMcritz= {12}, λmy ={13}, λmz ={14}",
                     Math.Round(kflam, 3), Math.Round(kcrit, 3), Math.Round(kcrit, 3), Math.Round(lamy, 3), Math.Round(lamz, 3), Math.Round(lamyrel, 3), Math.Round(lamzrel, 3), Math.Round(ky, 3), Math.Round(kz, 3),
                     Math.Round(kyc, 3), Math.Round(kzc, 3), Math.Round(sigMcrity, 3), Math.Round(sigMcritz, 3), Math.Round(lammy, 3), Math.Round(lammz, 3));
             parameters = Sectiondata;
 
-            //Define Utilization
+            ///Define Utilization
             double Util0;
             double Util1;
             double UtilY2;
@@ -206,11 +210,12 @@ namespace BeaverCore.Frame
             double UtilZ7;
             double UtilY8;
             double UtilZ8;
+            double Util9;
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
             foreach (Force f in ULSComb.DesignForces)
             {
-                //Actions
+                ///Actions
                 double Nd = f.N;
                 double Vy = f.Vy;
                 double Vz = f.Vz;
@@ -224,33 +229,38 @@ namespace BeaverCore.Frame
                 double sigMz = Math.Abs(Mzd) / Wz;
                 double SigMt = Math.Abs(Mt) / CS.It;
 
-                //Resistances
+                ///Resistances
                 double Kmod = Utils.KMOD(ULSComb.SC, f.duration);
                 double fc0d = Kmod * fc0k / Ym;
                 double ft0d = Kmod * ft0k / Ym;
                 double fvd = Kmod * Fvk / Ym;
                 double fmd = Kmod * fmk / Ym;
 
-                //0 EC5 Section 6.1.2 Tension parallel to the grain
+                ///0 EC5 Section 6.1.2 Tension parallel to the grain
                 if (sigN < 0) Util0 = 0;
                 else Util0 = Math.Abs(sigN) / ft0d;
 
-                //1 EC5 Section 6.1.4 Compression parallel to the grain
+                ///1 EC5 Section 6.1.4 Compression parallel to the grain
                 if (sigN > 0) Util1 = 0;
                 else Util1 = Math.Abs(sigN) / fc0d;
 
-                //2 EC5 Section 6.1.6 Biaxial Bending
+                ///2 EC5 Section 6.1.6 Biaxial Bending
                 UtilY2 = Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
                 UtilZ2 = Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
 
-                //3 EC5 Section 6.1.7 Shear
+                ///3 EC5 Section 6.1.7 Shear
                 UtilY3 = Math.Abs(Sigvy) / fvd;
                 UtilZ3 = Math.Abs(Sigvz) / fvd;
 
-                //4 EC5 Section 6.1.8 Torsion
+                ///4 EC5 Section 6.1.8 Torsion
                 Util4 = Math.Abs(SigMt) / (kshape * fvd);
 
-                //5 EC5 Section 6.2.3 Combined Bending and Axial Tension
+                ///9 Combined Shear and Tension - Not specified in EC5
+                Util9 = Math.Max(UtilY3 + Util4, UtilZ3 + Util4);
+                // Less conservative approach: 
+                // Util9 = Math.Max(Math.Pow(UtilY3,2) + Util4, Math.Pow(UtilZ3,2) + Util4);
+
+                ///5 EC5 Section 6.2.3 Combined Bending and Axial Tension
                 if (sigN < 0) UtilY5 = UtilZ5 = 0;
                 else
                 {
@@ -258,7 +268,7 @@ namespace BeaverCore.Frame
                     UtilZ5 = sigN / ft0d + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
-                // 6 EC5 Section 6.2.4 Combined Bending and Axial Compression
+                /// 6 EC5 Section 6.2.4 Combined Bending and Axial Compression
                 if (sigN > 0) UtilY6 = UtilZ6 = 0;
                 else
                 {
@@ -266,37 +276,46 @@ namespace BeaverCore.Frame
                     UtilZ6 = Math.Pow((Math.Abs(sigN) / fc0d), 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
-                //6 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
-                if (lamyrel <= 0.3 && lamzrel <= 0.3)
+                if(Util1 > Math.Max(UtilY2, UtilZ2))
+                /// If compression is more critical than bending, treat it as a column
                 {
-                    UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ7 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
-                }
-                else
-                {
-                    UtilY7 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ7 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
-                }
-
-                //7 EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression
-                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
-                {
-                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
-                }
-                if (Math.Max(lammy, lammz) >= 1.4)
-                {
-                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
-                }
-                else
-                {
+                    ///7 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
+                    if (lamyrel <= 0.3 && lamzrel <= 0.3)
+                    {
+                        UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                        UtilZ7 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    }
+                    else
+                    {
+                        UtilY7 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                        UtilZ7 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    }
                     UtilY8 = 0;
                     UtilZ8 = 0;
                 }
-
-                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8 };
-                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8 };
+                else
+                {
+                    ///8 EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression
+                    if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
+                    {
+                        UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                        UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
+                    }
+                    if (Math.Max(lammy, lammz) >= 1.4)
+                    {
+                        UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                        UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
+                    }
+                    else
+                    {
+                        UtilY8 = 0;
+                        UtilZ8 = 0;
+                    }
+                    UtilY7 = 0;
+                    UtilZ7 = 0;
+                }
+                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8 , Util9 };
+                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8 , Util9 };
                 AllUtilsY.Add(UtilsY.ToArray());
                 AllUtilsZ.Add(UtilsZ.ToArray());
 

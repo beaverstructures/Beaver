@@ -61,9 +61,10 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     "ULS Combined Tension and Bending              ", // 5
                     "ULS Columns - Combined bending and compression", // 6
                     "ULS Beams - Combined bending and compression  ", // 7
-                    "SLS Instantaneous deflection                  ", // 8
-                    "SLS Net final deflection                      ", // 9
-                    "SLS Final deflection                          "  // 10
+                    "ULS Combined shear and torsion                ", // 8
+                    "SLS Instantaneous deflection                  ", // 9
+                    "SLS Net final deflection                      ", // 10
+                    "SLS Final deflection                          "  // 11
             };
             List<Color> colors = new List<Color>() {
                 Color.FromArgb(141,211,199), // 0
