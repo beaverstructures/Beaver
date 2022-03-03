@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Linq;
 using BeaverCore.Actions;
 using BeaverCore.Misc;
+
 namespace BeaverGrasshopper.Components.ResultsComponents
 {
     public static class ExtendedMethods
@@ -153,6 +154,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     Point3d[] crosec_points = crosec_curve.ToArray();
                     UtilizationResult util_result = RetrieveUtilization(frame_point, ref util_type, dir, sls, loadcase_index);
                     double util = util_result.util;
+                    timber_frame.TimberPointsMap[rel_pos[i]].util = util;
+                    timber_frame.TimberPointsMap[rel_pos[i]].util_index = util_result.util_index;
                     if (util > new_max_util)
                     {
                         new_max_util = util;
@@ -216,8 +219,6 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             }
         }
         #endregion
-
-
 
         #region GATHERUTILIZATION
         public static bool Update_util(UtilizationType util_type, UtilizationType new_util_type)
@@ -574,7 +575,5 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             }
         }
         #endregion
-
-        
     }
 }

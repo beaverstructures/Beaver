@@ -45,7 +45,7 @@ namespace BeaverGrasshopper
             pManager.AddParameter(new Param_Model(), "Karamba Model", "Model",
                         "Karamba model with calculated displacements", GH_ParamAccess.item);
             pManager.AddTextParameter("Beam Identifiers", "BeamsIds", "Beam ID", GH_ParamAccess.list);
-            pManager.AddIntegerParameter("Number of results per beam element", "NRes", "Element nodal subdivision", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Number of results per beam element", "NRes", "Element nodal subdivision", GH_ParamAccess.item,2);
             pManager.AddTextParameter("LoadCase Type", "LCType", "Load Case Type", GH_ParamAccess.list);
             pManager.AddBooleanParameter("Run", "Run", "Boolean for running the algorithm", GH_ParamAccess.item,false);
         }
@@ -178,6 +178,7 @@ namespace BeaverGrasshopper
                     for (int j = 0; j < sub_div + 1; j++)
                     {
                         TimberFramePoint TFPoint = new TimberFramePoint(
+                            beaver_line.PointAtRelativePosition(Convert.ToDouble(j) / sub_div),
                             elements_forces[i, j],
                             elements_displacements[i, j],
                             beaver_crosec,

@@ -1,6 +1,7 @@
 ﻿using BeaverCore.Actions;
 using BeaverCore.CrossSection;
 using BeaverCore.Frame;
+using BeaverCore.Geometry;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using System;
@@ -118,7 +119,7 @@ namespace BeaverGrasshopper
             displacements.Add(disp);
         }
         //Think of ways of simplifying this input, it still needs span type and span limits
-        TimberFramePoint timber_frame_point = new TimberFramePoint(forces, displacements, crosec, service_class, bl_y, bl_z, sl, 0.9, cantilever);
+        TimberFramePoint timber_frame_point = new TimberFramePoint(new Point3D(),forces, displacements, crosec, service_class, bl_y, bl_z, sl, 0.9, cantilever);
 
         DA.SetData(0, new GH_TimberFramePoint(timber_frame_point));
     }

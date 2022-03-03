@@ -13,9 +13,9 @@ namespace BeaverGrasshopper
         /// Initializes a new instance of the Comp_Force class.
         /// </summary>
         public Comp_Fastener()
-          : base("Comp_Fastener", "Nickname",
-              "Description",
-              "Beaver", "1.Frame")
+          : base("Fastener", "Fast",
+              "Creates Beaver fastener element for assembly into a Beaver connection element",
+              "Beaver", "2. Connection")
         {
         }
 
@@ -29,7 +29,7 @@ namespace BeaverGrasshopper
             pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter", GH_ParamAccess.item, 0); //screws
             pManager.AddNumberParameter("Head Diameter", "Dh", "Fastener head diameter", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Fastener Length", "L", "Fastener length", GH_ParamAccess.item, 0);
-            pManager.AddNumberBoolean("Smooth Boolean", "Smooth", "True for smooth nails, false for other", GH_ParamAccess.item, 0); //nails
+            pManager.AddBooleanParameter("Smooth Boolean", "Smooth", "True for smooth nails, false for other", GH_ParamAccess.item, false); //nails
             pManager.AddNumberParameter("Fastener Fu", "Fu", "Fastener steel tensile ultimate strength", GH_ParamAccess.item, 0);
         }
 
@@ -38,7 +38,7 @@ namespace BeaverGrasshopper
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new Param_Force(), "Force", "Force", "Nodal Force", GH_ParamAccess.item);
+            pManager.AddParameter(new Param_Fastener(), "Fastener", "Fast", "Beaver fastener element", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -47,8 +47,6 @@ namespace BeaverGrasshopper
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-
-
             string Ftype = "Ftype?";
             double D = 0;
             double Ds = 0;
@@ -65,32 +63,8 @@ namespace BeaverGrasshopper
             DA.GetData(5, ref Smooth);
             DA.GetData(6, ref Fu);
 
-            Fastener Fastener = new Fastener();
-            if (Ftype = "dowel") {  Fastener=new Fastener(Ftype,D,L,Fu)}
-            else if (Ftype = "bolt") { Fastener = new Fastener(Ftype, D, Dh, L, Fu)}
-            else if (Ftype = "nail") { Fastener = new Fastener(Ftype, D, Dh, L, Smooth, Fu)}
-            else if (Ftype = "screw") {  Fastener = new Fastener(Ftype, D, Ds, Dh, L, Fu)}
-
-
-
-
-            double N = 0;
-            double Vy = 0;
-            double Vz = 0;
-            double Mx = 0;
-            double My = 0;
-            double Mz = 0;
-            string type = "";
-            DA.GetData(0, ref N);
-            DA.GetData(1, ref Vy);
-            DA.GetData(2, ref Vz);
-            DA.GetData(3, ref Mx);
-            DA.GetData(4, ref My);
-            DA.GetData(5, ref Mz);
-            DA.GetData(6, ref type);
-            Force force = new Force(N, Vy, Vz, Mx, My, Mz, type);
-
-            DA.SetData(0, new GH_Force(force));
+            Fastener fastener = new Fastener(Ftype,D,Ds,Dh,L,Fu,Smooth);
+            DA.SetData(0, new GH_Fastener(fastener));
         }
 
         /// <summary>
@@ -100,9 +74,7 @@ namespace BeaverGrasshopper
         {
             get
             {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.Bolt;
             }
         }
 

@@ -83,6 +83,16 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BeaverIcon {
+            get {
+                object obj = ResourceManager.GetObject("BeaverIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Bolt {
             get {
                 object obj = ResourceManager.GetObject("Bolt", resourceCulture);
@@ -183,6 +193,16 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap FastenerForces {
+            get {
+                object obj = ResourceManager.GetObject("FastenerForces", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Force {
             get {
                 object obj = ResourceManager.GetObject("Force", resourceCulture);
@@ -273,6 +293,16 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap SteelToTimberConnection {
+            get {
+                object obj = ResourceManager.GetObject("SteelToTimberConnection", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap TimberFrame {
             get {
                 object obj = ResourceManager.GetObject("TimberFrame", resourceCulture);
@@ -303,9 +333,29 @@ namespace BeaverGrasshopper.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap TimberToTimberConnection {
+            get {
+                object obj = ResourceManager.GetObject("TimberToTimberConnection", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ULSResults {
             get {
                 object obj = ResourceManager.GetObject("ULSResults", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ViewValueResults {
+            get {
+                object obj = ResourceManager.GetObject("ViewValueResults", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

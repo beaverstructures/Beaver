@@ -199,7 +199,8 @@ namespace BeaverCore.Geometry
 
         public Point3D PointAtRelativePosition(double relpos)
         {
-            return start + relpos * (end - start);
+            Point3D pt = start + relpos * (end - start);
+            return pt;
         }
     }
 

@@ -54,7 +54,7 @@ namespace BeaverCore.Connections
             }
             else
             {
-
+                nef = 1;
             }
         }
 

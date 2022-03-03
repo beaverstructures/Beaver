@@ -2,6 +2,10 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Rhino.PlugIns;
+using Grasshopper;
+using Grasshopper.Kernel;
+using System;
+using BeaverGrasshopper;
 
 
 // General Information about an assembly is controlled through the following 
@@ -10,9 +14,9 @@ using Rhino.PlugIns;
 [assembly: AssemblyTitle("Beaver")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Beaver")]
 [assembly: AssemblyProduct("Beaver")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -36,3 +40,16 @@ using Rhino.PlugIns;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+namespace BeaverGrasshopper
+{
+    public class BeaverGHSettings : Grasshopper.Kernel.GH_AssemblyPriority
+    {
+        public override GH_LoadingInstruction PriorityLoad()
+        {
+            Instances.ComponentServer.AddCategoryIcon("Beaver", Properties.Resources.BeaverIcon);
+            Instances.ComponentServer.AddCategorySymbolName("Beaver", 'B');
+            return GH_LoadingInstruction.Proceed;
+        }
+    }
+}

@@ -97,11 +97,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Rhino.UI, Version=7.10.21256.17000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.7.10.21256.17001\lib\net48\Rhino.UI.dll</HintPath>
+    <Reference Include="Rhino.UI">
+      <HintPath>C:\Program Files\Rhino 7\System\Rhino.UI.dll</HintPath>
     </Reference>
-    <Reference Include="RhinoCommon, Version=7.10.21256.17000, Culture=neutral, PublicKeyToken=552281e97c755530, processorArchitecture=MSIL">
-      <HintPath>..\packages\RhinoCommon.7.10.21256.17001\lib\net48\RhinoCommon.dll</HintPath>
+    <Reference Include="RhinoCommon">
+      <HintPath>C:\Program Files\Rhino 7\System\RhinoCommon.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -118,6 +118,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\ConnectionComponents\Comp_ConnectionResults.cs" />
+    <Compile Include="Components\ConnectionComponents\Comp_Fastener.cs" />
+    <Compile Include="Components\ConnectionComponents\Comp_FastenerForces.cs" />
+    <Compile Include="Components\ConnectionComponents\Comp_T2SConnection.cs" />
+    <Compile Include="Components\ConnectionComponents\Comp_T2TConnection.cs" />
+    <Compile Include="Components\ConnectionComponents\Comp_ConnectionView.cs" />
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
@@ -130,7 +136,9 @@
     <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />
     <Compile Include="Components\ResultsComponents\ResultUtils.cs" />
     <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
+    <Compile Include="Components\ResultsComponents\ViewValueResults.cs" />
     <Compile Include="Components\ResultsComponents\VisualizeCriticalCheck.cs" />
+    <Compile Include="CoreWrappers\GH_Settings.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
     <Compile Include="CoreWrappers\GH_Fastener.cs" />
@@ -204,9 +212,6 @@
     <None Include="Resources\ConnectionView2.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ConnectonResults.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\CrossSection.png" />
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +273,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\CriticalChecks.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SteelToTimberConnection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TimberToTimberConnection.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ConnectonResults.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FastenerForces.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BeaverIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ViewValueResults.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

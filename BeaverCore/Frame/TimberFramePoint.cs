@@ -15,6 +15,7 @@ namespace BeaverCore.Frame
         /// <summary>
         /// A referenced point on a TimberFrame element
         /// </summary>
+        public Point3D pt;
         public List<Force> Forces;
         public List<Displacement> Disp;
         public ULSCombinations ULSComb;
@@ -35,6 +36,9 @@ namespace BeaverCore.Frame
         public string parameters;
         public int sc;
 
+        public double util;
+        public int util_index;
+
         // calculated displacement average of end points of span line for each load case. 
         // For now it is the same for all timber frame. 
         // In reality should be an interpolation of the reference line at the position of the timberframepoint
@@ -44,8 +48,9 @@ namespace BeaverCore.Frame
 
         public TimberFramePoint() { }
 
-        public TimberFramePoint(List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, bool cantilever = false, double precamber = 0, bool local = false, List<Displacement> _localRefDisps = null)
+        public TimberFramePoint(Point3D pt, List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, bool cantilever = false, double precamber = 0, bool local = false, List<Displacement> _localRefDisps = null)
         {
+            this.pt = pt;
             Forces = forces;
             Disp = disp;
             localRefDisps = _localRefDisps;

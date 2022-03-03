@@ -45,6 +45,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddParameter(new Param_TimberFrame(), "Timber Frames", "TF's", "Modified timber frames", GH_ParamAccess.list);
             pManager.AddMeshParameter("Mesh", "M", "Mesh", GH_ParamAccess.list);
             pManager.AddTextParameter("Legend T", "T", "Legend T", GH_ParamAccess.list);
             pManager.AddColourParameter("Legend C", "C", "Legend C", GH_ParamAccess.list);
@@ -157,6 +158,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                 }
             }
             double max_util = 0;
+            List<GH_TimberFrame> out_beams = new List<GH_TimberFrame>();
             foreach (GH_TimberFrame gh_timber_frame in gh_timber_frames)
             {
                 TimberFrame timber_frame = gh_timber_frame.Value;
@@ -169,12 +171,14 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     colors,
                     "Utilization");
                 meshes.Add(mesh);
+                out_beams.Add(new GH_TimberFrame(timber_frame));
             }
 
-            DA.SetDataList(0, meshes);
-            DA.SetDataList(1, legend);
-            DA.SetDataList(2, colors);
-            DA.SetData(3, max_util);
+            DA.SetDataList(0, gh_timber_frames);
+            DA.SetDataList(1, meshes);
+            DA.SetDataList(2, legend);
+            DA.SetDataList(3, colors);
+            DA.SetData(4, max_util);
         }
 
         #region VARIABLE COMPONENT INTERFACE IMPLEMENTATION

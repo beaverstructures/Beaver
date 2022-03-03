@@ -47,8 +47,8 @@ namespace BeaverCore.Connections
 
         public Fastener() { }
 
-        public Fastener(string fastenerType = "", double D=0 , double Ds = 0, double Dh = 0,
-            double L = 0, double Fu = 4000000000, bool Smooth = true, double faxk=0,
+        public Fastener(string fastenerType, double D=0 , double Ds = 0, double Dh = 0,
+            double L = 0, double Fu = 4000000000, bool Smooth = true, double faxk= 4.5e-6,
             double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05)
         {
             switch (fastenerType)
@@ -97,8 +97,21 @@ namespace BeaverCore.Connections
                     fu = Fu;
                     type = fastenerType;
                     smooth = Smooth;
-                    this.faxk = faxk;
-                    this.fheadk = fheadk;
+                    switch (tpen)
+                    {
+                        /// EC5 SECTION 8.3.2 (6) TO (7)
+                        case double n when (n >= 12*d):
+                            this.faxk = 20e-6 * Math.Pow(rhok, 2);
+                            break;
+                        case double n when (n < 12 * d && n >= 8 * d):
+                            double reduction = smooth ? tpen/(4*d -2)  : tpen / (2 * d - 3);
+                            this.faxk = 20e-6 * Math.Pow(rhok, 2)*reduction;
+                            break;
+                        case double n when (n < 8 * d):
+                            this.faxk = 1e-10;
+                            break;
+                    }
+                    this.fheadk = 20e-6 * Math.Pow(rhok, 2);
                     this.Ymsteel = Ymsteel;
                     break;
                 default:

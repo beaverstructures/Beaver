@@ -3,17 +3,17 @@ using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 
-namespace BeaverGrasshopper.Components.PropertiesComponents
+namespace BeaverGrasshopper.Components.ConnectionComponents
 {
-    public class MyComponent1 : GH_Component
+    public class Comp_FastenerForces : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the MyComponent1 class.
+        /// Initializes a new instance of the Comp_FastenerForces class.
         /// </summary>
-        public MyComponent1()
-          : base("MyComponent1", "Nickname",
-              "Description",
-              "Category", "Subcategory")
+        public Comp_FastenerForces()
+          : base("Fastener Forces", "FastForce",
+              "Viewer for calculated fastener forces",
+              "Beaver", "2. Connection")
         {
         }
 
@@ -46,9 +46,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         {
             get
             {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.FastenerForces;
             }
         }
 
@@ -57,7 +55,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("fa1381e0-820f-4e1d-9daf-7e824407924e"); }
+            get { return new Guid("9165a2c8-5c53-460b-9048-2f073382105d"); }
         }
     }
-}*/
+}

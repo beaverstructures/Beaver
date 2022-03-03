@@ -22,7 +22,7 @@ namespace BeaverGrasshopper.Components.InteropComponents
         public Comp_KarambaAddBeaverParams()
           : base("Karamba add beaver parameters", "B2KBeams",
               "Adds Beaver parameters to a Karamba Beam Element for performing ULS and SLS checks in Beaver",
-              "Category", "Subcategory")
+              "Beaver", "External")
         {
         }
 

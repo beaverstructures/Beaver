@@ -83,7 +83,7 @@ namespace BeaverGrasshopper
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("ce157802-fa6c-44f1-846b-b4c6092649cf"); }
+            get { return new Guid("613bac1e-22b0-4178-b449-2ca549efc10c"); }
         }
     }
 }
