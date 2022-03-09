@@ -22,6 +22,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddParameter(new Param_Fastener(), "Fastener", "Fast", "Beaver fastener element", GH_ParamAccess.item);
+            pManager.AddParameter(new Param_Spacing(), "Spacing", "Spacing", "Beaver spacing element", GH_ParamAccess.item);
         }
 
         /// <summary>

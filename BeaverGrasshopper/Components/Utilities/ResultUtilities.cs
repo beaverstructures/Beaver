@@ -11,9 +11,9 @@ using System.Linq;
 using BeaverCore.Actions;
 using BeaverCore.Misc;
 
-namespace BeaverGrasshopper.Components.ResultsComponents
+namespace BeaverGrasshopper.Components.Utilities
 {
-    public static class ExtendedMethods
+    public static class ResultUtilities
     {
         public enum ULSDirection
         {

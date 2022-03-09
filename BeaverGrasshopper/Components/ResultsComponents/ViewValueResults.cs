@@ -19,9 +19,8 @@ using Rhino.Collections;
 using GH_IO;
 using GH_IO.Serialization;
 
-using BeaverGrasshopper.Components.InteropComponents;
+using BeaverGrasshopper.Components.Utilities;
 using BeaverCore.Frame;
-using BeaverCore.Geometry;
 
 namespace BeaverGrasshopper.Components.ResultsComponents
 {
@@ -33,7 +32,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         public ViewValueResults()
           : base("ViewNumericResults", "NumericResults",
               "Displays numerical results on timber frame",
-              "Beaver", "4.Results")
+              "Beaver", "4. Results")
         {
         }
 
@@ -44,8 +43,11 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         {
             pManager.AddParameter(new Param_TimberFrame(), "Timber Frames", "TF's", "Timber Frames to visualize", GH_ParamAccess.list);
             pManager.AddTextParameter("Value type", "Type", "Results to be displayed. Accepted values are 'Utilization' or 'Critical Check'", GH_ParamAccess.item,"Utilization") ;
-            pManager.AddColourParameter("Text Colour", "colour", "colour", GH_ParamAccess.item,Color.DarkGray);
-            pManager.AddNumberParameter("Text Size", "Size", "Text Size", GH_ParamAccess.item,0.5);
+            pManager.AddColourParameter("Text Colour", "C", "Text Color", GH_ParamAccess.item,Color.DarkGray);
+            pManager.AddNumberParameter("Text Size", "Size", "Text Size", GH_ParamAccess.item,0.2);
+            pManager[1].Optional = true;
+            pManager[2].Optional = true;
+            pManager[3].Optional = true;
         }
 
         /// <summary>
@@ -53,6 +55,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddTextParameter("Info", "Info", "Info", GH_ParamAccess.list);
+            pManager.AddPointParameter("Points", "Points", "Points", GH_ParamAccess.list);
         }
 
         
@@ -88,8 +92,9 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     }
                     _point.Add(new Point3d(tfPoint.pt.x, tfPoint.pt.y, tfPoint.pt.z));
                 }
-                
             }
+            DA.SetData(0, _text);
+            DA.SetData(1, _point);
         }
 
         public override BoundingBox ClippingBox

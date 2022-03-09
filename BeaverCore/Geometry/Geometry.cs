@@ -20,6 +20,68 @@ namespace BeaverCore.Geometry
             return new List<double>() { x, y };
         }
     }
+
+    [Serializable]
+    public class Point3D
+    {
+        public double x;
+        public double y;
+        public double z;
+
+        public Point3D() { }
+
+        public Point3D(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        public List<double> ToList()
+        {
+            return new List<double>() { x, y, z };
+        }
+
+        public static Point3D operator +(Point3D p1, Point3D p2)
+        {
+            Point3D result = new Point3D
+            {
+                x = p1.x + p2.x,
+                y = p1.y + p2.y,
+                z = p1.z + p2.z
+            };
+            return result;
+        }
+
+        public static Point3D operator -(Point3D p1, Point3D p2)
+        {
+            Point3D result = new Point3D
+            {
+                x = p1.x - p2.x,
+                y = p1.y - p2.y,
+                z = p1.z - p2.z
+            };
+            return result;
+        }
+
+        public static Point3D operator *(double s, Point3D p)
+        {
+            Point3D result = new Point3D
+            {
+                x = s * p.x,
+                y = s * p.y,
+                z = s * p.z
+            };
+            return result;
+        }
+        public static double DistanceTo(Point3D startpt, Point3D endpt)
+        {
+            Point3D distance = endpt - startpt;
+            double dist = Math.Sqrt(Math.Pow(distance.x, 2) + Math.Pow(distance.y, 2) + Math.Pow(distance.z, 2));
+            return dist;
+        }
+
+    }
+
     [Serializable]
     public class Vector2D
     {
@@ -125,66 +187,121 @@ namespace BeaverCore.Geometry
             return new List<double>() { x, y };
         }
     }
+
     [Serializable]
-    public class Point3D
+    public class Vector3D
     {
         public double x;
         public double y;
         public double z;
 
-        public Point3D() { }
+        public Vector3D() { }
 
-        public Point3D(double x, double y, double z)
+        public Vector3D(double x, double y, double z)
         {
             this.x = x;
             this.y = y;
             this.z = z;
         }
+
+        public static Vector3D fromPoint(Point3D point)
+        {
+            Vector3D vector = new Vector3D(point.x, point.y, point.z);
+            return vector;
+        }
+
+        public double DotProduct(Vector3D other_vector)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double Magnitude()
+        {
+            return Math.Sqrt(x * x + y * y + z*z);
+        }
+
+        public double AngletoVector(Vector3D other_vector)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Vector3D Unit()
+        {
+            return this / Magnitude();
+        }
+
+        public Vector3D RotatedVector(double radians)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static Vector3D operator +(Vector3D v1, Vector3D v2)
+        {
+            Vector3D result = new Vector3D
+            {
+                x = v1.x + v2.x,
+                y = v1.y + v2.y,
+                z = v1.z + v2.z
+            };
+            return result;
+        }
+
+        public static Vector3D operator -(Vector3D v1, Vector3D v2)
+        {
+            Vector3D result = new Vector3D
+            {
+                x = v1.x - v2.x,
+                y = v1.y - v2.y,
+                z = v1.z - v2.z
+            };
+            return result;
+        }
+
+        public static Vector3D operator *(double s, Vector3D v)
+        {
+            Vector3D result = new Vector3D
+            {
+                x = s * v.x,
+                y = s * v.y,
+                z = s * v.z
+            };
+            return result;
+        }
+
+        public static Vector3D operator *(Vector3D v, double s)
+        {
+            Vector3D result = new Vector3D
+            {
+                x = s * v.x,
+                y = s * v.y,
+                z = s * v.z,
+            };
+            return result;
+        }
+
+        public static Vector3D operator /(Vector3D v, double s)
+        {
+            Vector3D result = new Vector3D
+            {
+                x = v.x / s,
+                y = v.y / s,
+                z = v.z / s,
+            };
+            return result;
+        }
         public List<double> ToList()
         {
-            return new List<double>() { x, y, z };
+            return new List<double>() { x, y , z};
         }
-
-        public static Point3D operator +(Point3D p1, Point3D p2)
-        {
-            Point3D result = new Point3D
-            {
-                x = p1.x + p2.x,
-                y = p1.y + p2.y,
-                z = p1.z + p2.z
-            };
-            return result;
-        }
-
-        public static Point3D operator -(Point3D p1, Point3D p2)
-        {
-            Point3D result = new Point3D
-            {
-                x = p1.x - p2.x,
-                y = p1.y - p2.y,
-                z = p1.z - p2.z
-            };
-            return result;
-        }
-
-        public static Point3D operator *(double s, Point3D p)
-        {
-            Point3D result = new Point3D
-            {
-                x = s * p.x,
-                y = s * p.y,
-                z = s * p.z
-            };
-            return result;
-        }
-        public static double DistanceTo(Point3D startpt, Point3D endpt)
-        {
-            Point3D distance = endpt - startpt;
-            double dist = Math.Sqrt(Math.Pow(distance.x,2) + Math.Pow(distance.y, 2)+ Math.Pow(distance.z, 2));
-            return dist;
-        }
-
     }
+
+    public class Plane
+    {
+        public Point3D origin;
+        public Vector3D U;
+        public Vector3D V;
+    }
+   
     [Serializable]
     public class Line
     {

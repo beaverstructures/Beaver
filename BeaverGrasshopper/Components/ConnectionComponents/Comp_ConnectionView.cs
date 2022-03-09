@@ -11,9 +11,9 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// Initializes a new instance of the MyComponent1 class.
         /// </summary>
         public Comp_ConnectionView()
-          : base("MyComponent1", "Nickname",
-              "Description",
-              "Category", "Subcategory")
+          : base("Connection View", "ConnectionView",
+              "Displays the arrangement for the Beaver connection",
+              "Beaver", "2. Connection")
         {
         }
 
@@ -48,7 +48,7 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Properties.Resources.ConnectionView;
             }
         }
 

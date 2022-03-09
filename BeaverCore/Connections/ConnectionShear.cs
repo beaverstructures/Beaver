@@ -6,6 +6,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+using BeaverCore.Misc;
+using BeaverCore.Geometry;
+using BeaverCore.Actions;
+
 
 namespace BeaverCore.Connections
 {
@@ -18,7 +22,7 @@ namespace BeaverCore.Connections
     }
 
     [Serializable]
-    public class ConnectionShearFastenerCapacity
+    public class ConnectionShearFastenerCapacity : Connection
     {
         public List<SingleFastenerCapacity> fastener_capacities;
         public ShearSpacing spacing;
@@ -139,25 +143,23 @@ namespace BeaverCore.Connections
             {
 
                 double kef = 0;
-                if (a1 >= 4 * d & a1 < 7 * d)
+                switch (a1)
                 {
-                    kef = 0.5 - (0.5 - 0.7) * (4 * d - a1) / (4 * d - 7 * d);
-                }
-                if (a1 >= 7 * d & a1 < 10 * d)
-                {
-                    kef = 0.7 - (0.7 - 0.85) * (7 * d - a1) / (7 * d - 10 * d);
-                }
-                if (a1 >= 10 * d & a1 < 14 * d)
-                {
-                    kef = 0.85 - (0.85 - 1) * (10 * d - a1) / (10 * d - 14 * d);
-                }
-                if (a1 >= 14 * d)
-                {
-                    kef = 1;
+                    case double n when n < 4*d: 
+                        break;
+                    case double n when n >= 4 * d & n < 7 * d:
+                        kef = 0.5 - (0.5 - 0.7) * (4 * d - a1) / (4 * d - 7 * d); break;
+                    case double n when n >= 7 * d & n < 10 * d:
+                        kef = 0.7 - (0.7 - 0.85) * (7 * d - a1) / (7 * d - 10 * d); break;
+                    case double n when n >= 10 * d & n< 14 * d:
+                        kef = 0.85 - (0.85 - 1) * (10 * d - a1) / (10 * d - 14 * d); break;
+                    case double n when n >= 14 * d:
+                        kef = 1; break;
+
                 }
                 nef = (Math.Pow(npar, kef)) * nperp;
             }
-            if (type == "bolt" || (type == "screw" & d >= 6) || type == "dowel")
+            else if (type == "bolt" || (type == "screw" & d >= 6) || type == "dowel")
             {
                 if (npar * nperp == 1) { nef = 1; }
                 else

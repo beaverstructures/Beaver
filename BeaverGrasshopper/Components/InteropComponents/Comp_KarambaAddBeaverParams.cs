@@ -11,6 +11,7 @@ using Karamba.Geometry;
 using Karamba.CrossSections;
 
 using BeaverCore.Materials;
+using BeaverGrasshopper.Components.Utilities;
 
 namespace BeaverGrasshopper.Components.InteropComponents
 {

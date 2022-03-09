@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BeaverCore.Frame;
+using BeaverCore.Geometry;
+using BeaverCore.Actions;
+
 namespace BeaverCore.Connections
 {
     [Serializable]
@@ -56,7 +60,7 @@ namespace BeaverCore.Connections
         /// 
 
 
-        public ShearSpacing(Fastener fastener, double pk, double alfa, bool preDrilled)
+        public void SetSpacingLimits(Fastener fastener, double pk, double alfa, bool preDrilled)
         {
             if (fastener.type == "nail" || (fastener.type == "screw" && fastener.ds <= 6))
             {
@@ -158,7 +162,7 @@ namespace BeaverCore.Connections
             this.a4c = 3 * ds;
         }
 
-
+        
 
 
     }

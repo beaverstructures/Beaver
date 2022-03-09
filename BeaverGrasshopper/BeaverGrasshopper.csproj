@@ -118,23 +118,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\Utilities\RhinoUtilities.cs" />
+    <Compile Include="Components\Utilities\ConnectionUtilities.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_ConnectionResults.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_Fastener.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_FastenerForces.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_T2SConnection.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_T2TConnection.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_ConnectionView.cs" />
+    <Compile Include="Components\ConnectionComponents\Comp_ShearSpacings.cs" />
     <Compile Include="Components\FrameComponents\Comp_Displacement.cs" />
     <Compile Include="Components\FrameComponents\Comp_Force.cs" />
     <Compile Include="Components\FrameComponents\Comp_TimberFramePoint.cs" />
-    <Compile Include="Components\InteropComponents\InteropUtils.cs" />
+    <Compile Include="Components\Utilities\KarambaUtilities.cs" />
     <Compile Include="Components\InteropComponents\Comp_BeaverToKarambaMaterial.cs" />
     <Compile Include="Components\InteropComponents\Comp_KarambaToBeaver.cs" />
     <Compile Include="Components\InteropComponents\Comp_KarambaAddBeaverParams.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_CrossSection.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_ImportCSVMaterials.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />
-    <Compile Include="Components\ResultsComponents\ResultUtils.cs" />
+    <Compile Include="Components\Utilities\ResultUtilities.cs" />
     <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
     <Compile Include="Components\ResultsComponents\ViewValueResults.cs" />
     <Compile Include="Components\ResultsComponents\VisualizeCriticalCheck.cs" />

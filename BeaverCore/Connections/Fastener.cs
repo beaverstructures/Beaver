@@ -23,6 +23,7 @@ namespace BeaverCore.Connections
         public string type;
         public bool smooth;
         public double alpha;
+        public bool countersunk;// EC3 Section 3.9
 
         // Recently added properties
         public double Ymsteel;
@@ -49,53 +50,38 @@ namespace BeaverCore.Connections
 
         public Fastener(string fastenerType, double D=0 , double Ds = 0, double Dh = 0,
             double L = 0, double Fu = 4000000000, bool Smooth = true, double faxk= 4.5e-6,
-            double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05)
+            double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05, bool countersunk = false)
         {
+            d = D;
+            l = L;
+            fu = Fu;
+            type = fastenerType;
+            this.faxk = faxk;
+            this.fheadk = fheadk;
+            this.Ymsteel = Ymsteel;
+
             switch (fastenerType)
             {
                 case "Dowel":
-                    d = D;
                     ds = D;
                     dh = D;
-                    l = L;
-                    fu = Fu;
-                    type = fastenerType;
                     smooth = true;
-                    this.faxk = faxk;
-                    this.fheadk = fheadk;
-                    this.Ymsteel = Ymsteel;
                     break;
                 case "Screw":
-                    d = D;
                     ds = Ds;
                     dh = Dh;
-                    l = L;
-                    fu = Fu;
-                    type = fastenerType;
-                    smooth = true;
-                    this.faxk = faxk;
-                    this.fheadk = fheadk;
-                    this.Ymsteel = Ymsteel;
+                    smooth = Smooth;
                     break;
                 case "Bolt":
-                    d = D;
                     ds = D;
                     dh = Dh;
-                    l = L;
-                    fu = Fu;
-                    type = fastenerType;
                     smooth = true;
                     this.faxk = faxk;
-                    this.fheadk = fheadk;
-                    this.Ymsteel = Ymsteel;
+                    this.countersunk = countersunk;
                     break;
                 case "Nail":
-                    d = D;
                     ds = D;
                     dh = Dh;
-                    l = L;
-                    fu = Fu;
-                    type = fastenerType;
                     smooth = Smooth;
                     switch (tpen)
                     {
@@ -112,7 +98,6 @@ namespace BeaverCore.Connections
                             break;
                     }
                     this.fheadk = 20e-6 * Math.Pow(rhok, 2);
-                    this.Ymsteel = Ymsteel;
                     break;
                 default:
                     throw new ArgumentException("Fasterner type not found");
@@ -134,7 +119,7 @@ namespace BeaverCore.Connections
     {
         public double Faxd = 0;
         public double Fvd = 0;
-        public Vector2D force_vector;
+        public Vector3D force_vector;
         public double alpha = 0;
         public string duration;
 

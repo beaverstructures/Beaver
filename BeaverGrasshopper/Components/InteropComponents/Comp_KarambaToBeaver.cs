@@ -20,7 +20,7 @@ using Karamba.Geometry;
 using Karamba.CrossSections;
 using static Karamba.Elements.BuilderElementStraightLine;
 
-using BeaverGrasshopper.Components.InteropComponents;
+using BeaverGrasshopper.Components.Utilities;
 
 
 namespace BeaverGrasshopper

@@ -14,9 +14,9 @@ using Rhino.Geometry;
 using Karamba.Geometry;
 using Karamba.CrossSections;
 
-namespace BeaverGrasshopper.Components.InteropComponents
+namespace BeaverGrasshopper.Components.Utilities
 {
-    public static class ExtendedMethods
+    public static class KarambaUtilities
     {
         public static Point3D K3Dpt2Beaver(this Point3 karamba_point)
         {
@@ -138,10 +138,4 @@ namespace BeaverGrasshopper.Components.InteropComponents
         }
 
     }
-}
-
-namespace BeaverCore.Geometry
-{
-    
-    
 }

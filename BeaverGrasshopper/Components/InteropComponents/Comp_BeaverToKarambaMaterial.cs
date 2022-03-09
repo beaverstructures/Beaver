@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Karamba.Materials;
 using Karamba.GHopper.Materials;
 using BeaverCore.Materials;
+using BeaverGrasshopper.Components.Utilities;
 
 namespace BeaverGrasshopper.Components.InteropComponents
 {

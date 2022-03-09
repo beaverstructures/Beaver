@@ -10,7 +10,7 @@ using System.Drawing;
 using System.Linq;
 using BeaverCore.Actions;
 using BeaverCore.Misc;
-using static BeaverGrasshopper.Components.ResultsComponents.ExtendedMethods;
+using static BeaverGrasshopper.Components.Utilities.ResultUtilities;
 
 namespace BeaverGrasshopper.Components.ResultsComponents
 {
@@ -46,9 +46,9 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddParameter(new Param_TimberFrame(), "Timber Frames", "TF's", "Modified timber frames", GH_ParamAccess.list);
-            pManager.AddMeshParameter("Mesh", "M", "Mesh", GH_ParamAccess.list);
-            pManager.AddTextParameter("Legend T", "T", "Legend T", GH_ParamAccess.list);
-            pManager.AddColourParameter("Legend C", "C", "Legend C", GH_ParamAccess.list);
+            pManager.AddMeshParameter("Mesh", "Mesh", "Mesh", GH_ParamAccess.list);
+            pManager.AddTextParameter("Legend T", "Text", "Legend T", GH_ParamAccess.list);
+            pManager.AddColourParameter("Legend C", "Color", "Legend C", GH_ParamAccess.list);
             pManager.AddNumberParameter("Maximum Utilization", "MaxUtil", "Maximum Utilization", GH_ParamAccess.item);
         }
         UtilizationType util_type = UtilizationType.All;

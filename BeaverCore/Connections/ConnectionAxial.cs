@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BeaverCore.Connections
 {
-    public class ConnectionAxial
+    public class ConnectionAxial : Connection
     {
         // Calculates the axial capacity of the connection
         public List<Point2D> fastener_coordinates;

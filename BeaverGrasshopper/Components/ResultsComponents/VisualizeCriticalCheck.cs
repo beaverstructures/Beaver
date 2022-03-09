@@ -10,7 +10,7 @@ using BeaverCore.Misc;
 using BeaverCore.CrossSection;
 using BeaverCore.Frame;
 
-using static BeaverGrasshopper.Components.ResultsComponents.ExtendedMethods;
+using static BeaverGrasshopper.Components.Utilities.ResultUtilities;
 
 namespace BeaverGrasshopper.Components.ResultsComponents
 {
@@ -39,9 +39,10 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddMeshParameter("Mesh", "M", "Mesh", GH_ParamAccess.list);
-            pManager.AddTextParameter("Legend T", "T", "Legend T", GH_ParamAccess.list);
-            pManager.AddColourParameter("Legend C", "C", "Legend C", GH_ParamAccess.list);
+            pManager.AddParameter(new Param_TimberFrame(), "Timber Frames", "TF's", "Modified timber frames", GH_ParamAccess.list);
+            pManager.AddMeshParameter("Mesh", "Mesh", "Mesh", GH_ParamAccess.list);
+            pManager.AddTextParameter("Legend T", "T", "Legend Text", GH_ParamAccess.list);
+            pManager.AddColourParameter("Legend C", "C", "Legend Colors", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -53,18 +54,18 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             List<GH_TimberFrame> gh_timber_frames = new List<GH_TimberFrame>();
             List<Mesh> meshes = new List<Mesh>();
             List<String> legend = new List<String>() {
-                    "ULS Tension parallel to the grain             ", // 0
-                    "ULS Compression parallel to the grain         ", // 1
-                    "ULS Biaxial Bending                           ", // 2
-                    "ULS Shear                                     ", // 3
-                    "ULS Torsion                                   ", // 4
-                    "ULS Combined Tension and Bending              ", // 5
-                    "ULS Columns - Combined bending and compression", // 6
-                    "ULS Beams - Combined bending and compression  ", // 7
-                    "ULS Combined shear and torsion                ", // 8
-                    "SLS Instantaneous deflection                  ", // 9
-                    "SLS Net final deflection                      ", // 10
-                    "SLS Final deflection                          "  // 11
+                    "0:  ULS Tension parallel to the grain             ", // 0
+                    "1:  ULS Compression parallel to the grain         ", // 1
+                    "2:  ULS Biaxial Bending                           ", // 2
+                    "3:  ULS Shear                                     ", // 3
+                    "4:  ULS Torsion                                   ", // 4
+                    "5:  ULS Combined Tension and Bending              ", // 5
+                    "6:  ULS Columns - Combined bending and compression", // 6
+                    "7:  ULS Beams - Combined bending and compression  ", // 7
+                    "8:  ULS Combined shear and torsion                ", // 8
+                    "9:  SLS Instantaneous deflection                  ", // 9
+                    "10: SLS Net final deflection                      ", // 10
+                    "11: SLS Final deflection                          "  // 11
             };
             List<Color> colors = new List<Color>() {
                 Color.FromArgb(141,211,199), // 0
@@ -77,7 +78,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                 Color.FromArgb(252,205,229), // 7
                 Color.FromArgb(217,217,217), // 8
                 Color.FromArgb(188,128,189), // 9
-                Color.FromArgb(204,235,197)  // 10 
+                Color.FromArgb(204,235,197), // 10 
+                Color.FromArgb(255,237,111)  // 11
             };
 
             DA.GetDataList(0, gh_timber_frames);
@@ -85,6 +87,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             int loadcase_index = -1;
 
             double max_util = 0;
+            List<GH_TimberFrame> out_beams = new List<GH_TimberFrame>();
             foreach (GH_TimberFrame gh_timber_frame in gh_timber_frames)
             {
                 TimberFrame timber_frame = gh_timber_frame.Value;
@@ -97,11 +100,12 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     colors,
                     "Critical Check");
                 meshes.Add(mesh);
+                out_beams.Add(new GH_TimberFrame(timber_frame));
             }
-
-            DA.SetDataList(0, meshes);
-            DA.SetDataList(1, legend);
-            DA.SetDataList(2, colors);
+            DA.SetDataList(0, gh_timber_frames);
+            DA.SetDataList(1, meshes);
+            DA.SetDataList(2, legend);
+            DA.SetDataList(3, colors);
 
         }
 

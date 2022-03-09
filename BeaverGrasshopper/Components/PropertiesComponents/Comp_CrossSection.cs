@@ -20,9 +20,9 @@ namespace BeaverGrasshopper
         /// Initializes a new instance of the Comp_CrossSection class.
         /// </summary>
         public Comp_CrossSection()
-          : base("Comp_CrossSection", "Nickname",
-              "Description",
-              "Beaver", "2.Cross Section")
+          : base("CrossSection", "CS",
+              "Computes a Beaver Crossection",
+              "Beaver", "1. Frame")
         {
         }
 
