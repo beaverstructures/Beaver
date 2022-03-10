@@ -46,6 +46,9 @@ namespace BeaverCore.Connections
         public double rhoa;     // 
         public double rhok;     // Characteristic timber density in kg/m³
 
+        public double Fax_Rd;
+        public double Fv_Rd;
+
         public Fastener() { }
 
         public Fastener(string fastenerType, double D=0 , double Ds = 0, double Dh = 0,
@@ -117,8 +120,14 @@ namespace BeaverCore.Connections
     }
     public class FastenerForce
     {
-        public double Faxd = 0;
-        public double Fvd = 0;
+        public Vector3D Faxd = new Vector3D();
+        public Vector3D Fvd = new Vector3D();
+        public Vector3D Fx = new Vector3D();
+        public Vector3D Fy = new Vector3D();
+        public Vector3D Fz = new Vector3D();
+        public Vector3D Fi_My = new Vector3D();
+        public Vector3D Fi_Mz = new Vector3D();
+        public Vector3D Fi_Mt = new Vector3D();
         public Vector3D force_vector;
         public double alpha = 0;
         public string duration;

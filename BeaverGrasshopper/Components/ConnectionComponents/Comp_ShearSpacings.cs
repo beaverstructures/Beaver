@@ -23,8 +23,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("Npar", "Npar", "Number of perpendicular fasteners", GH_ParamAccess.item, 1);
-            pManager.AddNumberParameter("Nperp", "Nperp", "Number of perpendicular fasteners", GH_ParamAccess.item, 1);
+            pManager.AddNumberParameter("Npar", "Npar", "Number of rows paralell to grain", GH_ParamAccess.item, 1);
+            pManager.AddNumberParameter("Nperp", "Nperp", "Number of rows perpendicular to grain ", GH_ParamAccess.item, 1);
             pManager.AddBooleanParameter("Stagger", "Stagger", "Boolean indicating whether the arrangement is staggered", GH_ParamAccess.item, false);
             pManager.AddNumberParameter("a1", "a1", "Spacing parallel to the grain", GH_ParamAccess.item);
             pManager.AddNumberParameter("a2", "a2", "Spacing perpendicular to the grain", GH_ParamAccess.item);

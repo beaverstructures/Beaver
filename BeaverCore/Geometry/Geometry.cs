@@ -15,9 +15,28 @@ namespace BeaverCore.Geometry
             this.x = x;
             this.y = y;
         }
+        public static Point2D operator -(Point2D p1, Point2D p2)
+        {
+            return new Point2D(p1.x - p2.x, p1.y - p2.y);
+        }
+
         public List<double> ToList()
         {
             return new List<double>() { x, y };
+        }
+
+        public double Distance(Point2D pt)
+        {
+            return Math.Sqrt(Math.Pow(this.x - pt.x, 2) + Math.Pow(this.y - pt.y, 2));
+        }
+
+        public double deltaX(Point2D pt)
+        {
+            return this.x - pt.x;
+        }
+        public double deltaY(Point2D pt)
+        {
+            return this.y - pt.y;
         }
     }
 
@@ -204,15 +223,33 @@ namespace BeaverCore.Geometry
             this.z = z;
         }
 
+        public Vector3D(Vector3D vector)
+        {
+            x = vector.x;
+            y = vector.y;
+            z = vector.z;
+        }
+
         public static Vector3D fromPoint(Point3D point)
         {
             Vector3D vector = new Vector3D(point.x, point.y, point.z);
             return vector;
         }
 
-        public double DotProduct(Vector3D other_vector)
+        public double DotProduct(Vector3D vector)
         {
-            throw new NotImplementedException();
+            return x * vector.x + y * vector.y + z * vector.z;
+        }
+
+        public Vector3D CrossProduct(Vector3D v1)
+        {
+            return new Vector3D()
+            {
+                x = this.y * v1.z - this.z * v1.y,
+                y = -(this.y * v1.y - this.z * v1.x),
+                z = this.x * v1.y - this.y * v1.x
+            };
+            
         }
 
         public double Magnitude()
@@ -222,7 +259,7 @@ namespace BeaverCore.Geometry
 
         public double AngletoVector(Vector3D other_vector)
         {
-            throw new NotImplementedException();
+            return Math.Acos(DotProduct(other_vector) / (Magnitude() * other_vector.Magnitude()));
         }
 
         public Vector3D Unit()

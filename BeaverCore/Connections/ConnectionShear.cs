@@ -13,7 +13,6 @@ using BeaverCore.Actions;
 
 namespace BeaverCore.Connections
 {
-    using DictResults = Dictionary<string, double>;
 
     public enum ConnectionType
     {
@@ -28,22 +27,6 @@ namespace BeaverCore.Connections
         public ShearSpacing spacing;
         public Fastener fastener;
         bool isMultiple;
-
-        public ConnectionShearFastenerCapacity(List<SingleFastenerCapacity> fastener_capacities, ShearSpacing spacing)
-        {
-            if (fastener_capacities.Count != spacing.npar * spacing.nperp)
-            {
-                throw new ArgumentException("The number of fastener shear_capacities does not match with the spacing array (npar*npep)");
-            }
-            if (fastener_capacities.Any(x => (x.fastener.type != fastener_capacities[0].fastener.type &&
-                                                  x.fastener.d != fastener_capacities[0].fastener.d)))
-            {
-                throw new ArgumentException("There are different fastener types inputed. Diameter and type of fastener must be the same for all fastener shear_capacities");
-            }
-            this.fastener_capacities = fastener_capacities;
-            this.spacing = spacing;
-            isMultiple = true;
-        }
 
         public ConnectionShearFastenerCapacity(SingleFastenerCapacity fastener_Cap, ShearSpacing spacing)
         {

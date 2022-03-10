@@ -28,6 +28,8 @@ namespace BeaverCore.Connections
     public class ShearSpacing
     {
         public double a1;
+        public double a1v;
+        public double a1h;
         public double a2;
         public double a3t;
         public double a3c;
@@ -35,6 +37,11 @@ namespace BeaverCore.Connections
         public double a4c;
         public int npar;
         public int nperp;
+        public bool staggered;
+
+        public Dictionary<int, Point2D> fastPositions;
+
+
 
         /// <summary>
         /// Creates a generic ShearSpacing object based on spacing parameters.
@@ -161,8 +168,6 @@ namespace BeaverCore.Connections
             this.a4t = Math.Max((2 + 2 * sinAlfa) * ds, 3 * ds);
             this.a4c = 3 * ds;
         }
-
-        
 
 
     }

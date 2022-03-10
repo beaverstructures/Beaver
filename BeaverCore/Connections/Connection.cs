@@ -9,13 +9,18 @@ namespace BeaverCore.Connections
 {
    public class Connection
     {
-        public Dictionary<int, fastInfo> fastPositions;  // fastener index and info
+        public Fastener fastener;
+        public Force force;
+        public List<FastData> FastenerList;  // fastener index and info
+        public Plane plane;
 
-        public struct fastInfo
+        public struct FastData
         {
-            public Point3D pt;
-            public Plane plane;
-            public Force force;
+            public Point2D pt;
+            
+            public FastenerForce force;
+            public double utilization;
+            public string critical_force;
         }
     }
 }

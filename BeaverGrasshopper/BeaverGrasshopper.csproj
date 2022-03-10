@@ -138,9 +138,9 @@
     <Compile Include="Components\PropertiesComponents\Comp_ImportCSVMaterials.cs" />
     <Compile Include="Components\PropertiesComponents\Comp_BeaverMaterial.cs" />
     <Compile Include="Components\Utilities\ResultUtilities.cs" />
-    <Compile Include="Components\ResultsComponents\TimberFrameView.cs" />
-    <Compile Include="Components\ResultsComponents\ViewValueResults.cs" />
-    <Compile Include="Components\ResultsComponents\VisualizeCriticalCheck.cs" />
+    <Compile Include="Components\ResultsComponents\Comp_TimberFrameView.cs" />
+    <Compile Include="Components\ResultsComponents\Comp_ViewValueResults.cs" />
+    <Compile Include="Components\ResultsComponents\Comp_VisualizeCriticalCheck.cs" />
     <Compile Include="CoreWrappers\GH_Settings.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />
