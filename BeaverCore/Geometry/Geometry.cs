@@ -337,7 +337,15 @@ namespace BeaverCore.Geometry
         public Point3D origin;
         public Vector3D U;
         public Vector3D V;
+        
+        public Plane(Point3D origin, Vector3D U, Vector3D V)
+        {
+            this.origin = origin;
+            this.U = U;
+            this.V = V;
+        }
     }
+
    
     [Serializable]
     public class Line

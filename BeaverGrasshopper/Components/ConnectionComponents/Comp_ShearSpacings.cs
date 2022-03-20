@@ -23,8 +23,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("Npar", "Npar", "Number of rows paralell to grain", GH_ParamAccess.item, 1);
-            pManager.AddNumberParameter("Nperp", "Nperp", "Number of rows perpendicular to grain ", GH_ParamAccess.item, 1);
+            pManager.AddIntegerParameter("Npar", "Npar", "Number of rows paralell to grain", GH_ParamAccess.item, 1);
+            pManager.AddIntegerParameter("Nperp", "Nperp", "Number of rows perpendicular to grain ", GH_ParamAccess.item, 1);
             pManager.AddBooleanParameter("Stagger", "Stagger", "Boolean indicating whether the arrangement is staggered", GH_ParamAccess.item, false);
             pManager.AddNumberParameter("a1", "a1", "Spacing parallel to the grain", GH_ParamAccess.item);
             pManager.AddNumberParameter("a2", "a2", "Spacing perpendicular to the grain", GH_ParamAccess.item);
@@ -42,7 +42,7 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddParameter(new Param_Spacing(), "Spacing", "Spacing", "Beaver spacing element", GH_ParamAccess.item);
+            pManager.AddParameter(new Param_ShearSpacing(), "Spacing", "Spacing", "Beaver spacing element", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.GetData(6, ref a4);
 
             ShearSpacing spacing = new ShearSpacing(a1,a2,a3,a3,a4,a4,npar,nperp);
-            DA.SetData(0, new GH_Spacing(new Spacing(spacing,null)));
+            DA.SetData(0, new GH_ShearSpacing(spacing));
         }
 
         /// <summary>

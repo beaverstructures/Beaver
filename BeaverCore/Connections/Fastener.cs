@@ -118,6 +118,8 @@ namespace BeaverCore.Connections
 
         }
     }
+
+
     public class FastenerForce
     {
         public Vector3D Faxd = new Vector3D();
@@ -134,8 +136,8 @@ namespace BeaverCore.Connections
 
         public FastenerForce(double faxd=0, double fvd=0, double alpha=0, string duration ="")
         {
-            Faxd = faxd;
-            Fvd = fvd;
+            Faxd = new Vector3D().Unit() * (faxd);
+            Fvd = new Vector3D().Unit() * (fvd);
             this.alpha = alpha;
             this.duration = duration;
         }

@@ -38,6 +38,7 @@ namespace BeaverCore.Connections
         public string error = null;
 
         public double kser;
+        public double kdef;
 
         public SingleFastenerCapacity() { }
 
@@ -78,11 +79,17 @@ namespace BeaverCore.Connections
             }
         }
 
+        public static double CalcKdef(Material mat1, Material mat2)
+        {
+            return Math.Min(mat1.kdef, mat2.kdef);
+        }
+
         public static double CalcKser(Fastener fastener, Material mat1, Material mat2)
         {
             // calculates Kser for the fastener
             // EC5 SECTION 7.1 TABLE 7.1
             double pm = Math.Sqrt(mat1.pk * mat2.pk);
+
             switch (fastener.type)
             {
                 case "Dowel":
@@ -121,6 +128,8 @@ namespace BeaverCore.Connections
                     axial_critical_failure_mode = keyValuePair.Key;
                 }
             }
+            fastener.faxk = axial_crictical_capacity;
+            fastener.faxk = shear_crictical_capacity;
         }
 
         public double GetTpen(Fastener fastener, double t1, double t2)

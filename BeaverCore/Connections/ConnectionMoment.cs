@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BeaverCore.Geometry;
+using BeaverCore.Actions;
 
 namespace BeaverCore.Connections
 {
@@ -17,7 +18,33 @@ namespace BeaverCore.Connections
         public double nef_z; /// vertical transversal
         public double shearplanes;
 
-        public void SetProperties()
+        public ConnectionMoment() { }
+        public ConnectionMoment(
+            Fastener fastener,
+            Force force,
+            Plane plane,
+            List<Point2D> points,
+            ShearSpacing spacing) 
+        {
+            this.fastener = fastener;
+            this.force = force;
+            this.plane = plane;
+            foreach(Point2D point in points)
+            {
+                this.FastenerList.Add(new FastData(point));
+            }
+            this.spacing = spacing;
+        }
+
+        public void Initialize()
+        {
+            SetProperties();
+            SetFastenerForces();
+            SetFastenerUtilizations();
+            SetConnectionStiffness();
+        }
+
+        private void SetProperties()
         {
             double sumx = 0;
             double sumy = 0;
@@ -91,20 +118,65 @@ namespace BeaverCore.Connections
             else throw new ArgumentException("Fastener diameter cannot be lower than 6mm");
         }
 
-        public void SetFastenerForces()
+        private void SetFastenerForces()
         {
-            foreach(FastData fD in FastenerList)
+            foreach (FastData fD in FastenerList)
             {
-                fD.force.Fx     = new Vector3D(plane.U).Unit()                          * (force.N / nef_x);
-                fD.force.Fz     = new Vector3D(plane.V).Unit()                          * (force.Vz / nef_z);
-                fD.force.Fy     = new Vector3D(plane.U.CrossProduct(plane.V)).Unit()    * (force.Vy / nef_y);
-                fD.force.Fi_My  = new Vector3D(CR.y - fD.pt.y, -CR.x + fD.pt.x,0).Unit()* (force.My * CR.Distance(fD.pt) / sumDsq);
-                fD.force.Fi_Mz  = new Vector3D(plane.U.CrossProduct(plane.V))           * (force.Mz * CR.deltaX(fD.pt) / sumXsq);
-                fD.force.Fi_Mt  = new Vector3D(plane.U.CrossProduct(plane.V))           * (force.Mt * CR.deltaY(fD.pt) / sumYsq);
+                fD.forces["Fx"]     = new Vector3D(plane.U).Unit()                          * (force.N / nef_x);
+                fD.forces["Fz"] = new Vector3D(plane.V).Unit()                          * (force.Vz / nef_z);
+                fD.forces["Fy"] = new Vector3D(plane.U.CrossProduct(plane.V)).Unit()    * (force.Vy / nef_y);
+                fD.forces["Fi_My"] = new Vector3D(CR.y - fD.pt.y, -CR.x + fD.pt.x,0).Unit()* (force.My * CR.Distance(fD.pt) / sumDsq);
+                fD.forces["Fi_Mz"] = new Vector3D(plane.U.CrossProduct(plane.V))           * (force.Mz * CR.deltaX(fD.pt) / sumXsq);
+                fD.forces["Fi_Mt"] = new Vector3D(plane.U.CrossProduct(plane.V))           * (force.Mt * CR.deltaY(fD.pt) / sumYsq);
 
-                fD.force.Fvd = fD.force.Fx + fD.force.Fz + fD.force.Fi_My;      /// Vectorial sum
-                fD.force.Faxd = fD.force.Fy + fD.force.Fi_Mz + fD.force.Fi_Mt;  /// Vectorial sum
+                fD.forces["Fvd"] = fD.forces["Fx"] + fD.forces["Fz"] + fD.forces["Fi_My"];      /// Vectorial sum
+                fD.forces["Faxd"] = fD.forces["Fy"] + fD.forces["Fi_Mz"] + fD.forces["Fi_Mt"];  /// Vectorial sum
             }
+        }
+
+        private void SetFastenerUtilizations()
+        {
+            foreach (FastData fD in FastenerList)
+            {
+                fD.utilization["N"] = fD.forces["Fx"].Magnitude() / fastener.Fv_Rd;
+                fD.utilization["Vz"] = fD.forces["Fz"].Magnitude() / fastener.Fv_Rd;
+                fD.utilization["Vy"] = fD.forces["Fy"].Magnitude() / fastener.Fv_Rd;
+                fD.utilization["Shear"] = fD.forces["Fvd"].Magnitude() / fastener.Fv_Rd;
+                fD.utilization["Axial"] = fD.forces["Faxd"].Magnitude() / fastener.Fax_Rd;
+                if(fastener.type == "Nail" & fastener.smooth == true)
+                {
+                    fD.utilization["Combined"] = fD.utilization["Axial"] + fD.utilization["Shear"];
+                }
+                else
+                {
+                    fD.utilization["Combined"] = Math.Pow(fD.utilization["Axial"], 2) + Math.Pow(fD.utilization["Shear"], 2);
+                }
+                fD.critical_utilization = GetMaxTuple(fD.utilization);
+                
+            }
+        }
+
+        private void SetConnectionStiffness()
+        {
+            double kser = fastenerCapacity.kser;
+            double kdef = fastenerCapacity.kdef;
+            translationalStiffness = shearplanes * kser * FastenerList.Count / (1 + kdef);
+            rotationalStiffness = shearplanes * kser * sumDsq / (1 + kdef);
+        }
+
+        public Tuple<string, double> GetMaxTuple(Dictionary<string, double> keyValuePairs)
+        {
+            double max = 0;
+            string key = null;
+            foreach(KeyValuePair<string,double> keyValuePair in keyValuePairs)
+            {
+                if(max <= keyValuePair.Value)
+                {
+                    key = keyValuePair.Key;
+                    max = keyValuePair.Value;
+                }
+            }
+            return new Tuple<string, double>(key, max);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace BeaverCore.Connections
         }
     }
 
+    [Serializable]
     public class ShearSpacing
     {
         public double a1;
@@ -41,7 +42,7 @@ namespace BeaverCore.Connections
 
         public Dictionary<int, Point2D> fastPositions;
 
-
+        public ShearSpacing() { }
 
         /// <summary>
         /// Creates a generic ShearSpacing object based on spacing parameters.
@@ -172,6 +173,7 @@ namespace BeaverCore.Connections
 
     }
 
+    [Serializable]
     public class AxialSpacing
     {
 

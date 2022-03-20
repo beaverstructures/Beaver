@@ -7,6 +7,7 @@ using System.Text;
 
 namespace BeaverCore.Connections
 {
+    [Serializable]
     public class ConnectionAxial : Connection
     {
         // Calculates the axial capacity of the connection

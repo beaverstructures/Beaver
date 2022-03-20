@@ -119,7 +119,7 @@ namespace BeaverGrasshopper
                     }
 
                 }
-                timber_frames = ExtendedMethods.CreateList<GH_TimberFrame>(beams.Count);
+                timber_frames = KarambaUtilities.CreateList<GH_TimberFrame>(beams.Count);
                 Parallel.For(0, beams.Count, new ParallelOptions
                 {
                     // multiply the count because a processor has 2 cores
@@ -170,7 +170,7 @@ namespace BeaverGrasshopper
                         pts.Add(new BvGeom.Point3D(pt.X, pt.Y, pt.Z));
                     }
                     BvGeom.Polyline beaver_Polyline = new BvGeom.Polyline(pts);
-                    BeaverCore.Frame.TimberFrame.SpanLine spanLine = ExtendedMethods.ImportSpanLineProperties(
+                    BeaverCore.Frame.TimberFrame.SpanLine spanLine = KarambaUtilities.ImportSpanLineProperties(
                         beaver_Polyline,
                         model,
                         lc_types);

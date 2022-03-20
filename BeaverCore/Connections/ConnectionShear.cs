@@ -13,7 +13,7 @@ using BeaverCore.Actions;
 
 namespace BeaverCore.Connections
 {
-
+    using DictResults = Dictionary<string, double>;
     public enum ConnectionType
     {
         TimbertoTimber,

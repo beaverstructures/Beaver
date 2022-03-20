@@ -42,6 +42,7 @@ namespace BeaverCore.Connections
             tpen = GetTpen(fastener, t1, t2);
             Faxrk = CalcFaxrk(mat1.pk, fastener, t1, this.tpen, alphafast, fastener.lth);
             kser = CalcKser(fastener, mat1, mat2);
+            kdef = CalcKdef(mat1, mat2);
         }
 
         public override Dictionary<string, double> FvkSingleShear()

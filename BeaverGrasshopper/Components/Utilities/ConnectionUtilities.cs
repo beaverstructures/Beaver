@@ -8,7 +8,7 @@ using BeaverCore.Actions;
 using BeaverCore.Connections;
 using BeaverCore.CrossSection;
 using BeaverCore.Frame;
-using BvGeom = BeaverCore.Geometry;
+using bv = BeaverCore.Geometry;
 
 using Rhino.Geometry;
 
@@ -16,7 +16,7 @@ namespace BeaverGrasshopper.Components.Utilities
 {
     public static class ConnectionUtilities
     {
-        public static List<Mesh> ConnectionToMesh(TimberFramePoint element1, TimberFramePoint element2, BvGeom.Plane plane, Connection connection)
+        public static List<Mesh> ConnectionToMesh(TimberFramePoint element1, TimberFramePoint element2, bv.Plane plane, Connection connection)
         {
             // displays the arrangement of timber elements, steel plates and fasteners and CR of connection
             throw new NotImplementedException();
