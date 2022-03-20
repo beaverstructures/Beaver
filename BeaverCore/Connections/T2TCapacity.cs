@@ -16,6 +16,7 @@ namespace BeaverCore.Connections
         public double alpha1;
         public double alpha2;
         public string woodType;
+        public bool predrillingNeeded;
 
         public T2TCapacity() { }
 
@@ -31,9 +32,14 @@ namespace BeaverCore.Connections
             double alpha2,
             double alphafast,
             double t1,
-            double t2
+            double t2,
+            int shearplanes,
+            bool rope_effect
             )
         {
+            this.fastener = fastener;
+            this.shearplanes = shearplanes;
+            this.rope_effect = rope_effect;
 
             Myrk = CalcMyrk(fastener);
             fh1k = CalcFhk(preDrilled1, fastener, mat1.pk, alpha1, mat1.type);
@@ -43,6 +49,18 @@ namespace BeaverCore.Connections
             Faxrk = CalcFaxrk(mat1.pk, fastener, t1, this.tpen, alphafast, fastener.lth);
             kser = CalcKser(fastener, mat1, mat2);
             kdef = CalcKdef(mat1, mat2);
+
+            if (shearplanes == 1) { shear_capacities = FvkSingleShear(); }
+            else if (shearplanes == 2) { shear_capacities = FvkDoubleShear(); }
+            else { throw new ArgumentException("Number of shear planes is invalid"); }
+
+            axial_capacities = Faxk();
+
+            SetCriticalCapacity();
+            predrillingNeeded = checkPreDrilling();
+            if (predrillingNeeded || preDrilled1) { }
+            if (predrillingNeeded || preDrilled2) { }
+
         }
 
         public override Dictionary<string, double> FvkSingleShear()

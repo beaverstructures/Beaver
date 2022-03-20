@@ -9,7 +9,7 @@ namespace BeaverCore.Connections
     public class ConnectionMoment : Connection
     {
         public ShearSpacing spacing;
-        public Point2D CR;
+        public Point2D CR = new Point2D();
         public double sumXsq = 0;
         public double sumYsq = 0;
         public double sumDsq = 0;

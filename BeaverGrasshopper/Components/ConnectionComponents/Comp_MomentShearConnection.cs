@@ -17,8 +17,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// Initializes a new instance of the Comp_MomentShearConnection class.
         /// </summary>
         public Comp_MomentShearConnection()
-          : base("SemiRigidConnection", "SemiRigidConnection using a FREE CENTER OF ROTATION hypothesis",
-              "Assembles the connection spacings to be used in the connection analysis",
+          : base("SemiRigidConnection", "SemiRigidConnection",
+              "Assembles the connection spacings to be used in the connection analysis. Hypothesos of a SemiRigidConnection using a FREE CENTER OF ROTATION",
               "Beaver", "2. Connection")
         {
         }
@@ -30,11 +30,9 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         {
             pManager.AddPlaneParameter("plane", "plane", "plane", GH_ParamAccess.item, Plane.WorldZX);
             pManager.AddPointParameter("points", "points", "points", GH_ParamAccess.list);
-            pManager.AddParameter(new Param_Fastener(), "Fastener", "Fast", "Beaver fastener element", GH_ParamAccess.item);
+            pManager.AddParameter(new Param_Fastener(), "Fastener", "Fast", "Beaver fastener with calculated capacity", GH_ParamAccess.item);
             pManager.AddParameter(new Param_ShearSpacing(), "Spacing", "Spacing", "Beaver Spacing element", GH_ParamAccess.item);
             pManager.AddParameter(new Param_TFPoint(), "TimberFramePoint", "TF", "Beaver TimberFramePoint element", GH_ParamAccess.item);
-            pManager.AddNumberParameter("t1", "t1", "t1", GH_ParamAccess.item);
-            pManager.AddNumberParameter("t2", "t2", "t2", GH_ParamAccess.item);
             pManager.AddTextParameter("ForceType", "FType", "ForceType", GH_ParamAccess.item);
             pManager.AddTextParameter("AnalysisType", "AType", "UtilizationType", GH_ParamAccess.item);
         }
@@ -71,11 +69,11 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.GetData(2, ref gh_fast);
             DA.GetData(3, ref gh_spacing);
             DA.GetData(4, ref gh_tfPoint);
-            DA.GetData(5, ref t1);
-            DA.GetData(6, ref t2);
-            DA.GetData(7, ref Ftype);
-            DA.GetData(7, ref Atype);
+            DA.GetData(5, ref Ftype);
+            DA.GetData(6, ref Atype);
 
+            t1 = t1 / 1000;
+            t2 = t2 / 1000;
             List<BvGeom.Point2D> bvPoints = new List<BvGeom.Point2D>();
             List<Vector3d> out_vectors = null;
             List<BvGeom.Vector3D> bvVectors = null;

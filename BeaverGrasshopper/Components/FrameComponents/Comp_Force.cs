@@ -12,7 +12,7 @@ namespace BeaverGrasshopper
         /// Initializes a new instance of the Comp_Force class.
         /// </summary>
         public Comp_Force()
-          : base("Comp_Force", "Nickname",
+          : base("Force", "Force",
               "Description",
               "Beaver", "1.Frame")
         {
@@ -29,7 +29,7 @@ namespace BeaverGrasshopper
             pManager.AddNumberParameter("Torsional Moment", "Mt", "Normal force at point", GH_ParamAccess.item,0);
             pManager.AddNumberParameter("Bending Moment Y", "My", "Normal force at point", GH_ParamAccess.item,0);
             pManager.AddNumberParameter("Bending Moment Z", "Mz", "Normal force at point", GH_ParamAccess.item,0);
-            pManager.AddTextParameter("LoadCase type", "type", "Type of corresponding loadcase", GH_ParamAccess.item);
+            pManager.AddTextParameter("LoadCase type", "type", "Type of corresponding loadcase", GH_ParamAccess.item,"P");
         }
 
         /// <summary>

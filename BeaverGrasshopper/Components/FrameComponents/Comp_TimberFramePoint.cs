@@ -111,7 +111,7 @@ namespace BeaverGrasshopper
         CroSec crosec = ghcrosec.Value;
         List<Force> forces = new List<Force>();
         List<Displacement> displacements = new List<Displacement>();
-        for (int i = 0; i < forces.Count; i++)
+        for (int i = 0; i < ghforce.Count; i++)
         {
             Force force = ghforce[i].Value;
             forces.Add(force);

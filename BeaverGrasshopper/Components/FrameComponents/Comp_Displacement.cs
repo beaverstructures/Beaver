@@ -11,7 +11,7 @@ namespace BeaverGrasshopper {
         /// Initializes a new instance of the Comp_Displacement class.
         /// </summary>
         public Comp_Displacement()
-          : base("Comp_Displacement", "Nickname",
+          : base("Comp_Displacement", "Disp",
               "Description",
               "Beaver", "1.Frame")
         {
@@ -25,7 +25,7 @@ namespace BeaverGrasshopper {
             pManager.AddNumberParameter("Displacement x", "ux", "Displacement in x direction", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Displacement y", "uy", "Displacement in y direction", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("Displacement z", "uz", "Displacement in z direction", GH_ParamAccess.item, 0);
-            pManager.AddTextParameter("LoadCase type", "type", "Type of corresponding loadcase", GH_ParamAccess.item);
+            pManager.AddTextParameter("LoadCase type", "type", "Type of corresponding loadcase", GH_ParamAccess.item, "P");
         }
 
         /// <summary>

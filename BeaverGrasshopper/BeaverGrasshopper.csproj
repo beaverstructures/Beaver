@@ -89,11 +89,11 @@
       <HintPath>C:\Program Files\Rhino 7\Plug-ins\Grasshopper\Grasshopper.dll</HintPath>
     </Reference>
     <Reference Include="karamba">
-      <HintPath>..\packages\Karamba\karamba.gha</HintPath>
+      <HintPath>C:\Program Files\Rhino 7\Plug-ins\Karamba\karamba.gha</HintPath>
     </Reference>
     <Reference Include="karambaCommon, Version=2.2.0.7, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Karamba\karambaCommon.dll</HintPath>
+      <HintPath>C:\Program Files\Rhino 7\Plug-ins\Karamba\karambaCommon.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -144,6 +144,7 @@
     <Compile Include="Components\ResultsComponents\Comp_TimberFrameView.cs" />
     <Compile Include="Components\ResultsComponents\Comp_ViewValueResults.cs" />
     <Compile Include="Components\ResultsComponents\Comp_VisualizeCriticalCheck.cs" />
+    <Compile Include="CoreWrappers\GH_T2TCapacity.cs" />
     <Compile Include="CoreWrappers\GH_Settings.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />
     <Compile Include="CoreWrappers\GH_Displacement.cs" />

@@ -37,8 +37,12 @@ namespace BeaverCore.Connections
         public double tpen;
         public string error = null;
 
+        public double kmod;
+        public double gammaM;
+
         public double kser;
         public double kdef;
+        public int shearplanes;
 
         public SingleFastenerCapacity() { }
 
@@ -128,8 +132,10 @@ namespace BeaverCore.Connections
                     axial_critical_failure_mode = keyValuePair.Key;
                 }
             }
-            fastener.faxk = axial_crictical_capacity;
-            fastener.faxk = shear_crictical_capacity;
+            fastener.Fax_Rd = axial_crictical_capacity*kmod / gammaM;
+            fastener.Fv_Rd = shear_crictical_capacity * kmod / gammaM;
+
+
         }
 
         public double GetTpen(Fastener fastener, double t1, double t2)

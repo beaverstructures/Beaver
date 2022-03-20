@@ -156,7 +156,7 @@ namespace BeaverGrasshopper.Components.Utilities
                     double util = util_result.util;
                     timber_frame.TimberPointsMap[rel_pos[i]].util = util;
                     timber_frame.TimberPointsMap[rel_pos[i]].util_index = util_result.util_index;
-                    if (util > new_max_util)
+                    if (util >= new_max_util)
                     {
                         new_max_util = util;
                         info = util_result.util_index;
