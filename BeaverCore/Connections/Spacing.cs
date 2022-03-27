@@ -32,8 +32,10 @@ namespace BeaverCore.Connections
         public double a1v;
         public double a1h;
         public double a2;
+        public double a3;
         public double a3t;
         public double a3c;
+        public double a4;
         public double a4t;
         public double a4c;
         public int npar;
@@ -55,6 +57,16 @@ namespace BeaverCore.Connections
             this.a3c = a3c;
             this.a4t = a4t;
             this.a4c = a4c;
+            this.npar = npar;
+            this.nperp = nperp;
+        }
+
+        public ShearSpacing(double a1h, double a1v,double a3, double a4, int npar, int nperp)
+        {
+            this.a1h = a1h;
+            this.a1v = a1v;
+            this.a3 = a3;
+            this.a4 = a4;
             this.npar = npar;
             this.nperp = nperp;
         }

@@ -54,7 +54,6 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             GH_Fastener ghfastener = new GH_Fastener();
-            Fastener fastener = new Fastener();
             bool preDrilled1 = false;
             bool preDrilled2 = false;
             double alpha1 = 0;
@@ -63,8 +62,6 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             double t2 = 0;
             int shearplanes = 0;
             bool rope = false;
-            Material mat1 = new Material();
-            Material mat2 = new Material();
             GH_Material ghmat1 = new GH_Material();
             GH_Material ghmat2 = new GH_Material();
 
@@ -89,8 +86,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             T2TCapacity t2TCapacity = new T2TCapacity(ghfastener.Value,
                                                       preDrilled1,
                                                       preDrilled2,
-                                                      mat1,
-                                                      mat2,
+                                                      ghmat1.Value,
+                                                      ghmat2.Value,
                                                       alpha1,
                                                       alpha2,
                                                       0,  // DOUBLE CHECK THIS INPUT LATER

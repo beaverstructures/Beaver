@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BeaverCore.Geometry;
 using BeaverCore.Actions;
+using BeaverCore.Misc;
 
 namespace BeaverCore.Connections
 {
@@ -20,13 +21,14 @@ namespace BeaverCore.Connections
 
         public ConnectionMoment() { }
         public ConnectionMoment(
-            Fastener fastener,
+            T2TCapacity capacity,
             Force force,
             Plane plane,
             List<Point2D> points,
             ShearSpacing spacing) 
         {
-            this.fastener = fastener;
+            fastenerCapacity = capacity;
+            this.fastener = capacity.fastener;
             this.force = force;
             this.plane = plane;
             foreach(Point2D point in points)
@@ -50,8 +52,8 @@ namespace BeaverCore.Connections
             double sumy = 0;
             foreach(FastData fastData in FastenerList)
             {
-                sumx = fastData.pt.x;
-                sumy = fastData.pt.y;
+                sumx += fastData.pt.x;
+                sumy += fastData.pt.y;
             }
             CR.x = sumx / FastenerList.Count;
             CR.y = sumy / FastenerList.Count;
@@ -122,15 +124,17 @@ namespace BeaverCore.Connections
         {
             foreach (FastData fD in FastenerList)
             {
-                fD.forces["Fx"]     = new Vector3D(plane.U).Unit()                          * (force.N / nef_x);
-                fD.forces["Fz"] = new Vector3D(plane.V).Unit()                          * (force.Vz / nef_z);
-                fD.forces["Fy"] = new Vector3D(plane.U.CrossProduct(plane.V)).Unit()    * (force.Vy / nef_y);
-                fD.forces["Fi_My"] = new Vector3D(CR.y - fD.pt.y, -CR.x + fD.pt.x,0).Unit()* (force.My * CR.Distance(fD.pt) / sumDsq);
-                fD.forces["Fi_Mz"] = new Vector3D(plane.U.CrossProduct(plane.V))           * (force.Mz * CR.deltaX(fD.pt) / sumXsq);
-                fD.forces["Fi_Mt"] = new Vector3D(plane.U.CrossProduct(plane.V))           * (force.Mt * CR.deltaY(fD.pt) / sumYsq);
+                fD.forces["Fx"] = new Vector3D(1,0,0)                                   * (force.N / nef_x);
+                fD.forces["Fz"] = new Vector3D(0,1,0)                                   * (force.Vz / nef_z);
+                fD.forces["Fy"] = new Vector3D(0,0,1)                                   * (force.Vy / nef_y);
+
+                fD.forces["Fi_My"] = new Vector3D(CR.y - fD.pt.y, -CR.x + fD.pt.x, 0).Unit()* (force.My * CR.Distance(fD.pt) / sumDsq);
+                fD.forces["Fi_Mz"] = new Vector3D(0,0,1)           * (force.Mz * CR.deltaX(fD.pt) / sumXsq);
+                fD.forces["Fi_Mt"] = new Vector3D(0,0,1)           * (force.Mt * CR.deltaY(fD.pt) / sumYsq);
 
                 fD.forces["Fvd"] = fD.forces["Fx"] + fD.forces["Fz"] + fD.forces["Fi_My"];      /// Vectorial sum
                 fD.forces["Faxd"] = fD.forces["Fy"] + fD.forces["Fi_Mz"] + fD.forces["Fi_Mt"];  /// Vectorial sum
+                fD.forces["Combined"] = fD.forces["Faxd"] + fD.forces["Fvd"];                   /// Vectorial sum
             }
         }
 

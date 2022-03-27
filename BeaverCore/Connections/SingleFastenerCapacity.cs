@@ -6,7 +6,7 @@ using System.Text;
 namespace BeaverCore.Connections
 {
 
-
+    [Serializable]
     public abstract class SingleFastenerCapacity
     {
         // THIS IS AN ABSTRACT CLASS WITH CONSTRUCTORS ON T2T AND S2T
@@ -169,6 +169,7 @@ namespace BeaverCore.Connections
                         : 0.3 * fastener.fu * Math.Pow(fastener.d, 2.6);
                     break;
                 case "Bolt":
+                case "Dowel":
                     // EC5 SECTION 8.5.1.1 EQ 8.30
                     value = 0.3 * fastener.fu * Math.Pow(fastener.d, 2.6);
                     break;
@@ -209,7 +210,9 @@ namespace BeaverCore.Connections
                             case "Hardwood":
                                 k90 = 0.9 + 0.015 * fastener.d; break;
                             case "LVL":
-                            case "Gluelam":
+                            case "Glulam":
+                            case "Glulam c":
+                            case "Glulam h":
                                 k90 = 1.3 + 0.015 * fastener.d; break;
                             case "Plywood":
                                 // EC5 SECTION 8.5.1 EQ 8.36
@@ -254,7 +257,9 @@ namespace BeaverCore.Connections
                             case "Hardwood":
                                 k90 = 0.9 + 0.015 * fastener.d; break;
                             case "LVL":
-                            case "Gluelam":
+                            case "Glulam":
+                            case "Glulam c":
+                            case "Glulam h":
                                 k90 = 1.3 + 0.015 * fastener.d; break;
                             case "Plywood":
                                 // EC5 SECTION 8.5.1 EQ 8.36
@@ -288,7 +293,9 @@ namespace BeaverCore.Connections
                             case "Hardwood":
                                 k90 = 0.9 + 0.015 * fastener.d; break;
                             case "LVL":
-                            case "Gluelam":
+                            case "Glulam":
+                            case "Glulam c":
+                            case "Glulam h":
                                 k90 = 1.3 + 0.015 * fastener.d; break;
                             case "Plywood":
                                 // EC5 SECTION 8.5.1 EQ 8.36
@@ -325,7 +332,9 @@ namespace BeaverCore.Connections
                                 case "Hardwood":
                                     k90 = 0.9 + 0.015 * fastener.d; break;
                                 case "LVL":
-                                case "Gluelam":
+                                case "Glulam":
+                                case "Glulam c":
+                                case "Glulam h":
                                     k90 = 1.3 + 0.015 * fastener.d; break;
                                 case "Plywood":
                                     // EC5 SECTION 8.5.1 EQ 8.36
@@ -417,7 +426,9 @@ namespace BeaverCore.Connections
                     double aread = Math.Pow(f.d, 2) * Math.PI / 4;
                     double areadw = Math.Pow(f.dh, 2) * Math.PI / 4;
                     return Math.Min(3 * fc90k * (areadw - aread), f.fu * aread);
-                default: throw new ArgumentException("Fastener does not support axial loading.");
+                default:
+                    return 0;
+                    // throw new ArgumentException("Fastener does not support axial loading.");
 
             }
         }

@@ -67,7 +67,7 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.GetData(5, ref a3);
             DA.GetData(6, ref a4);
 
-            ShearSpacing spacing = new ShearSpacing(a1,a2,a3,a3,a4,a4,npar,nperp);
+            ShearSpacing spacing = new ShearSpacing(a1,a2,a3,a4,npar,nperp);
             DA.SetData(0, new GH_ShearSpacing(spacing));
         }
 

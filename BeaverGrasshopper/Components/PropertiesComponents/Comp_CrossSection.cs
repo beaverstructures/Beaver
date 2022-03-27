@@ -26,31 +26,32 @@ namespace BeaverGrasshopper
         {
         }
 
-        public override void AddedToDocument(GH_Document document)
-        {
-            if (Params.Input[0].SourceCount == 0)
-            {
-                // Perform Layout to get actual positionning of the component on the canevas
-                this.Attributes.ExpireLayout();
-                this.Attributes.PerformLayout();
+        //public override void AddedToDocument(GH_Document document)
+        //{
+        //    if (Params.Input[0].SourceCount == 0)
+        //    {
+        //        // Perform Layout to get actual positionning of the component on the canevas
+        //        this.Attributes.ExpireLayout();
+        //        this.Attributes.PerformLayout();
 
-                //instantiate new value list
-                var vl = new Grasshopper.Kernel.Special.GH_ValueList();
-                vl.CreateAttributes();
-                vl.NickName = "Type";
-                //clear default contents
-                vl.ListItems.Clear();
-                vl.ListItems.Add(new GH_ValueListItem("Rectangular", "\"rectangular\"" ));
-                vl.ListItems.Add(new GH_ValueListItem("Circular", "\"circular\"" ));
-                document.AddObject(vl, false);
-                Params.Input[0].AddSource(vl);
-                //get the pivot of the "accent" param
-                PointF currPivot = Params.Input[0].Attributes.Pivot;
-                //set the pivot of the new object
-                vl.Attributes.Pivot = new PointF(currPivot.X - 120, currPivot.Y - 11);
-            }
-            base.AddedToDocument(document);
-        }
+        //        //instantiate new value list
+        //        var vl = new Grasshopper.Kernel.Special.GH_ValueList();
+        //        vl.CreateAttributes();
+        //        vl.NickName = "Type";
+        //        //clear default contents
+        //        vl.ListItems.Clear();
+        //        vl.ListItems.Add(new GH_ValueListItem("Rectangular", "\"rectangular\"" ));
+        //        vl.ListItems.Add(new GH_ValueListItem("Circular", "\"circular\"" ));
+        //        document.AddObject(vl, false);
+        //        if (Params.Input[0].)
+        //        Params.Input[0].AddSource(vl);
+        //        //get the pivot of the "accent" param
+        //        PointF currPivot = Params.Input[0].Attributes.Pivot;
+        //        //set the pivot of the new object
+        //        vl.Attributes.Pivot = new PointF(currPivot.X - 120, currPivot.Y - 11);
+        //    }
+        //    base.AddedToDocument(document);
+        //}
 
         /// <summary>
         /// Registers all the input parameters for this component.

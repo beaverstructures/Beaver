@@ -23,14 +23,14 @@ namespace BeaverCore.Connections
     [Serializable]
     public class ConnectionShearFastenerCapacity : Connection
     {
-        public List<SingleFastenerCapacity> fastener_capacities;
+        public SingleFastenerCapacity fastener_capacity;
         public ShearSpacing spacing;
         public Fastener fastener;
         bool isMultiple;
 
         public ConnectionShearFastenerCapacity(SingleFastenerCapacity fastener_Cap, ShearSpacing spacing)
         {
-            this.fastener_capacities = new List<SingleFastenerCapacity>() { fastener_Cap };
+            this.fastener_capacity = fastener_Cap ;
             this.spacing = spacing;
             this.fastener = fastener_Cap.fastener;
             isMultiple = false;
@@ -50,7 +50,7 @@ namespace BeaverCore.Connections
 
         DictResults OverallShearResistance()
         {
-            SingleFastenerCapacity capacity = fastener_capacities[0];
+            SingleFastenerCapacity capacity = fastener_capacity;
             int npar = spacing.npar;
             int nperp = spacing.nperp;
             double n = npar * nperp;
@@ -87,6 +87,7 @@ namespace BeaverCore.Connections
             int nperp = spacing.nperp;
             double n = npar * nperp;
             double nef = Nef();
+            List<SingleFastenerCapacity> fastener_capacities = new List<SingleFastenerCapacity>() { fastener_capacity };
             foreach (SingleFastenerCapacity capacity in fastener_capacities)
             {
                 double alpha = capacity.fastener.alpha;

@@ -23,37 +23,37 @@ namespace BeaverGrasshopper
         {
         }
 
-        public override void AddedToDocument(GH_Document document)
-        {
-            // Perform Layout to get actual positionning of the component on the canevas
-            this.Attributes.ExpireLayout();
-            this.Attributes.PerformLayout();
+    //    public override void AddedToDocument(GH_Document document)
+    //    {
+    //        // Perform Layout to get actual positionning of the component on the canevas
+    //        this.Attributes.ExpireLayout();
+    //        this.Attributes.PerformLayout();
 
-            //instantiate new value list
-            var cro_sec = new Comp_CrossSection();
-            var material = new BeaverMaterial();
-            var force = new Comp_Force();
-            var displacement = new Comp_Displacement();
+    //        //instantiate new value list
+    //        var cro_sec = new Comp_CrossSection();
+    //        var material = new BeaverMaterial();
+    //        var force = new Comp_Force();
+    //        var displacement = new Comp_Displacement();
 
-            document.AddObject(cro_sec, false);
-            Params.Input[0].AddSource(cro_sec.Params.Output[0]);
-            PointF currPivot = Params.Input[0].Attributes.Pivot;
-            cro_sec.Attributes.Pivot = new PointF(currPivot.X - 300, currPivot.Y-50);
-            cro_sec.Params.Input[0].Sources[0].Attributes.Pivot = new PointF(currPivot.X - 450, currPivot.Y-91);
-            document.AddObject(material, false);
-            cro_sec.Params.Input[1].AddSource(material.Params.Output[0]);
-            material.Attributes.Pivot = new PointF(currPivot.X - 600, currPivot.Y - 61);
+    //        document.AddObject(cro_sec, false);
+    //        Params.Input[0].AddSource(cro_sec.Params.Output[0]);
+    //        PointF currPivot = Params.Input[0].Attributes.Pivot;
+    //        cro_sec.Attributes.Pivot = new PointF(currPivot.X - 300, currPivot.Y-50);
+    //        cro_sec.Params.Input[0].Sources[0].Attributes.Pivot = new PointF(currPivot.X - 450, currPivot.Y-91);
+    //        document.AddObject(material, false);
+    //        cro_sec.Params.Input[1].AddSource(material.Params.Output[0]);
+    //        material.Attributes.Pivot = new PointF(currPivot.X - 600, currPivot.Y - 61);
 
-            document.AddObject(force, false);
-            Params.Input[1].AddSource(force.Params.Output[0]);
-            force.Attributes.Pivot = new PointF(currPivot.X - 300, currPivot.Y +90);
+    //        document.AddObject(force, false);
+    //        Params.Input[1].AddSource(force.Params.Output[0]);
+    //        force.Attributes.Pivot = new PointF(currPivot.X - 300, currPivot.Y +90);
 
-            document.AddObject(displacement, false);
-            Params.Input[2].AddSource(displacement.Params.Output[0]);
-            displacement.Attributes.Pivot = new PointF(currPivot.X - 300, currPivot.Y +220);
+    //        document.AddObject(displacement, false);
+    //        Params.Input[2].AddSource(displacement.Params.Output[0]);
+    //        displacement.Attributes.Pivot = new PointF(currPivot.X - 300, currPivot.Y +220);
 
-            base.AddedToDocument(document);
-    }
+    //        base.AddedToDocument(document);
+    //      }
 
     /// <summary>
     /// Registers all the input parameters for this component.

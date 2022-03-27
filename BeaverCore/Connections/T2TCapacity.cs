@@ -6,6 +6,7 @@ using BeaverCore.Materials;
 
 namespace BeaverCore.Connections
 {
+    [Serializable]
     public class T2TCapacity: SingleFastenerCapacity
     {
         // Calculates the capacity of Timber-to-timber connections according to EC5, Section 8.2.2
@@ -165,6 +166,7 @@ namespace BeaverCore.Connections
         {
             // Calculates the axial force acting on each screw by decomposing V and N into the local axis of the fastener
             Fastener f = fastener;
+            Dictionary<string, double> axial_capacities = new Dictionary<string, double>();
             switch (f.type)
             {
                 case "Nail":
@@ -181,7 +183,8 @@ namespace BeaverCore.Connections
                     }
                     break;
                 case "Dowel":
-                    throw new ArgumentException("Dowel does not support Axial loading");
+                        axial_capacities.Add("Dowel does not support axial loading", 0);
+                        break;
                 case "Bolted":
                     // EC5, SECTION 8.5.2 AXIALLY LOADED BOLTS
                     double faxrd = 0.9 * f.fu * Math.Pow(f.d, 2) / 4 * 1.25 / 1.25; //***!Needs review
