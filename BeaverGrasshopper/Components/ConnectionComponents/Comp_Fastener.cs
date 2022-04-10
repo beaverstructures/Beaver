@@ -32,12 +32,13 @@ namespace BeaverGrasshopper
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddTextParameter("FastenerType", "Ftype", "Fastener type", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Nominal Diameter", "D", "Fastener nominal diamater", GH_ParamAccess.item, 0);
-            pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter", GH_ParamAccess.item, 0); //screws
-            pManager.AddNumberParameter("Head Diameter", "Dh", "Fastener head diameter", GH_ParamAccess.item, 0);
-            pManager.AddNumberParameter("Fastener Length", "L", "Fastener length", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Nominal Diameter", "D", "Fastener nominal diamater in mm", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter in mm", GH_ParamAccess.item, 0); //screws
+            pManager.AddNumberParameter("Head Diameter", "Dh", "Fastener head diameter in mm", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Fastener Length", "L", "Fastener length in mm", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Fastener threaded length", "Lth", "Fastener threaded length in mm", GH_ParamAccess.item, 0);
             pManager.AddBooleanParameter("Smooth Boolean", "Smooth", "True for smooth nails, false for other", GH_ParamAccess.item, false); //nails
-            pManager.AddNumberParameter("Fastener Fu", "Fu", "Fastener steel tensile ultimate strength", GH_ParamAccess.item, 800*1e6);
+            pManager.AddNumberParameter("Fastener Fu", "Fu", "Fastener steel tensile ultimate strength in MPa", GH_ParamAccess.item, 800*1e6);
         }
 
         /// <summary>
@@ -61,6 +62,7 @@ namespace BeaverGrasshopper
             double Ds = 0;
             double Dh = 0;
             double L = 0;
+            double Lth = 0;
             bool Smooth = true;
             double Fu = 0;
 
@@ -69,10 +71,11 @@ namespace BeaverGrasshopper
             DA.GetData(2, ref Ds);
             DA.GetData(3, ref Dh);
             DA.GetData(4, ref L);
-            DA.GetData(5, ref Smooth);
-            DA.GetData(6, ref Fu);
+            DA.GetData(5, ref Lth);
+            DA.GetData(6, ref Smooth);
+            DA.GetData(7, ref Fu);
 
-            Fastener fastener = new Fastener(Ftype, D, Ds, Dh, L, Fu, Smooth);
+            Fastener fastener = new Fastener(Ftype, D/1000, Ds/1000, Dh/1000, L / 1000, Fu, Smooth, lth: Lth / 1000);
             DA.SetData(0, new GH_Fastener(fastener));
         }
 

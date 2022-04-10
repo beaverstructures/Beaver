@@ -59,6 +59,7 @@ namespace BeaverCore.Connections
             l = L;
             fu = Fu;
             type = fastenerType;
+            
             this.faxk = faxk;
             this.fheadk = fheadk;
             this.Ymsteel = Ymsteel;
@@ -74,6 +75,7 @@ namespace BeaverCore.Connections
                     ds = Ds;
                     dh = Dh;
                     smooth = Smooth;
+                    this.lth = lth;
                     break;
                 case "Bolt":
                     ds = D;
@@ -81,6 +83,7 @@ namespace BeaverCore.Connections
                     smooth = true;
                     this.faxk = faxk;
                     this.countersunk = countersunk;
+                    this.lth = lth;
                     break;
                 case "Nail":
                     ds = D;

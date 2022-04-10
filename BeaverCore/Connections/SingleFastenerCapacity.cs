@@ -118,7 +118,7 @@ namespace BeaverCore.Connections
             axial_crictical_capacity = 9999999;
             foreach (var keyValuePair in shear_capacities)
             {
-                if (keyValuePair.Value < shear_crictical_capacity)
+                if (keyValuePair.Value < shear_crictical_capacity && !Double.IsNaN(keyValuePair.Value) ) 
                 {
                     shear_crictical_capacity = keyValuePair.Value;
                     shear_critical_failure_mode = keyValuePair.Key;
@@ -126,7 +126,7 @@ namespace BeaverCore.Connections
             }
             foreach (var keyValuePair in axial_capacities)
             {
-                if (keyValuePair.Value < axial_crictical_capacity)
+                if (keyValuePair.Value < axial_crictical_capacity && !Double.IsNaN(keyValuePair.Value))
                 {
                     axial_crictical_capacity = keyValuePair.Value;
                     axial_critical_failure_mode = keyValuePair.Key;

@@ -25,7 +25,6 @@ namespace BeaverCore.Connections
     {
         public SingleFastenerCapacity fastener_capacity;
         public ShearSpacing spacing;
-        public Fastener fastener;
         bool isMultiple;
 
         public ConnectionShearFastenerCapacity(SingleFastenerCapacity fastener_Cap, ShearSpacing spacing)
@@ -123,7 +122,7 @@ namespace BeaverCore.Connections
             double npar = spacing.npar;
             double nperp = spacing.nperp;
 
-            if (type == "nail" || (type == "screw" & d < 6))
+            if (type == "nail" || (type == "screw" & d < 0.006))
             {
 
                 double kef = 0;
@@ -143,7 +142,7 @@ namespace BeaverCore.Connections
                 }
                 nef = (Math.Pow(npar, kef)) * nperp;
             }
-            else if (type == "bolt" || (type == "screw" & d >= 6) || type == "dowel")
+            else if (type == "bolt" || (type == "screw" & d >= 0.006) || type == "dowel")
             {
                 if (npar * nperp == 1) { nef = 1; }
                 else

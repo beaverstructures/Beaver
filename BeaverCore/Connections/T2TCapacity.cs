@@ -41,6 +41,17 @@ namespace BeaverCore.Connections
             this.fastener = fastener;
             this.shearplanes = shearplanes;
             this.rope_effect = rope_effect;
+            this.t1 = t1;
+            this.t2 = t2;
+            this.mat1 = mat1;
+            this.mat2 = mat2;
+            this.alpha1 = alpha1;
+            this.alpha2 = alpha2;
+            this.shearplanes = shearplanes;
+            this.rope_effect = rope_effect;
+            this.gammaM = Math.Min(mat1.Ym, mat2.Ym);
+            this.kmod = 1; /// *** there is no way to know what is the kmod at the setup. it must be multiplied at the end.
+
 
             Myrk = CalcMyrk(fastener);
             fh1k = CalcFhk(preDrilled1, fastener, mat1.pk, alpha1, mat1.type);
@@ -59,6 +70,8 @@ namespace BeaverCore.Connections
 
             SetCriticalCapacity();
             predrillingNeeded = checkPreDrilling();
+
+            /// *** to be implemented
             if (predrillingNeeded || preDrilled1) { }
             if (predrillingNeeded || preDrilled2) { }
 
@@ -221,7 +234,7 @@ namespace BeaverCore.Connections
                 case "Staple":
                 case "Screws":
                     pk = Math.Min(mat1.pk, mat2.pk);
-                    if (pk > 500 || fastener.d > 6) { result = true; }
+                    if (pk > 500 || fastener.d > 0.006) { result = true; }
                     break;
                 default:
                     break;
