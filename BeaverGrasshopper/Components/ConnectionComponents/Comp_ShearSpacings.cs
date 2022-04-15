@@ -26,10 +26,10 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             pManager.AddIntegerParameter("Npar", "Npar", "Number of rows paralell to grain", GH_ParamAccess.item, 1);
             pManager.AddIntegerParameter("Nperp", "Nperp", "Number of rows perpendicular to grain ", GH_ParamAccess.item, 1);
             pManager.AddBooleanParameter("Stagger", "Stagger", "Boolean indicating whether the arrangement is staggered", GH_ParamAccess.item, false);
-            pManager.AddNumberParameter("a1", "a1", "Spacing parallel to the grain", GH_ParamAccess.item);
-            pManager.AddNumberParameter("a2", "a2", "Spacing perpendicular to the grain", GH_ParamAccess.item);
-            pManager.AddNumberParameter("a3", "a3", "end spacing", GH_ParamAccess.item);
-            pManager.AddNumberParameter("a4", "a4", "edge distance", GH_ParamAccess.item);
+            pManager.AddNumberParameter("a1", "a1", "Spacing parallel to the grain. Use model dimensions", GH_ParamAccess.item);
+            pManager.AddNumberParameter("a2", "a2", "Spacing perpendicular to the grain. Use model dimensions", GH_ParamAccess.item);
+            pManager.AddNumberParameter("a3", "a3", "end spacing. Use model dimensions ", GH_ParamAccess.item);
+            pManager.AddNumberParameter("a4", "a4", "edge distance. Use model dimensions", GH_ParamAccess.item);
             pManager.AddPlaneParameter("Plane", "Plane", "connection reference plane", GH_ParamAccess.item, Plane.WorldYZ);
             pManager[3].Optional = true;
             pManager[4].Optional = true;
@@ -51,6 +51,9 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            double unit;
+            unit = Rhino.RhinoMath.UnitScale(Rhino.RhinoDoc.ActiveDoc.ModelUnitSystem, Rhino.UnitSystem.Millimeters);
+
             int npar = 1;
             int nperp = 1;
             double a1 = 0;
@@ -67,7 +70,7 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.GetData(5, ref a3);
             DA.GetData(6, ref a4);
 
-            ShearSpacing spacing = new ShearSpacing(a1,a2,a3,a4,npar,nperp);
+            ShearSpacing spacing = new ShearSpacing(a1*unit,a2*unit,a3*unit,a4*unit,npar,nperp);
             DA.SetData(0, new GH_ShearSpacing(spacing));
         }
 

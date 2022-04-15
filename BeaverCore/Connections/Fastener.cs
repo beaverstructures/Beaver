@@ -18,7 +18,7 @@ namespace BeaverCore.Connections
         public double lth;      // Threaded Length
         public double offset;   // Offset from timber face
         public double tpen;     // Penetration length of threaded part
-        public double fu;       // Ultimate Strength of fastener
+        public double fuk;       // Ultimate Strength of fastener
         public double t;        // Thickness of the headside member
         public string type;
         public bool smooth;
@@ -46,20 +46,24 @@ namespace BeaverCore.Connections
         public double rhoa;     // 
         public double rhok;     // Characteristic timber density in kg/m³
 
-        public double Fax_Rd;
-        public double Fv_Rd;
+
+        // Parameters set after calculation
+        public double Fax_Rk;
+        public double Fv_Rk;
+        public double Ym;
+        public double kser;
+        public double kdef;
 
         public Fastener() { }
 
         public Fastener(string fastenerType, double D=0 , double Ds = 0, double Dh = 0,
-            double L = 0, double Fu = 4000000000, bool Smooth = true, double faxk= 4.5e-6,
+            double L = 0, double Fuk = 400, bool Smooth = true, double faxk= 0,
             double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05, bool countersunk = false)
         {
             d = D;
             l = L;
-            fu = Fu;
+            fuk = Fuk;
             type = fastenerType;
-            
             this.faxk = faxk;
             this.fheadk = fheadk;
             this.Ymsteel = Ymsteel;
@@ -75,7 +79,6 @@ namespace BeaverCore.Connections
                     ds = Ds;
                     dh = Dh;
                     smooth = Smooth;
-                    this.lth = lth;
                     break;
                 case "Bolt":
                     ds = D;
@@ -83,7 +86,6 @@ namespace BeaverCore.Connections
                     smooth = true;
                     this.faxk = faxk;
                     this.countersunk = countersunk;
-                    this.lth = lth;
                     break;
                 case "Nail":
                     ds = D;
@@ -113,11 +115,13 @@ namespace BeaverCore.Connections
             double cos = Math.Cos(Math.PI / 180 * alpha);
             vector = new Vector2D(sin, cos);
 
+            /*
             t1 = b1 - sin*offset;
             t2 = l - t1;
             lpen = Math.Min(t1, t2);
             double tpen2 = t2 > lth ? lth : t2;
             double tpen1 = t2 > lth ? 0 : lth - t2;
+            */
 
         }
     }

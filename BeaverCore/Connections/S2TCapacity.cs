@@ -208,7 +208,7 @@ namespace BeaverCore.Connections
                     throw new ArgumentException("Dowel does not support Axial loading");
                 case "Bolted":
                     // EC5, SECTION 8.5.2 AXIALLY LOADED BOLTS
-                    double faxrd = 0.9 * f.fu * Math.Pow(f.d, 2) / 4 * 1.25 / 1.25; //***!Needs review
+                    double faxrd = 0.9 * f.fuk * Math.Pow(f.d, 2) / 4 * 1.25 / 1.25; //***!Needs review
                     axial_capacities.Add("Faxrd, EC5, 8.5.2", faxrd);
                     break;
                 case "Screw":

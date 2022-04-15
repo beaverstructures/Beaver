@@ -32,13 +32,12 @@ namespace BeaverGrasshopper
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddTextParameter("FastenerType", "Ftype", "Fastener type", GH_ParamAccess.item);
-            pManager.AddNumberParameter("Nominal Diameter", "D", "Fastener nominal diamater in mm", GH_ParamAccess.item, 0);
-            pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter in mm", GH_ParamAccess.item, 0); //screws
-            pManager.AddNumberParameter("Head Diameter", "Dh", "Fastener head diameter in mm", GH_ParamAccess.item, 0);
-            pManager.AddNumberParameter("Fastener Length", "L", "Fastener length in mm", GH_ParamAccess.item, 0);
-            pManager.AddNumberParameter("Fastener threaded length", "Lth", "Fastener threaded length in mm", GH_ParamAccess.item, 0);
+            pManager.AddNumberParameter("Nominal Diameter", "D", "Fastener nominal diamater [mm]", GH_ParamAccess.item, 6);
+            pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter [mm]", GH_ParamAccess.item, 6); //screws
+            pManager.AddNumberParameter("Head Diameter", "Dh", "Fastener head diameter [mm]", GH_ParamAccess.item, 6);
+            pManager.AddNumberParameter("Fastener Length", "L", "Fastener length [mm]", GH_ParamAccess.item, 50);
             pManager.AddBooleanParameter("Smooth Boolean", "Smooth", "True for smooth nails, false for other", GH_ParamAccess.item, false); //nails
-            pManager.AddNumberParameter("Fastener Fu", "Fu", "Fastener steel tensile ultimate strength in MPa", GH_ParamAccess.item, 800*1e6);
+            pManager.AddNumberParameter("Fastener Fuk", "Fuk", "Fastener steel characteristic tensile ultimate strength [MPa]", GH_ParamAccess.item, 400);
         }
 
         /// <summary>
@@ -62,20 +61,18 @@ namespace BeaverGrasshopper
             double Ds = 0;
             double Dh = 0;
             double L = 0;
-            double Lth = 0;
             bool Smooth = true;
-            double Fu = 0;
+            double Fuk = 0;
 
             DA.GetData(0, ref Ftype);
             DA.GetData(1, ref D);
             DA.GetData(2, ref Ds);
             DA.GetData(3, ref Dh);
             DA.GetData(4, ref L);
-            DA.GetData(5, ref Lth);
-            DA.GetData(6, ref Smooth);
-            DA.GetData(7, ref Fu);
+            DA.GetData(5, ref Smooth);
+            DA.GetData(6, ref Fuk);
 
-            Fastener fastener = new Fastener(Ftype, D/1000, Ds/1000, Dh/1000, L / 1000, Fu, Smooth, lth: Lth / 1000);
+            Fastener fastener = new Fastener(Ftype, D, Ds, Dh, L, Fuk, Smooth);
             DA.SetData(0, new GH_Fastener(fastener));
         }
 

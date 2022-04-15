@@ -93,8 +93,8 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                     _point.Add(new Point3d(tfPoint.pt.x, tfPoint.pt.y, tfPoint.pt.z));
                 }
             }
-            DA.SetData(0, _text);
-            DA.SetData(1, _point);
+            DA.SetDataList(0, _text);
+            DA.SetDataList(1, _point);
         }
 
         public override BoundingBox ClippingBox

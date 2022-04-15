@@ -7,7 +7,6 @@ using BeaverCore.Misc;
 
 namespace BeaverCore.Connections
 {
-    [Serializable]
     public class ConnectionMoment : Connection
     {
         public ShearSpacing spacing;
@@ -19,20 +18,18 @@ namespace BeaverCore.Connections
         public double nef_y; /// horizontal transversal
         public double nef_z; /// vertical transversal
         public double shearplanes;
-        int SC;
+        public int serviceclass;
 
         public ConnectionMoment() { }
         public ConnectionMoment(
-            T2TCapacity capacity,
+            Fastener fastener,
             Force force,
             Plane plane,
             List<Point2D> points,
             ShearSpacing spacing,
-            int SC) 
+            int serviceclass) 
         {
-            fastenerCapacity = capacity;
-            this.fastener = capacity.fastener;
-            this.SC = SC;
+            this.fastener = fastener;
             this.force = force;
             this.plane = plane;
             foreach(Point2D point in points)
@@ -40,6 +37,7 @@ namespace BeaverCore.Connections
                 this.FastenerList.Add(new FastData(point));
             }
             this.spacing = spacing;
+            this.serviceclass = serviceclass;
         }
 
         public void Initialize()
@@ -98,7 +96,7 @@ namespace BeaverCore.Connections
         {
             /// EC5 SECTION 8.3.8
             double d = fastener.d;
-            if (fastener.d > 0.006)
+            if (fastener.d > 6)
             {
 
                 double kef = 0;
@@ -144,20 +142,14 @@ namespace BeaverCore.Connections
 
         private void SetFastenerUtilizations()
         {
-            // *** kmod is only calculated at the end
-            double kmod = Utils.KMOD(SC, force.duration);
-            fastener.Fv_Rd = fastener.Fv_Rd * kmod;
-            fastener.Fax_Rd = fastener.Fax_Rd * kmod;
-
+            double kmod = Utils.KMOD(serviceclass, force.duration);
             foreach (FastData fD in FastenerList)
             {
-                
-
-                fD.utilization["N"] = fD.forces["Fx"].Magnitude() / fastener.Fv_Rd;
-                fD.utilization["Vz"] = fD.forces["Fz"].Magnitude() / fastener.Fv_Rd;
-                fD.utilization["Vy"] = fD.forces["Fy"].Magnitude() / fastener.Fv_Rd;
-                fD.utilization["Shear"] = fD.forces["Fvd"].Magnitude() / fastener.Fv_Rd;
-                fD.utilization["Axial"] = fD.forces["Faxd"].Magnitude() / fastener.Fax_Rd;
+                fD.utilization["N"] = fD.forces["Fx"].Magnitude() / (fastener.Fv_Rk * kmod / fastener.Ym);
+                fD.utilization["Vz"] = fD.forces["Fz"].Magnitude() / (fastener.Fv_Rk * kmod / fastener.Ym);
+                fD.utilization["Vy"] = fD.forces["Fy"].Magnitude() / (fastener.Fax_Rk * kmod / fastener.Ym);
+                fD.utilization["Shear"] = fD.forces["Fvd"].Magnitude() / (fastener.Fv_Rk * kmod / fastener.Ym);
+                fD.utilization["Axial"] = fD.forces["Faxd"].Magnitude() / (fastener.Fax_Rk * kmod / fastener.Ym);
                 if(fastener.type == "Nail" & fastener.smooth == true)
                 {
                     fD.utilization["Combined"] = fD.utilization["Axial"] + fD.utilization["Shear"];
@@ -173,8 +165,8 @@ namespace BeaverCore.Connections
 
         private void SetConnectionStiffness()
         {
-            double kser = fastenerCapacity.kser;
-            double kdef = fastenerCapacity.kdef;
+            double kser = fastener.kser;
+            double kdef = fastener.kdef;
             translationalStiffness = shearplanes * kser * FastenerList.Count / (1 + kdef);
             rotationalStiffness = shearplanes * kser * sumDsq / (1 + kdef);
         }

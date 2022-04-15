@@ -144,7 +144,6 @@
     <Compile Include="Components\ResultsComponents\Comp_TimberFrameView.cs" />
     <Compile Include="Components\ResultsComponents\Comp_ViewValueResults.cs" />
     <Compile Include="Components\ResultsComponents\Comp_VisualizeCriticalCheck.cs" />
-    <Compile Include="CoreWrappers\GH_Connection.cs" />
     <Compile Include="CoreWrappers\GH_T2TCapacity.cs" />
     <Compile Include="CoreWrappers\GH_Settings.cs" />
     <Compile Include="CoreWrappers\GH_CrossSection.cs" />

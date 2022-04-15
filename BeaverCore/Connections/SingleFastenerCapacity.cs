@@ -18,11 +18,11 @@ namespace BeaverCore.Connections
 
         public int sheartype; //1 for single shear, 2 for double shear
         public Dictionary<string, double> shear_capacities;
-        public double shear_crictical_capacity;
+        public double Fv_Rk;
         public string shear_critical_failure_mode;
 
         public Dictionary<string, double> axial_capacities;
-        public double axial_crictical_capacity;
+        public double Fax_Rk;
         public string axial_critical_failure_mode;
         public bool rope_effect;
 
@@ -37,8 +37,9 @@ namespace BeaverCore.Connections
         public double tpen;
         public string error = null;
 
+        public double Ym;
+
         public double kmod;
-        public double gammaM;
 
         public double kser;
         public double kdef;
@@ -97,6 +98,7 @@ namespace BeaverCore.Connections
             switch (fastener.type)
             {
                 case "Dowel":
+                case "Bolt":
                     return Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
                 case "Nail":
                     return fastener.predrilled1 ?
@@ -114,28 +116,35 @@ namespace BeaverCore.Connections
         public void SetCriticalCapacity()
         {
             /// Finds and updates the critical capacity from the shear_capacities variable
-            shear_crictical_capacity = 9999999;
-            axial_crictical_capacity = 9999999;
+            Fv_Rk = 9999999;
+            Fax_Rk = 9999999;
             foreach (var keyValuePair in shear_capacities)
             {
-                if (keyValuePair.Value < shear_crictical_capacity && !Double.IsNaN(keyValuePair.Value) ) 
+                if (keyValuePair.Value < Fv_Rk)
                 {
-                    shear_crictical_capacity = keyValuePair.Value;
+                    Fv_Rk = keyValuePair.Value;
                     shear_critical_failure_mode = keyValuePair.Key;
                 }
             }
             foreach (var keyValuePair in axial_capacities)
             {
-                if (keyValuePair.Value < axial_crictical_capacity && !Double.IsNaN(keyValuePair.Value))
+                if (keyValuePair.Value < Fax_Rk)
                 {
-                    axial_crictical_capacity = keyValuePair.Value;
+                    Fax_Rk = keyValuePair.Value;
                     axial_critical_failure_mode = keyValuePair.Key;
                 }
             }
-            fastener.Fax_Rd = axial_crictical_capacity*kmod / gammaM;
-            fastener.Fv_Rd = shear_crictical_capacity * kmod / gammaM;
+            SetFastenerProperties();  
+        }
 
-
+        public void SetFastenerProperties()
+        {
+            // registering calculated values to fastener for using in connection analysis
+            fastener.Fax_Rk = Fax_Rk;
+            fastener.Fv_Rk = Fv_Rk;
+            fastener.Ym = Ym;
+            fastener.kser = kser;
+            fastener.kdef = kdef;
         }
 
         public double GetTpen(Fastener fastener, double t1, double t2)
@@ -160,18 +169,18 @@ namespace BeaverCore.Connections
                 case "Nail":
                     // EC5 SECTION 8.3.1.1 EQ 8.14
                     value = fastener.smooth ?
-                        0.3 * fastener.fu * Math.Pow(fastener.d, 2.6)
-                        : 0.45 * fastener.fu * Math.Pow(fastener.d, 2.6);
+                        0.3 * fastener.fuk * Math.Pow(fastener.d, 2.6)
+                        : 0.45 * fastener.fuk * Math.Pow(fastener.d, 2.6);
                     break;
                 case "Screw":
                     value = fastener.d <= 6 ?
-                        0.45 * fastener.fu * Math.Pow(fastener.d, 2.6)
-                        : 0.3 * fastener.fu * Math.Pow(fastener.d, 2.6);
+                        0.45 * fastener.fuk * Math.Pow(fastener.d, 2.6)
+                        : 0.3 * fastener.fuk * Math.Pow(fastener.d, 2.6);
                     break;
                 case "Bolt":
                 case "Dowel":
                     // EC5 SECTION 8.5.1.1 EQ 8.30
-                    value = 0.3 * fastener.fu * Math.Pow(fastener.d, 2.6);
+                    value = 0.3 * fastener.fuk * Math.Pow(fastener.d, 2.6);
                     break;
                 case "Staple":
                     value = 240 * Math.Pow(fastener.d, 2.6);
@@ -283,7 +292,8 @@ namespace BeaverCore.Connections
                     }
                 case "Dowel":
                     //  EC5 SECTION 8.6 REFER TO SECTION 8.5.1
-                    if (6 < fastener.d && fastener.d < 30)
+                    if (6 < fastener.d && fastener.d < 24)
+                    /// EC5 SECTION 10.4.4
                     {
                         switch (woodType)
                         {
@@ -425,7 +435,7 @@ namespace BeaverCore.Connections
                     double fc90k = t_thread;
                     double aread = Math.Pow(f.d, 2) * Math.PI / 4;
                     double areadw = Math.Pow(f.dh, 2) * Math.PI / 4;
-                    return Math.Min(3 * fc90k * (areadw - aread), f.fu * aread);
+                    return Math.Min(3 * fc90k * (areadw - aread), f.fuk * aread);
                 default:
                     return 0;
                     // throw new ArgumentException("Fastener does not support axial loading.");

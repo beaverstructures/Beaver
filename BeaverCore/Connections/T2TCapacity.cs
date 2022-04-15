@@ -38,20 +38,20 @@ namespace BeaverCore.Connections
             bool rope_effect
             )
         {
-            this.fastener = fastener;
-            this.shearplanes = shearplanes;
-            this.rope_effect = rope_effect;
-            this.t1 = t1;
-            this.t2 = t2;
+
             this.mat1 = mat1;
             this.mat2 = mat2;
             this.alpha1 = alpha1;
             this.alpha2 = alpha2;
+            
+            this.kmod = 1; /// *** this depends on load case + duration  EC5 Section 2.3.2.1
+            this.Ym = Math.Min(mat1.Ym, mat2.Ym);
+            this.fastener = fastener;
+            fastener.alpha = alphafast;
+            this.t1 = t1;
+            this.t2 = t2;
             this.shearplanes = shearplanes;
             this.rope_effect = rope_effect;
-            this.gammaM = Math.Min(mat1.Ym, mat2.Ym);
-            this.kmod = 1; /// *** there is no way to know what is the kmod at the setup. it must be multiplied at the end.
-
 
             Myrk = CalcMyrk(fastener);
             fh1k = CalcFhk(preDrilled1, fastener, mat1.pk, alpha1, mat1.type);
@@ -70,8 +70,6 @@ namespace BeaverCore.Connections
 
             SetCriticalCapacity();
             predrillingNeeded = checkPreDrilling();
-
-            /// *** to be implemented
             if (predrillingNeeded || preDrilled1) { }
             if (predrillingNeeded || preDrilled2) { }
 
@@ -84,7 +82,7 @@ namespace BeaverCore.Connections
             analysisType = "FASTENERS IN SINGLE SHEAR - EC5, Section 8.2.2, Eq. 8.6";
 
             double maxFaxrk = FaxrkUpperLimitValue();
-            double Mryk = this.Myrk;
+            double Myrk = this.Myrk;
             double Fh1k = this.fh1k;
             double Fh2k = this.fh2k;
             double Beta = this.beta;
@@ -111,7 +109,7 @@ namespace BeaverCore.Connections
 
             //4th Failure Mode (d)
             double Fyk4 = 1.05 * Fh1k * t1 * this.fastener.d / (2 + Beta)
-                * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Mryk / (Fh1k * Math.Pow(t1, 2) * this.fastener.d))) - Beta);
+                * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Myrk / (Fh1k * Math.Pow(t1, 2) * this.fastener.d))) - Beta);
             rope_effect_contribution =  rope_effect ?
                                         Math.Min(Faxrk / 4, maxFaxrk*Fyk4) 
                                         : 0;
@@ -119,7 +117,7 @@ namespace BeaverCore.Connections
 
             //5th Failure Mode (e)
             double Fyk5 = 1.05 * Fh2k * t2 * this.fastener.d / (2 + Beta)
-                * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Mryk / (Fh2k * Math.Pow(t2, 2) * this.fastener.d))) - Beta);
+                * (Math.Sqrt(2 * Beta * (1 + Beta) + (4 * Beta * (2 + Beta) * Myrk / (Fh2k * Math.Pow(t2, 2) * this.fastener.d))) - Beta);
             rope_effect_contribution = rope_effect ?
                     Math.Min(Faxrk / 4, maxFaxrk * Fyk5) 
                     : 0;
@@ -127,7 +125,7 @@ namespace BeaverCore.Connections
 
             //6th Failure Mode (f)
             double Fyk6 = 1.15 * Math.Sqrt(2 * Beta / (1 + Beta))
-                * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d);
+                * Math.Sqrt(2 * Myrk * Fh1k * this.fastener.d);
             rope_effect_contribution = rope_effect ? 
                 Math.Min(Faxrk / 4, maxFaxrk * Fyk6) 
                 : 0;
@@ -142,7 +140,7 @@ namespace BeaverCore.Connections
             analysisType = "FASTENERS IN DOUBLE SHEAR - EC5, Section 8.2.2, Eq. 8.7";
 
             double maxFaxrk = FaxrkUpperLimitValue();
-            double Mryk = this.Myrk;
+            double Myrk = this.Myrk;
             double Fh1k = this.fh1k;
             double Fh2k = this.fh2k;
             double Beta = this.beta;
@@ -159,14 +157,14 @@ namespace BeaverCore.Connections
 
             // 3rd Failure Mode (j)
             double Fyk3 = 1.05 * (Fh1k * t1 * this.fastener.d / (2 * Beta))
-                * (Math.Sqrt(2 * Beta * (1 + Beta) + 4 * Beta * (2 + Beta) * Mryk / (Fh1k * Math.Pow(t1, 2) * this.fastener.d)) - Beta);
+                * (Math.Sqrt(2 * Beta * (1 + Beta) + 4 * Beta * (2 + Beta) * Myrk / (Fh1k * Math.Pow(t1, 2) * this.fastener.d)) - Beta);
             rope_effect_contribution = rope_effect ?
                 Math.Min(Faxrk / 4, maxFaxrk * Fyk3) 
                 : 0;
             capacities.Add("EC5, Section 8.2.2, Eq. 8.7j", Fyk3 + rope_effect_contribution);
 
             // 4th Failure Mode (k)
-            double Fyk4 = 1.15 * Math.Sqrt(2 * Beta / (1 + Beta)) * Math.Sqrt(2 * Mryk * Fh1k * this.fastener.d);
+            double Fyk4 = 1.15 * Math.Sqrt(2 * Beta / (1 + Beta)) * Math.Sqrt(2 * Myrk * Fh1k * this.fastener.d);
             rope_effect_contribution = rope_effect ? 
                 Math.Min(Faxrk / 4, maxFaxrk * Fyk4) 
                 : 0;
@@ -198,9 +196,9 @@ namespace BeaverCore.Connections
                 case "Dowel":
                         axial_capacities.Add("Dowel does not support axial loading", 0);
                         break;
-                case "Bolted":
+                case "Bolt":
                     // EC5, SECTION 8.5.2 AXIALLY LOADED BOLTS
-                    double faxrd = 0.9 * f.fu * Math.Pow(f.d, 2) / 4 * 1.25 / 1.25; //***!Needs review
+                    double faxrd = 0.9 * f.fuk * Math.Pow(f.d, 2) / 4 * 1.25 / 1.25; //***!Needs review
                     axial_capacities.Add("Faxrd, EC5, 8.5.2", faxrd);
                     break;
                 case "Screw":
@@ -234,7 +232,7 @@ namespace BeaverCore.Connections
                 case "Staple":
                 case "Screws":
                     pk = Math.Min(mat1.pk, mat2.pk);
-                    if (pk > 500 || fastener.d > 0.006) { result = true; }
+                    if (pk > 500 || fastener.d > 6) { result = true; }
                     break;
                 default:
                     break;

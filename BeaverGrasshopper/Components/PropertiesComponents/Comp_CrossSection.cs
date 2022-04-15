@@ -183,7 +183,8 @@ namespace BeaverGrasshopper
 
         public bool DestroyParameter(GH_ParameterSide side, int index)
         {
-            //This function will be called when a parameter is about to be removed. 
+            //This
+            //nction will be called when a parameter is about to be removed. 
             //You do not need to do anything, but this would be a good time to remove 
             //any event handlers that might be attached to the parameter in question.
 

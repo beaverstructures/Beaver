@@ -25,12 +25,12 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddParameter(new Param_Fastener(), "Fastener", "Fast", "Beaver fastener element", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("preDrilled1", "preDrilled1", "preDrilled1", GH_ParamAccess.item, false);
-            pManager.AddBooleanParameter("preDrilled2", "preDrilled2", "preDrilled2", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("preDrilled1", "preDrilled1", "Boolean representing whether timber element 1 must be predrilled", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("preDrilled2", "preDrilled2", "Boolean representing whether timber element 2 must be predrilled", GH_ParamAccess.item, false);
             pManager.AddNumberParameter("alpha1", "alpha1", "alpha1 in degrees", GH_ParamAccess.item, 0);
             pManager.AddNumberParameter("alpha2", "alpha2", "alpha2 in degrees", GH_ParamAccess.item, 90);
-            pManager.AddNumberParameter("t1", "t1", "t1 in mm", GH_ParamAccess.item, 15);
-            pManager.AddNumberParameter("t2", "t2", "t2 in mm", GH_ParamAccess.item, 15);
+            pManager.AddNumberParameter("t1", "t1", "t1 [mm]", GH_ParamAccess.item, 15);
+            pManager.AddNumberParameter("t2", "t2", "t2 [mm]", GH_ParamAccess.item, 15);
             pManager.AddParameter(new Param_Material(), "mat1", "mat1", "mat1", GH_ParamAccess.item);
             pManager.AddParameter(new Param_Material(), "mat2", "mat2", "mat2", GH_ParamAccess.item);
             pManager.AddIntegerParameter("Shear Planes", "n", "Number of shear planes on the fastener. Currently beaver only supports 1 and 2 shear planes.", GH_ParamAccess.item, 1);
@@ -45,6 +45,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
         {
             pManager.AddParameter(new Param_T2TCapacity(), "Fastener capacity", "T2T", "Fastener capacity for a T2T check", GH_ParamAccess.item);
             pManager.AddParameter(new Param_Fastener(), "Fastener", "Fast", "Beaver fastener with calculated capacity", GH_ParamAccess.item);
+            pManager.AddTextParameter("Shear Capacities", "ShearCap", "Calculated capacities and respective failure modes",GH_ParamAccess.list);
+            pManager.AddTextParameter("Axial Capacities", "AxialCap", "Calculated capacities and respective failure modes", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -78,10 +80,10 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.GetData(10, ref rope);
 
             // unit conversions to SI
-            alpha1 = alpha1 * (Math.PI / 180) ;
-            alpha2 = alpha2 * (Math.PI / 180) ;
-            t1 = t1 / 1000;
-            t2 = t2 / 1000;
+            alpha1 = alpha1 * (Math.PI / 180);
+            alpha2 = alpha2 * (Math.PI / 180);
+            t1 = t1;
+            t2 = t2;
 
             T2TCapacity t2TCapacity = new T2TCapacity(ghfastener.Value,
                                                       preDrilled1,
@@ -90,14 +92,28 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
                                                       ghmat2.Value,
                                                       alpha1,
                                                       alpha2,
-                                                      0,  // DOUBLE CHECK THIS INPUT LATER
+                                                      0,  // *** DOUBLE CHECK THIS INPUT LATER
                                                       t1,
                                                       t2,
                                                       shearplanes,
                                                       rope);
 
+            List<string> axials = new List<string>();
+            List<string> shears = new List<string>();
+
+            foreach (KeyValuePair<string, double> keyValuePair in t2TCapacity.axial_capacities)
+            {
+                axials.Add(keyValuePair.Key + ": " + Math.Round(keyValuePair.Value,2));
+            }
+            foreach (KeyValuePair<string, double> keyValuePair in t2TCapacity.shear_capacities)
+            {
+                shears.Add(keyValuePair.Key + ": " + Math.Round(keyValuePair.Value, 2));
+            }
+
             DA.SetData(0,new GH_T2TCapacity(t2TCapacity));
             DA.SetData(1, new GH_Fastener(t2TCapacity.fastener));
+            DA.SetDataList(2, shears);
+            DA.SetDataList(3, axials);
         }
 
         /// <summary>

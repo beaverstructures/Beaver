@@ -23,12 +23,12 @@ namespace BeaverGrasshopper
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddNumberParameter("Normal Force", "N", "Normal force at point in kN", GH_ParamAccess.item,0);
-            pManager.AddNumberParameter("Shear Force Y", "Vy", "Shear force at point in y direction in kN", GH_ParamAccess.item,0);
-            pManager.AddNumberParameter("Shear Force Z", "Vz", "Shear force at point in z direction in kN", GH_ParamAccess.item,0);
-            pManager.AddNumberParameter("Torsional Moment", "Mt", "Torsional moment at point in kNm", GH_ParamAccess.item,0);
-            pManager.AddNumberParameter("Bending Moment Y", "My", "Bending moment around y-y axis at point in kNm", GH_ParamAccess.item,0);
-            pManager.AddNumberParameter("Bending Moment Z", "Mz", "Bending moment around z-z axis at point in kNm", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Normal Force", "N", "Normal force at point", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Shear Force Y", "Vy", "Shear force at point in y direction", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Shear Force Z", "Vz", "Shear force at point in z direction", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Torsional Moment", "Mt", "Normal force at point", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Bending Moment Y", "My", "Normal force at point", GH_ParamAccess.item,0);
+            pManager.AddNumberParameter("Bending Moment Z", "Mz", "Normal force at point", GH_ParamAccess.item,0);
             pManager.AddTextParameter("LoadCase type", "type", "Type of corresponding loadcase", GH_ParamAccess.item,"P");
         }
 
@@ -60,7 +60,7 @@ namespace BeaverGrasshopper
             DA.GetData(4, ref My);
             DA.GetData(5, ref Mz);
             DA.GetData(6, ref type);
-            Force force = new Force(N/1000, Vy / 1000, Vz / 1000, Mx / 1000, My / 1000, Mz / 1000, type);
+            Force force = new Force(N, Vy, Vz, Mx, My, Mz, type);
 
             DA.SetData(0, new GH_Force(force));
         }
