@@ -84,16 +84,16 @@ namespace BeaverCore.Frame
 
     public class TimberFrameULSResult
     {
-        public string[] Info { get; }
+        public List<string[]> ULSReport { get; }
         public List<double[]> UtilsY { get; }
         public List<double[]> UtilsZ { get; }
         public string SectionData { get; }
 
-        public TimberFrameULSResult() { }
+        public TimberFrameULSResult(List<string[]> allULSinfo) { }
 
-        public TimberFrameULSResult(string[] info, List<double[]> utilsY, List<double[]> utilsZ, string sectiondata)
+        public TimberFrameULSResult(List<string[]> ulsreport, List<double[]> utilsY, List<double[]> utilsZ, string sectiondata)
         {
-            Info = info;
+            ULSReport = ulsreport;
             UtilsY = utilsY;
             UtilsZ = utilsZ;
             SectionData = sectiondata;

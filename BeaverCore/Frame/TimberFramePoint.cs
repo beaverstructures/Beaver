@@ -117,28 +117,7 @@ namespace BeaverCore.Frame
 
         public TimberFrameULSResult ULSUtilization()
         {
-            string[] Info = new string[] {
-                    //0
-                    "EC5 Section 6.1.2 Tension parallel to the grain",
-                    //1
-                    "EC5 Section 6.1.4 Compression parallel to the grain.",
-                    //2
-                    "EC5 Section 6.1.6 Biaxial Bending",
-                    //3
-                    "EC5 Section 6.1.7 Shear",
-                    //4
-                    "EC5 Section 6.1.8 Torsion",
-                    //5
-                    "EC5 Section 6.2.3 Combined Tension and Bending",
-                    //6 
-                    "EC5 Section 6.2.4 Combined Bending and Axial Compression",
-                    //7
-                    "EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending",
-                    //8
-                    "EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression",
-                    //9
-                    "Combined Torsion and Shear",
-                };
+
 
             ///Basic Geometry and Material Values
             double A = CS.A;
@@ -213,11 +192,14 @@ namespace BeaverCore.Frame
             double UtilZ6;
             double UtilY7;
             double UtilZ7;
-            double UtilY8;
-            double UtilZ8;
+            double UtilY8 = 0;
+            double UtilZ8 = 0;
             double Util9;
+
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
+            List<string[]> ULSReport = new List<string[]>();
+
             foreach (Force f in ULSComb.DesignForces)
             {
                 ///Actions
@@ -241,31 +223,26 @@ namespace BeaverCore.Frame
                 double fvd = Kmod * Fvk / Ym;
                 double fmd = Kmod * fmk / Ym;
 
-                ///0 EC5 Section 6.1.2 Tension parallel to the grain
+                ///0 "Tension along the grain acc. to EC5 6.1.2",
                 if (sigN < 0) Util0 = 0;
                 else Util0 = Math.Abs(sigN) / ft0d;
 
-                ///1 EC5 Section 6.1.4 Compression parallel to the grain
+                ///1 "Compression along the grain acc. to EC5 6.1.4"
                 if (sigN > 0) Util1 = 0;
                 else Util1 = Math.Abs(sigN) / fc0d;
 
-                ///2 EC5 Section 6.1.6 Biaxial Bending
+                ///2 "Bending acc. to EC5 6.1.6"
                 UtilY2 = Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
                 UtilZ2 = Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
 
-                ///3 EC5 Section 6.1.7 Shear
+                ///3 "Shear acc. to EC5 6.1.7"
                 UtilY3 = Math.Abs(Sigvy) / fvd;
                 UtilZ3 = Math.Abs(Sigvz) / fvd;
 
-                ///4 EC5 Section 6.1.8 Torsion
+                ///4 "Torsion acc. to EC5 6.1.8"
                 Util4 = Math.Abs(SigMt) / (kshape * fvd);
 
-                ///9 Combined Shear and Tension - Not specified in EC5
-                Util9 = Math.Max(UtilY3 + Util4, UtilZ3 + Util4);
-                // Less conservative approach: 
-                // Util9 = Math.Max(Math.Pow(UtilY3,2) + Util4, Math.Pow(UtilZ3,2) + Util4);
-
-                ///5 EC5 Section 6.2.3 Combined Bending and Axial Tension
+                ///5 "Combined Bending and Axial Tension acc. to EC5 6.2.3"
                 if (sigN < 0) UtilY5 = UtilZ5 = 0;
                 else
                 {
@@ -273,7 +250,7 @@ namespace BeaverCore.Frame
                     UtilZ5 = sigN / ft0d + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
-                /// 6 EC5 Section 6.2.4 Combined Bending and Axial Compression
+                /// 6 "Combined Bending and Axial Compression acc. to EC5 6.2.4"
                 if (sigN > 0) UtilY6 = UtilZ6 = 0;
                 else
                 {
@@ -281,10 +258,35 @@ namespace BeaverCore.Frame
                     UtilZ6 = Math.Pow((Math.Abs(sigN) / fc0d), 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
                 }
 
+                ///7 "Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered)"
+                if (lamyrel <= 0.3 && lamzrel <= 0.3)
+                {
+                    UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ7 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                }
+                else
+                {
+                    UtilY7 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ7 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                }
+
+                ///8 "Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered)"
+                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
+                {
+                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
+                }
+                if (Math.Max(lammy, lammz) >= 1.4)
+                {
+                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
+                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
+                }
+
+                /*
                 if(Util1 > Math.Max(UtilY2, UtilZ2))
                 /// If compression is more critical than bending, treat it as a column
                 {
-                    ///7 EC5 Section 6.3.2 Columns subjected to either compression or combined compression and bending
+                    ///7 "Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered)"
                     if (lamyrel <= 0.3 && lamzrel <= 0.3)
                     {
                         UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
@@ -300,7 +302,7 @@ namespace BeaverCore.Frame
                 }
                 else
                 {
-                    ///8 EC5 Section 6.3.3 Beams subjected to either bending or combined bending and compression
+                    ///8 "Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered)"
                     if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
                     {
                         UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
@@ -319,14 +321,48 @@ namespace BeaverCore.Frame
                     UtilY7 = 0;
                     UtilZ7 = 0;
                 }
-                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8 , Util9 };
-                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8 , Util9 };
+                */
+
+                ///9 "Combined Shear and Torsion - Not specified in EC5"
+                Util9 = Math.Max(UtilY3 + Util4, UtilZ3 + Util4);
+                // Less conservative approach: 
+                // Util9 = Math.Max(Math.Pow(UtilY3,2) + Util4, Math.Pow(UtilZ3,2) + Util4);
+
+                List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8, Util9 };
+                List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8, Util9 };
+
+                List<string> ULSReports = new List<string>()
+                {
+                    //0
+                    "R = " + Util0.ToString() + " | Tension along the grain acc. to EC5 6.1.2",
+                    //1
+                    "R = " + Util1.ToString() + " | Compression along the grain acc. to EC5 6.1.4",
+                    //2
+                    "Ry = " + UtilY2.ToString() + "&" + "Rz = " + UtilZ2.ToString() + " | Bending acc. to EC5 6.1.6",
+                    //3
+                    "Ry = " + UtilY3.ToString() + "&" +  "Rz = " + UtilZ3.ToString() + " | Shear acc. to EC5 6.1.7",
+                    //4
+                    "R = " + Util4.ToString() + " | Torsion acc. to EC5 6.1.8",
+                    //5
+                    "Ry = " + UtilY5.ToString() + "&" + "Rz = " + UtilZ5.ToString() + " | Combined Bending and Axial Tension acc. to EC5 6.2.3",
+                    //6
+                    "Ry = " + UtilY6.ToString() + "&" + "Rz = " + UtilZ6.ToString() + " | Combined Bending and Axial Compression acc. to EC5 6.2.4",
+                    //7
+                    "Ry = " + UtilY7.ToString() + "&" + "Rz = " + UtilZ7.ToString() + " | Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered)",
+                    //8
+                    "Ry = " + UtilY8.ToString() + "&" + "Rz = " + UtilZ8.ToString() + " | Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered)",
+                    //9
+                    "R = " + Util9.ToString() + " | Combined Torsion and Shear - Not speciefied in EC5 (Torsion Utilization Ratio + Maximum Shear Utilization Ratio)",
+                };
+
                 AllUtilsY.Add(UtilsY.ToArray());
                 AllUtilsZ.Add(UtilsZ.ToArray());
+                ULSReport.Add(ULSReports.ToArray());
 
             }
 
-            TimberFrameULSResult Result = new TimberFrameULSResult(Info, AllUtilsY, AllUtilsZ, Sectiondata);
+
+            TimberFrameULSResult Result = new TimberFrameULSResult(ULSReport, AllUtilsY, AllUtilsZ, Sectiondata);
 
             return Result;
 

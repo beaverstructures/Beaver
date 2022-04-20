@@ -55,8 +55,9 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddTextParameter("Info", "Info", "Info", GH_ParamAccess.list);
+            pManager.AddTextParameter("Util", "Util", "Util", GH_ParamAccess.list);
             pManager.AddPointParameter("Points", "Points", "Points", GH_ParamAccess.list);
+            pManager.AddTextParameter("Report", "Report", "Report", GH_ParamAccess.list);
         }
 
         
@@ -95,6 +96,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             }
             DA.SetDataList(0, _text);
             DA.SetDataList(1, _point);
+
         }
 
         public override BoundingBox ClippingBox
