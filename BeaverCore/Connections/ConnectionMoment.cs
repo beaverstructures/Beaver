@@ -50,6 +50,8 @@ namespace BeaverCore.Connections
 
         private void SetProperties()
         {
+            shearplanes = fastener.shearplanes;
+
             double sumx = 0;
             double sumy = 0;
             foreach(FastData fastData in FastenerList)
@@ -96,7 +98,7 @@ namespace BeaverCore.Connections
         {
             /// EC5 SECTION 8.3.8
             double d = fastener.d;
-            if (fastener.d > 6)
+            if (fastener.d > 6 || fastener.type == "Nail")
             {
 
                 double kef = 0;
@@ -126,13 +128,13 @@ namespace BeaverCore.Connections
         {
             foreach (FastData fD in FastenerList)
             {
-                fD.forces["Fx"] = new Vector3D(1,0,0)                                   * (force.N / nef_x);
-                fD.forces["Fz"] = new Vector3D(0,1,0)                                   * (force.Vz / nef_z);
-                fD.forces["Fy"] = new Vector3D(0,0,1)                                   * (force.Vy / nef_y);
+                fD.forces["Fx"] = new Vector3D(1,0,0)                                   * (force.N / nef_x)     / shearplanes;
+                fD.forces["Fz"] = new Vector3D(0,1,0)                                   * (force.Vz / nef_z)    / shearplanes;
+                fD.forces["Fy"] = new Vector3D(0,0,1)                                   * (force.Vy / nef_y)    / shearplanes;
 
-                fD.forces["Fi_My"] = new Vector3D(CR.y - fD.pt.y, -CR.x + fD.pt.x, 0).Unit()* (force.My * CR.Distance(fD.pt) / sumDsq);
-                fD.forces["Fi_Mz"] = new Vector3D(0,0,1)           * (force.Mz * CR.deltaX(fD.pt) / sumXsq);
-                fD.forces["Fi_Mt"] = new Vector3D(0,0,1)           * (force.Mt * CR.deltaY(fD.pt) / sumYsq);
+                fD.forces["Fi_My"] = new Vector3D(CR.y - fD.pt.y, -CR.x + fD.pt.x, 0).Unit()* (force.My * CR.Distance(fD.pt) / sumDsq) / shearplanes;
+                fD.forces["Fi_Mz"] = new Vector3D(0,0,1)           * (force.Mz * CR.deltaX(fD.pt) / sumXsq) / shearplanes;
+                fD.forces["Fi_Mt"] = new Vector3D(0,0,1)           * (force.Mt * CR.deltaY(fD.pt) / sumYsq) / shearplanes;
 
                 fD.forces["Fvd"] = fD.forces["Fx"] + fD.forces["Fz"] + fD.forces["Fi_My"];      /// Vectorial sum
                 fD.forces["Faxd"] = fD.forces["Fy"] + fD.forces["Fi_Mz"] + fD.forces["Fi_Mt"];  /// Vectorial sum

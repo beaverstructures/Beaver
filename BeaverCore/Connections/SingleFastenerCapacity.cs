@@ -214,7 +214,7 @@ namespace BeaverCore.Connections
                         switch (woodType)
                         {
                             // EC5 SECTION 8.5.1 EQ 8.31
-                            case "Sofwood":
+                            case "Softwood":
                                 k90 = 1.35 + 0.015 * fastener.d; break;
                             case "Hardwood":
                                 k90 = 0.9 + 0.015 * fastener.d; break;
@@ -261,7 +261,7 @@ namespace BeaverCore.Connections
                         switch (woodType)
                         {
                             // EC5 SECTION 8.5.1 EQ 8.31
-                            case "Sofwood":
+                            case "Softwood":
                                 k90 = 1.35 + 0.015 * fastener.d; break;
                             case "Hardwood":
                                 k90 = 0.9 + 0.015 * fastener.d; break;
@@ -298,7 +298,7 @@ namespace BeaverCore.Connections
                         switch (woodType)
                         {
                             // EC5 SECTION 8.5.1 EQ 8.31
-                            case "Sofwood":
+                            case "Softwood":
                                 k90 = 1.35 + 0.015 * fastener.d; break;
                             case "Hardwood":
                                 k90 = 0.9 + 0.015 * fastener.d; break;
@@ -337,7 +337,7 @@ namespace BeaverCore.Connections
                             switch (woodType)
                             {
                                 // EC5 SECTION 8.5.1 EQ 8.31
-                                case "Sofwood":
+                                case "Softwood":
                                     k90 = 1.35 + 0.015 * fastener.d; break;
                                 case "Hardwood":
                                     k90 = 0.9 + 0.015 * fastener.d; break;
@@ -389,7 +389,7 @@ namespace BeaverCore.Connections
         }
 
 
-        public static double CalcFaxrk(double pk, Fastener f, double t1, double tpen, double alpha, double t_thread)
+        public static double CalcFaxrk(double pk, Fastener f, double t1, double tpen, double alpha)
         {
             switch (f.type)
             {
@@ -417,7 +417,7 @@ namespace BeaverCore.Connections
 
                     if (SECTION_8_7_2_item4)
                     {
-                        double l_ef2 = tpen <= t_thread ? (tpen - f.d) : (t_thread - f.d);
+                        double l_ef2 = tpen <= f.lth ? (tpen - f.d) : (f.lth - f.d);
                         double f_ax_k = 0.52 * Math.Pow(f.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);      // EQ 8.39
                         double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2)); // EQ 8.40
                         double F_1_ax_alpha_k = nef * f.d * l_ef2 * f_ax_alpha_k * Math.Min(f.d / 8, 1);        // EQ 8.38
@@ -425,14 +425,14 @@ namespace BeaverCore.Connections
                     }
                     else
                     {
-                        double l_ef2 = tpen <= t_thread ? (tpen - f.d) : (t_thread - f.d);
+                        double l_ef2 = tpen <= f.lth ? (tpen - f.d) : (f.lth - f.d);
                         double f_ax_k = 0.52 * Math.Pow(f.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);      // EQ 8.39
                         double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2)); // EQ 8.40
                         double F_1_ax_alpha_k = nef * f.d * l_ef2 * f_ax_alpha_k * Math.Pow(pk / 385, 0.8);               // EQ 8.40a // 385= rho a
                         return F_1_ax_alpha_k;
                     }
                 case "Bolt":
-                    double fc90k = t_thread;
+                    double fc90k = f.lth;
                     double aread = Math.Pow(f.d, 2) * Math.PI / 4;
                     double areadw = Math.Pow(f.dh, 2) * Math.PI / 4;
                     return Math.Min(3 * fc90k * (areadw - aread), f.fuk * aread);

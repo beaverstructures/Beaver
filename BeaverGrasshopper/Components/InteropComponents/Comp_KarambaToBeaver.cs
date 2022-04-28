@@ -48,6 +48,7 @@ namespace BeaverGrasshopper
             pManager.AddIntegerParameter("Number of results per beam element", "NRes", "Element nodal subdivision", GH_ParamAccess.item,2);
             pManager.AddTextParameter("LoadCase Type", "LCType", "Load Case Type", GH_ParamAccess.list);
             pManager.AddBooleanParameter("Run", "Run", "Boolean for running the algorithm", GH_ParamAccess.item,false);
+            pManager[2].Optional = true;
         }
 
         /// <summary>

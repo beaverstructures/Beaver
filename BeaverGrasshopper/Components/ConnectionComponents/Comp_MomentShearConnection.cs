@@ -49,6 +49,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             pManager.AddNumberParameter("value", "value", "value", GH_ParamAccess.list);
             pManager.AddNumberParameter("utilization", "utilization", "utilization", GH_ParamAccess.list);
             pManager.AddMeshParameter("Mesh", "Mesh", "Colored mesh with fastener utilizations", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Translational Stiffness", "kδ", "", GH_ParamAccess.item);
+            pManager.AddNumberParameter("Rotational Stiffness", "kθ", "", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -146,7 +148,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.SetDataList(2, out_values);
             DA.SetDataList(3, out_utilizations);
             DA.SetDataList(4, out_meshes);
-
+            DA.SetData(5, connectionMoment.translationalStiffness);
+            DA.SetData(6, connectionMoment.rotationalStiffness);
         }
 
         /// <summary>

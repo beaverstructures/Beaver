@@ -76,7 +76,7 @@ namespace BeaverGrasshopper.Components.PropertiesComponents
                 double E90_05 = Double.Parse(values[12]) * 1e6;
                 double Gmean = Double.Parse(values[13]) * 1e6;
                 double G05 = Double.Parse(values[14]) * 1e6;
-                double pk = Double.Parse(values[15]) *9.81; // kgf/m³ to N/m³  
+                double pk = Double.Parse(values[15]) ; // kgf/m³  
                 double pmean = Double.Parse(values[16]) * 9.81;
                 double Ym = Double.Parse(values[17]);
                 Material mat = new Material(

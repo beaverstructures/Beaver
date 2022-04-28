@@ -53,6 +53,7 @@ namespace BeaverCore.Connections
         public double Ym;
         public double kser;
         public double kdef;
+        public double shearplanes;
 
         public Fastener() { }
 
@@ -67,6 +68,7 @@ namespace BeaverCore.Connections
             this.faxk = faxk;
             this.fheadk = fheadk;
             this.Ymsteel = Ymsteel;
+            this.lth = lth;
 
             switch (fastenerType)
             {

@@ -120,7 +120,7 @@ namespace BeaverGrasshopper
                 Gmean * 1e6, 
                 G05 * 1e6, 
                 Ym);
-            mat.pk = 365 *9.81 /1000;
+            mat.pk = 365;
 
             DA.SetData(0, new GH_Material(mat));
         }

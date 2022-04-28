@@ -38,6 +38,7 @@ namespace BeaverGrasshopper
             pManager.AddNumberParameter("Fastener Length", "L", "Fastener length [mm]", GH_ParamAccess.item, 50);
             pManager.AddBooleanParameter("Smooth Boolean", "Smooth", "True for smooth nails, false for other", GH_ParamAccess.item, false); //nails
             pManager.AddNumberParameter("Fastener Fuk", "Fuk", "Fastener steel characteristic tensile ultimate strength [MPa]", GH_ParamAccess.item, 400);
+            pManager.AddNumberParameter("Fastener threaded length", "Lth", "Fastener threaded length for screws [mm]", GH_ParamAccess.item, 50);
         }
 
         /// <summary>
@@ -63,6 +64,7 @@ namespace BeaverGrasshopper
             double L = 0;
             bool Smooth = true;
             double Fuk = 0;
+            double lth = 0;
 
             DA.GetData(0, ref Ftype);
             DA.GetData(1, ref D);
@@ -71,8 +73,9 @@ namespace BeaverGrasshopper
             DA.GetData(4, ref L);
             DA.GetData(5, ref Smooth);
             DA.GetData(6, ref Fuk);
+            DA.GetData(7, ref lth);
 
-            Fastener fastener = new Fastener(Ftype, D, Ds, Dh, L, Fuk, Smooth);
+            Fastener fastener = new Fastener(Ftype, D, Ds, Dh, L, Fuk, Smooth, lth: lth);
             DA.SetData(0, new GH_Fastener(fastener));
         }
 
