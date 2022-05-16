@@ -92,6 +92,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                         default: throw new ArgumentException("type not found.");
                     }
                     _point.Add(new Point3d(tfPoint.pt.x, tfPoint.pt.y, tfPoint.pt.z));
+
                 }
             }
             DA.SetDataList(0, _text);
@@ -110,6 +111,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         #region text tags
         private List<string> _text = new List<string>();
         private List<Point3d> _point = new List<Point3d>();
+
         public override void DrawViewportWires(IGH_PreviewArgs args)
         {
             if (_text.Count == 0)
