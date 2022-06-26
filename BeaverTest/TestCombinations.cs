@@ -4,6 +4,7 @@ using BeaverCore.Actions;
 using BeaverCore.Frame;
 using BeaverCore.CrossSection;
 using BeaverCore.Materials;
+using BeaverCore.Geometry;
 using System.Linq;
 
 namespace BeaverTest
@@ -35,8 +36,9 @@ namespace BeaverTest
             List<Force> forces = new List<Force>() { force1, force2, force3, force4, force5 };
             
             Material mat = new Material("ita", "Glulam", 5.5, 5, 0, 4.5, 0.2, 0.65, 1550, 1250, 106, 80,1.25,1.25,1.25);
+            Point3D pt = new Point3D();
             CroSec crosec = new CroSec_Rect(15, 15,mat);
-            TimberFramePoint timber = new TimberFramePoint(forces, disps, crosec, 2, 228.5, 228.5, 228.5, 0.9,false);
+            TimberFramePoint timber = new TimberFramePoint(pt, forces, disps, crosec, 2, 228.5, 228.5, 228.5, 0.9,false);
             List<string> combinations = new List<string>();
             foreach (Action a in timber.ULSComb.DesignForces)
             {

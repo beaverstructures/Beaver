@@ -43,6 +43,10 @@ namespace BeaverGrasshopper.Components.InteropComponents
             pManager.AddIntegerParameter("Service Class", "SC", "Service Class from 1 to 3 regarding the timber element. By default is set to 2", GH_ParamAccess.list,2);
             pManager.AddNumberParameter("Precamber", "Pcamber", "Precamber of beam elements in meters. Default is set to 0", GH_ParamAccess.list, 0);
             pManager.AddBooleanParameter("Local", "Local", "Boolean parameter describing whether the beam should be calculated using global or local SLS analysis. By default is set to False", GH_ParamAccess.list, false);
+            pManager[1].Optional = true;
+            pManager[2].Optional = true;
+            pManager[3].Optional = true;
+            pManager[4].Optional = true;
         }
 
         /// <summary>
@@ -82,13 +86,17 @@ namespace BeaverGrasshopper.Components.InteropComponents
             DA.GetDataList(8, local);
 
             List<Polyline> polylines = new List<Polyline>();
-            foreach (Curve curve in spans)
+            if (spans.Count > 0)
             {
-                Polyline pl;
-                if (curve.TryGetPolyline(out pl))
-                    polylines.Add(pl);
-                else throw new ArgumentException("Curve is not a polyline");
+                foreach (Curve curve in spans)
+                {
+                    Polyline pl;
+                    if (curve.TryGetPolyline(out pl))
+                        polylines.Add(pl);
+                    else throw new ArgumentException("Curve is not a polyline");
+                }
             }
+            
 
             // generates list of values if only one value is provided.
             cantilevers = (cantilevers.Count > 1) ? 
