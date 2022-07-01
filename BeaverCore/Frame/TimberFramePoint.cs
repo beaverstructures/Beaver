@@ -198,8 +198,28 @@ namespace BeaverCore.Frame
             double UtilZ8 = 0;
             double Util9;
 
+            string Rep0;
+            string Rep1;
+            string RepY2;
+            string RepZ2;
+            string RepY3;
+            string RepZ3;
+            string Rep4;
+            string RepY5;
+            string RepZ5;
+            string RepY6;
+            string RepZ6;
+            string RepY7;
+            string RepZ7;
+            string RepY8;
+            string RepZ8;
+            string Rep9;
+
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
+            List<string[]> AllRepsY = new List<string[]>();
+            List<string[]> AllRepsZ = new List<string[]>();
+
             List<string[]> AllULSReports = new List<string[]>();
 
             foreach (Force f in ULSComb.DesignForces)
@@ -336,6 +356,8 @@ namespace BeaverCore.Frame
 
                 List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8, Util9 };
                 List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8, Util9 };
+                List<string> RepsY = new List<string>() { Rep0, Rep1, RepY2, RepY3, Rep4, RepY5, RepY6, RepY7, RepY8, Rep9 };
+                List<string> RepsZ = new List<string>() { Rep0, Rep1, RepZ2, RepZ3, Rep4, RepZ5, RepZ6, RepZ7, RepZ8, Rep9 };
 
                 List<string> ULSReports = new List<string>()
                 {
@@ -390,6 +412,9 @@ namespace BeaverCore.Frame
 
                 AllUtilsY.Add(UtilsY.ToArray());
                 AllUtilsZ.Add(UtilsZ.ToArray());
+                AllRepsY.Add(RepsY.ToArray());
+                AllRepsZ.Add(RepsZ.ToArray());
+
                 AllULSReports.Add(ULSReports.ToArray());
 
             }
