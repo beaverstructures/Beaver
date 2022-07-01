@@ -157,7 +157,8 @@ namespace BeaverCore.Frame
             if (CS is CroSec_Rect) { kshape = Math.Min(1 + 0.15 * (cs.h / cs.b), 2); };
             if (CS is CroSec_Circ) { kshape = 1.2; };
 
-            ///Define EC5 Section 6.2.3 & 6.3.2 Coefficients
+            ///Define EC5 Section 6.2.3 (bending and tension) & 6.3.3 (lateral torsional buckling) Coefficients
+            /// trocar pra blkLT
             double lefy = ly * kflam;
             double lefz = lz * kflam;
             double sigMcrity = CS.GetsigMcrit(lefy, E05, G05);
@@ -168,6 +169,7 @@ namespace BeaverCore.Frame
             double kcritz = Getkcrit(lammz);
 
             ///Define EC5 Section 6.3.2 Coefficients
+            ///bckl ly e lz
             double lamy = ly / ry;
             double lamz = lz / rz;
             double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
@@ -204,7 +206,7 @@ namespace BeaverCore.Frame
             double UtilY8 = 0;
             double UtilZ8 = 0;
             double Util9;
-
+            /*
             string Rep0;
             string Rep1;
             string RepY2;
@@ -221,6 +223,7 @@ namespace BeaverCore.Frame
             string RepY8;
             string RepZ8;
             string Rep9;
+            */
 
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
@@ -304,16 +307,14 @@ namespace BeaverCore.Frame
                 }
 
                 ///8 "Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered)"
-                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
-                {
-                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
-                }
-                if (Math.Max(lammy, lammz) >= 1.4)
+                //conditions were defined by Getkcrit
+                if (sigN > 0) UtilY8 = UtilZ8 = 0;
+                else
                 {
                     UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
                     UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
                 }
+
 
                 /*
                 if(Util1 > Math.Max(UtilY2, UtilZ2))
@@ -363,8 +364,8 @@ namespace BeaverCore.Frame
 
                 List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8, Util9 };
                 List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8, Util9 };
-                List<string> RepsY = new List<string>() { Rep0, Rep1, RepY2, RepY3, Rep4, RepY5, RepY6, RepY7, RepY8, Rep9 };
-                List<string> RepsZ = new List<string>() { Rep0, Rep1, RepZ2, RepZ3, Rep4, RepZ5, RepZ6, RepZ7, RepZ8, Rep9 };
+                //List<string> RepsY = new List<string>() { Rep0, Rep1, RepY2, RepY3, Rep4, RepY5, RepY6, RepY7, RepY8, Rep9 };
+                //List<string> RepsZ = new List<string>() { Rep0, Rep1, RepZ2, RepZ3, Rep4, RepZ5, RepZ6, RepZ7, RepZ8, Rep9 };
 
                 List<string> ULSReports = new List<string>()
                 {
@@ -419,8 +420,8 @@ namespace BeaverCore.Frame
 
                 AllUtilsY.Add(UtilsY.ToArray());
                 AllUtilsZ.Add(UtilsZ.ToArray());
-                AllRepsY.Add(RepsY.ToArray());
-                AllRepsZ.Add(RepsZ.ToArray());
+                //AllRepsY.Add(RepsY.ToArray());
+                //AllRepsZ.Add(RepsZ.ToArray());
 
                 AllULSReports.Add(ULSReports.ToArray());
 
