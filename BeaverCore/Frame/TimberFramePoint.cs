@@ -48,7 +48,14 @@ namespace BeaverCore.Frame
 
         public TimberFramePoint() { }
 
-        public TimberFramePoint(Point3D pt, List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, bool cantilever = false, double precamber = 0, bool local = false, List<Displacement> _localRefDisps = null)
+        public TimberFramePoint(
+            Point3D pt,
+            List<Force> forces, 
+            List<Displacement> disp, 
+            CroSec cs, int sc, double ly, double lz, 
+            double lspan, double kflam, bool cantilever = false, 
+            double precamber = 0, bool local = false, 
+            List<Displacement> _localRefDisps = null)
         {
             this.pt = pt;
             Forces = forces;

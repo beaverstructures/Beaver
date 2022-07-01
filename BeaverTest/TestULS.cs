@@ -5,6 +5,7 @@ using BeaverCore.Frame;
 using BeaverCore.Actions;
 using BeaverCore.CrossSection;
 using BeaverCore.Materials;
+using BeaverCore.Geometry;
 
 namespace BeaverTest
 {
@@ -34,8 +35,8 @@ namespace BeaverTest
                 0.5, 21.5, 2.5, 3.5, 11000,
                 9100, 300, 650, 540,365,0); // kN/cm^2, EN 338:2016
             CroSec crosec = new CroSec_Rect(15, 15,mat);
-
-            TimberFramePoint element = new TimberFramePoint(forces, disps, crosec, 1, 205, 205, 205, 0.7);
+            Point3D point = new Point3D();
+            TimberFramePoint element = new TimberFramePoint(point,forces, disps, crosec, 1, 205, 205, 205, 0.7);
             TimberFrameULSResult result = element.ULSUtilization();
 
             // 
