@@ -48,7 +48,14 @@ namespace BeaverCore.Frame
 
         public TimberFramePoint() { }
 
-        public TimberFramePoint(Point3D pt, List<Force> forces, List<Displacement> disp, CroSec cs, int sc, double ly, double lz, double lspan, double kflam, bool cantilever = false, double precamber = 0, bool local = false, List<Displacement> _localRefDisps = null)
+        public TimberFramePoint(
+            Point3D pt,
+            List<Force> forces, 
+            List<Displacement> disp, 
+            CroSec cs, int sc, double ly, double lz, 
+            double lspan, double kflam, bool cantilever = false, 
+            double precamber = 0, bool local = false, 
+            List<Displacement> _localRefDisps = null)
         {
             this.pt = pt;
             Forces = forces;
@@ -150,7 +157,8 @@ namespace BeaverCore.Frame
             if (CS is CroSec_Rect) { kshape = Math.Min(1 + 0.15 * (cs.h / cs.b), 2); };
             if (CS is CroSec_Circ) { kshape = 1.2; };
 
-            ///Define EC5 Section 6.2.3 & 6.3.2 Coefficients
+            ///Define EC5 Section 6.2.3 (bending and tension) & 6.3.3 (lateral torsional buckling) Coefficients
+            /// trocar pra blkLT
             double lefy = ly * kflam;
             double lefz = lz * kflam;
             double sigMcrity = CS.GetsigMcrit(lefy, E05, G05);
@@ -161,8 +169,9 @@ namespace BeaverCore.Frame
             double kcritz = Getkcrit(lammz);
 
             ///Define EC5 Section 6.3.2 Coefficients
-            double lamy = (ly) / ry;
-            double lamz = (lz) / rz;
+            ///bckl ly e lz
+            double lamy = ly / ry;
+            double lamz = lz / rz;
             double lampi = Math.Sqrt(fc0k / E05) / Math.PI;
             double lamyrel = lamy * lampi;
             double lamzrel = lamz * lampi;
@@ -171,12 +180,14 @@ namespace BeaverCore.Frame
             double kyc = 1 / (ky + Math.Sqrt(Math.Pow(ky, 2) - Math.Pow(lamyrel, 2)));
             double kzc = 1 / (kz + Math.Sqrt(Math.Pow(kz, 2) - Math.Pow(lamzrel, 2)));
 
+            /*
             ///Define Basic Coefficients Output
             string Sectiondata = string.Format(
                 "kflam = {0}, kcrit ={1}, kshape = {2}, λy ={3}, λz ={4},λrely ={5}, λrelz ={6}, ky ={7}, kz ={8}, kcy={9}, kcz={10}, σMcrity= {11}, σMcritz= {12}, λmy ={13}, λmz ={14}",
                     Math.Round(kflam, 3), Math.Round(kcrit, 3), Math.Round(kcrit, 3), Math.Round(lamy, 3), Math.Round(lamz, 3), Math.Round(lamyrel, 3), Math.Round(lamzrel, 3), Math.Round(ky, 3), Math.Round(kz, 3),
                     Math.Round(kyc, 3), Math.Round(kzc, 3), Math.Round(sigMcrity, 3), Math.Round(sigMcritz, 3), Math.Round(lammy, 3), Math.Round(lammz, 3));
             parameters = Sectiondata;
+            */
 
             ///Define Utilization
             double Util0;
@@ -195,10 +206,31 @@ namespace BeaverCore.Frame
             double UtilY8 = 0;
             double UtilZ8 = 0;
             double Util9;
+            /*
+            string Rep0;
+            string Rep1;
+            string RepY2;
+            string RepZ2;
+            string RepY3;
+            string RepZ3;
+            string Rep4;
+            string RepY5;
+            string RepZ5;
+            string RepY6;
+            string RepZ6;
+            string RepY7;
+            string RepZ7;
+            string RepY8;
+            string RepZ8;
+            string Rep9;
+            */
 
             List<double[]> AllUtilsY = new List<double[]>();
             List<double[]> AllUtilsZ = new List<double[]>();
-            List<string[]> ULSReport = new List<string[]>();
+            List<string[]> AllRepsY = new List<string[]>();
+            List<string[]> AllRepsZ = new List<string[]>();
+
+            List<string[]> AllULSReports = new List<string[]>();
 
             foreach (Force f in ULSComb.DesignForces)
             {
@@ -259,28 +291,30 @@ namespace BeaverCore.Frame
                 }
 
                 ///7 "Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered)"
-                if (lamyrel <= 0.3 && lamzrel <= 0.3)
-                {
-                    UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ7 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
-                }
+                if (sigN > 0) UtilY7 = UtilZ7 = 0;
                 else
                 {
-                    UtilY7 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ7 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    if (lamyrel <= 0.3 && lamzrel <= 0.3)
+                    {
+                        UtilY7 = Math.Pow(sigN / fc0d, 2) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                        UtilZ7 = Math.Pow(sigN / fc0d, 2) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    }
+                    else
+                    {
+                        UtilY7 = Math.Abs(sigN / (kyc * fc0d)) + Math.Abs(sigMy / fmd) + Km * Math.Abs(sigMz / fmd);
+                        UtilZ7 = Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMy / fmd) + Math.Abs(sigMz / fmd);
+                    }
                 }
 
                 ///8 "Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered)"
-                if (Math.Max(lammy, lammz) >= 0.75 && Math.Max(lammy, lammz) < 1.4)
-                {
-                    UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
-                    UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd); ;
-                }
-                if (Math.Max(lammy, lammz) >= 1.4)
+                //conditions were defined by Getkcrit
+                if (sigN > 0) UtilY8 = UtilZ8 = 0;
+                else
                 {
                     UtilY8 = Math.Pow(sigMy / (kcrity * fmd), 2) + Math.Abs(sigN / (kzc * fc0d)) + Km * Math.Abs(sigMz / fmd);
                     UtilZ8 = Math.Pow(sigMz / (kcritz * fmd), 2) + Math.Abs(sigN / (kyc * fc0d)) + Km * Math.Abs(sigMy / fmd);
                 }
+
 
                 /*
                 if(Util1 > Math.Max(UtilY2, UtilZ2))
@@ -330,39 +364,71 @@ namespace BeaverCore.Frame
 
                 List<double> UtilsY = new List<double>() { Util0, Util1, UtilY2, UtilY3, Util4, UtilY5, UtilY6, UtilY7, UtilY8, Util9 };
                 List<double> UtilsZ = new List<double>() { Util0, Util1, UtilZ2, UtilZ3, Util4, UtilZ5, UtilZ6, UtilZ7, UtilZ8, Util9 };
+                //List<string> RepsY = new List<string>() { Rep0, Rep1, RepY2, RepY3, Rep4, RepY5, RepY6, RepY7, RepY8, Rep9 };
+                //List<string> RepsZ = new List<string>() { Rep0, Rep1, RepZ2, RepZ3, Rep4, RepZ5, RepZ6, RepZ7, RepZ8, Rep9 };
 
                 List<string> ULSReports = new List<string>()
                 {
                     //0
-                    "R = " + Util0.ToString() + " | Tension along the grain acc. to EC5 6.1.2",
+                    "Tension along the grain acc. to EC5 6.1.2 | " +
+                    "N = " + f.N.ToString() + "; sigN = " + sigN.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; ft0d = " + ft0d.ToString() +"; R0 = " + Util0.ToString(),
                     //1
-                    "R = " + Util1.ToString() + " | Compression along the grain acc. to EC5 6.1.4",
+                    "Compression along the grain acc. to EC5 6.1.4 | " +
+                    "N = " + f.N.ToString() + "; sigN = " + sigN.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() + "; R1 = " + Util1.ToString(),
                     //2
-                    "Ry = " + UtilY2.ToString() + "&" + "Rz = " + UtilZ2.ToString() + " | Bending acc. to EC5 6.1.6",
+                    "Bending acc. to EC5 6.1.6 | " + 
+                    "Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; fmk = " + fmk.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigMy = " + sigMy.ToString() + 
+                    "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fmd = " + fmd.ToString() + "; Km = " + Km.ToString() + "; R2y = " + UtilY2.ToString() + "&" + "R2z = " + UtilZ2.ToString(),
                     //3
-                    "Ry = " + UtilY3.ToString() + "&" +  "Rz = " + UtilZ3.ToString() + " | Shear acc. to EC5 6.1.7",
+                     "Shear acc. to EC5 6.1.7 | " +
+                     "kcrit = " + kcrit.ToString() + "; Vy = " + Vy.ToString() + "; Vz = " + Vz.ToString() + "; A = " + CS.A.ToString() + "; sigVy = " + Sigvy.ToString() + "; sigVz = " + Sigvz.ToString() + 
+                     "; R3y = " + UtilY3.ToString() + "&" +  "R3z = " + UtilZ3.ToString(),
                     //4
-                    "R = " + Util4.ToString() + " | Torsion acc. to EC5 6.1.8",
+                    "Torsion acc. to EC5 6.1.8 | " +
+                    "; It = " + CS.It.ToString() + "; Kshape = " + kshape.ToString() + "; Mt = " + Mt.ToString() + "; SigMt = " + SigMt.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() +
+                    "; fvd = " + fvd.ToString() + "; R4 = " + Util4.ToString(),
                     //5
-                    "Ry = " + UtilY5.ToString() + "&" + "Rz = " + UtilZ5.ToString() + " | Combined Bending and Axial Tension acc. to EC5 6.2.3",
+                    "Combined Bending and Axial Tension acc. to EC5 6.2.3 | " +
+                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
+                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; ft0d = " + ft0d.ToString() + "; fmd = " + fmd.ToString() +  
+                    "; Km = " + Km.ToString() + "; R5y = " + UtilY5.ToString() + "&" + "R5z = " + UtilZ5.ToString(),
                     //6
-                    "Ry = " + UtilY6.ToString() + "&" + "Rz = " + UtilZ6.ToString() + " | Combined Bending and Axial Compression acc. to EC5 6.2.4",
+                    "Combined Bending and Axial Compression acc. to EC5 6.2.4 | " +
+                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
+                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() + "; fmd = " + fmd.ToString() +
+                    "; Km = " + Km.ToString() + "; R6y = " + UtilY6.ToString() + "&" + "R6z = " + UtilZ6.ToString(),
                     //7
-                    "Ry = " + UtilY7.ToString() + "&" + "Rz = " + UtilZ7.ToString() + " | Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered)",
+                    "Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered) | " +
+                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
+                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; ly = " + ly.ToString() + "; lz = " + lz.ToString() + "; ry = " + ry.ToString() + "; rz = " + rz.ToString() +
+                    "; lampi = " + lampi.ToString() + "; lamy = " + lamy.ToString() + "; lamz = " + lamz.ToString() + "; lamyrel = " + lamyrel.ToString() + "; lamzrel = " + lamzrel.ToString() + "; ky = " + ky.ToString() +
+                    "; kz = " + kz.ToString() + "; kyc = " + kyc.ToString() + "; kzc = " + kzc.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() +
+                    "; fmd = " + fmd.ToString() +  "; Km = " + Km.ToString() + "; R7y = " + UtilY7.ToString() + "&" + "R7z = " + UtilZ7.ToString(),
                     //8
-                    "Ry = " + UtilY8.ToString() + "&" + "Rz = " + UtilZ8.ToString() + " | Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered)",
+                    "Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered) | " +
+                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
+                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; ly = " + ly.ToString() + "; lz = " + lz.ToString() + "; ry = " + ry.ToString() + "; rz = " + rz.ToString() +
+                    "; lampi = " + lampi.ToString() + "; lamy = " + lamy.ToString() + "; lamz = " + lamz.ToString() + "; lamyrel = " + lamyrel.ToString() + "; lamzrel = " + lamzrel.ToString() + "; ky = " + ky.ToString() +
+                    "; kz = " + kz.ToString() + "; kyc = " + kyc.ToString() + "; kzc = " + kzc.ToString() + "; kflam = " + kflam.ToString() + "; lefy = " + lefy.ToString() + "; lefz = " + lefz.ToString() +  
+                    "; sigMcrity = " + sigMcrity.ToString() + "; sigMcritz = " + sigMcritz.ToString() + "; lammy = " + lammy.ToString() + "; lammz = " + lammz.ToString() + "; kcrity = " + kcrity.ToString() + 
+                    "; kcritz = " + kcritz.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() + "; fmd = " + fmd.ToString() +  "; Km = " + Km.ToString() +
+                    "R8y = " + UtilY8.ToString() + "&" + "R8z = " + UtilZ8.ToString(),
                     //9
-                    "R = " + Util9.ToString() + " | Combined Torsion and Shear - Not speciefied in EC5 (Torsion Utilization Ratio + Maximum Shear Utilization Ratio)",
+                    "Combined Torsion and Shear - Not speciefied in EC5 (Maximum Shear Utilization Ratio + Torsion Utilization Ratio) | " +
+                    "R9 = R3max + R4 = " + Util9.ToString(),
                 };
 
                 AllUtilsY.Add(UtilsY.ToArray());
                 AllUtilsZ.Add(UtilsZ.ToArray());
-                ULSReport.Add(ULSReports.ToArray());
+                //AllRepsY.Add(RepsY.ToArray());
+                //AllRepsZ.Add(RepsZ.ToArray());
+
+                AllULSReports.Add(ULSReports.ToArray());
 
             }
 
 
-            TimberFrameULSResult Result = new TimberFrameULSResult(ULSReport, AllUtilsY, AllUtilsZ, Sectiondata);
+            TimberFrameULSResult Result = new TimberFrameULSResult(AllULSReports, AllUtilsY, AllUtilsZ);
 
             return Result;
 

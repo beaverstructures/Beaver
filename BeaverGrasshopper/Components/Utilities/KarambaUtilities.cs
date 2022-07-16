@@ -58,8 +58,8 @@ namespace BeaverGrasshopper.Components.Utilities
                     fmk = (double)k3dMaterial.UserData["fmk"] * 1e3, // kN/m² to Pa
                     ft0k = k3dMaterial.ft(0) * 1e3,
                     ft90k = k3dMaterial.ft(1) * 1e3,
-                    fc0k = k3dMaterial.fc(0) * 1e3,
-                    fc90k = k3dMaterial.fc(1) * 1e3,
+                    fc0k = Math.Abs(k3dMaterial.fc(0) * 1e3),
+                    fc90k = Math.Abs(k3dMaterial.fc(1) * 1e3),
 
                     fvk = (double)k3dMaterial.UserData["fvk"] * 1e3,
                     frk = (double)k3dMaterial.UserData["frk"] * 1e3,

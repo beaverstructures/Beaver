@@ -176,6 +176,7 @@ namespace BeaverGrasshopper
                         model,
                         lc_types);
 
+                    //kflam of 1 was considered becaus user must enter effective buckling lengths already
                     for (int j = 0; j < sub_div + 1; j++)
                     {
                         TimberFramePoint TFPoint = new TimberFramePoint(
@@ -186,7 +187,7 @@ namespace BeaverGrasshopper
                             (int)beam.UserData["ServiceClass"],
                             modelBeam.buckling_length(BucklingDir.bklY),
                             modelBeam.buckling_length(BucklingDir.bklZ),
-                            spanLength, 0.9,
+                            spanLength, 1,
                             (bool)beam.UserData["Cantilever"],
                             local: (bool)beam.UserData["Local"],
                             _localRefDisps: spanLine.midDisp);
