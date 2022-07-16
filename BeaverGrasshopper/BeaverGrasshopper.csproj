@@ -121,6 +121,8 @@
     <Compile Include="Components\ConnectionComponents\Comp_MomentShearConnection.cs" />
     <Compile Include="Components\ResultsComponents\Comp_FastenerForces.cs" />
     <Compile Include="Components\ResultsComponents\Comp_FastenerUtilizations.cs" />
+    <Compile Include="Components\Utilities\LicenceUtilities.cs" />
+    <Compile Include="Components\Utilities\Comp_GetBeaverLicense.cs" />
     <Compile Include="Components\Utilities\RhinoUtilities.cs" />
     <Compile Include="Components\Utilities\ConnectionUtilities.cs" />
     <Compile Include="Components\ConnectionComponents\Comp_ConnectionResults.cs" />
