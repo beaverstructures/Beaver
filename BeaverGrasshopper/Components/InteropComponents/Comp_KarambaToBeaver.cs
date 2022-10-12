@@ -121,11 +121,15 @@ namespace BeaverGrasshopper
 
                 }
                 timber_frames = KarambaUtilities.CreateList<GH_TimberFrame>(beams.Count);
+                
+                //for(int i = 0; i < beams.Count; i++) // DEBUGGING
+                
                 Parallel.For(0, beams.Count, new ParallelOptions
                 {
-                    // multiply the count because a processor has 2 cores
+                    //multiply the count because a processor has 2 cores
                     MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling((Environment.ProcessorCount * 0.75) * 2.0))
                 }, i =>
+                
                 {
                     Dictionary<double, TimberFramePoint> TFPoints = new Dictionary<double, TimberFramePoint>();
                     ModelBeam modelBeam = beams[i] as ModelBeam;
@@ -145,6 +149,7 @@ namespace BeaverGrasshopper
                                               "Beam does not contain span length data. Element length will be used");
                         else if (!(beam.UserData["SpanLength"] is double)) throw new Exception("SpanLength values must be double");
                     }
+
                     int serviceClass = 2;
                     try
                     {

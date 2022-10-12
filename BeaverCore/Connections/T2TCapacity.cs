@@ -75,7 +75,6 @@ namespace BeaverCore.Connections
             predrillingNeeded = checkPreDrilling();
             if (predrillingNeeded || preDrilled1) { }
             if (predrillingNeeded || preDrilled2) { }
-
         }
 
         public override Dictionary<string, double> FvkSingleShear()
@@ -206,7 +205,7 @@ namespace BeaverCore.Connections
                     break;
                 case "Screw":
                     // EC5, SECTION 8.7.2 AXIALLY LOADED SCREWS
-                    if(f.d>6 & f.d < 12)
+                    if (f.d >= 6 && f.d <= 12)
                     {
                         axial_capacities.Add("Faxrd, EC5 Eq. 8.38", Faxrk / 1000);
                         axial_capacities.Add("Faxrd, EC5 Eq. 8.40b", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
@@ -214,7 +213,11 @@ namespace BeaverCore.Connections
                     }
                     else
                     {
-                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40a", Faxrk*Math.Pow(f.rhok/f.rhoa,0.8) /1000);
+                        axial_capacities.Add("Faxrd, EC5 Eq. 8.40a", 
+                            Faxrk*Math.Pow(
+                                Math.Min(mat1.pk,mat2.pk) / 
+                                f.rhoa,0.8
+                                ) /1000);
                         axial_capacities.Add("Faxrd, EC5 Eq. 8.40b", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
                         axial_capacities.Add("Faxrd, EC5 Eq. 8.40c", 99999); //***!Missing! Implement on MultiAxialCapacity.cs
                     }

@@ -4,6 +4,7 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Parameters;
 using Grasshopper.Kernel.Special;
 using Rhino.Geometry;
+using Rhino.PlugIns;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -82,103 +83,105 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             base.AddedToDocument(document);
         }
 
-
-        /// <summary>
-        /// This is the method that actually does the work.
-        /// </summary>
-        /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-
-            List<Color> colors = new List<Color>() {
+            if (PlugIn.GetPlugInInfo(new Guid("0c4aa986-29fd-4e69-860e-138e87613538")).IsLoaded)
+            {
+                List<Color> colors = new List<Color>() {
                 Color.Black,
-                Color.FromArgb(165, 0, 38), 
+                Color.FromArgb(165, 0, 38),
                 Color.FromArgb(215,48,39),
-                Color.FromArgb(244,109,67), 
+                Color.FromArgb(244,109,67),
                 Color.FromArgb(253,174,97),
-                Color.FromArgb(254,224,144), 
+                Color.FromArgb(254,224,144),
                 Color.FromArgb(255,255,191),
-                Color.FromArgb(224,243,248), 
+                Color.FromArgb(224,243,248),
                 Color.FromArgb(171,217,233),
-                Color.FromArgb(116,173,209), 
+                Color.FromArgb(116,173,209),
                 Color.FromArgb(69,117,180),
                 Color.FromArgb(49,54,149) };
-            colors.Reverse();
-            List<String> legend = new List<String>() {
+                colors.Reverse();
+                List<String> legend = new List<String>() {
                 "0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%",">100%"
             };
 
-            meshes.Clear();
-            List<GH_TimberFrame> gh_timber_frames = new List<GH_TimberFrame>();
-            string type = "";
-            string sls_type_string = "";
-            string uls_dir_string = "";
-            string loadcase_string = "";
-            int loadcase_index = -1;
+                meshes.Clear();
+                List<GH_TimberFrame> gh_timber_frames = new List<GH_TimberFrame>();
+                string type = "";
+                string sls_type_string = "";
+                string uls_dir_string = "";
+                string loadcase_string = "";
+                int loadcase_index = -1;
 
-            DA.GetDataList(0, gh_timber_frames);
-            DA.GetData(1, ref type);
+                DA.GetDataList(0, gh_timber_frames);
+                DA.GetData(1, ref type);
 
-            uls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].ULSComb;
-            sls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].SLSComb;
-            
-            UtilizationType new_util_type = (UtilizationType)Enum.Parse(typeof(UtilizationType), type, true);
-            if (Update_util(util_type, new_util_type))
-            {
-                update_field_2 = true;
-                update_field_3 = true;
-                util_type = new_util_type;
-                return;
+                uls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].ULSComb;
+                sls_comb = gh_timber_frames[0].Value.TimberPointsMap[0].SLSComb;
+
+                UtilizationType new_util_type = (UtilizationType)Enum.Parse(typeof(UtilizationType), type, true);
+                if (Update_util(util_type, new_util_type))
+                {
+                    update_field_2 = true;
+                    update_field_3 = true;
+                    util_type = new_util_type;
+                    return;
+                }
+                else
+                {
+                    util_type = new_util_type;
+                    if (Params.Input.Count == 4)
+                    {
+                        if (util_type == UtilizationType.SLS)
+                        {
+                            DA.GetData(2, ref sls_type_string);
+                            SLSOptions new_sls_options = (SLSOptions)Enum.Parse(typeof(SLSOptions), sls_type_string, true);
+                            if (new_sls_options != sls_options) { sls_options = new_sls_options; update_field_3 = true; return; }
+                        }
+                        else
+                        {
+                            DA.GetData(2, ref uls_dir_string);
+                            ULSDirection new_uls_dir = (ULSDirection)Enum.Parse(typeof(ULSDirection), uls_dir_string, true);
+                            uls_dir = new_uls_dir;
+                        }
+                        DA.GetData(3, ref loadcase_string);
+                        try
+                        {
+                            loadcase_index = Int32.Parse(loadcase_string);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+                double max_util = 0;
+                List<GH_TimberFrame> out_beams = new List<GH_TimberFrame>();
+                foreach (GH_TimberFrame gh_timber_frame in gh_timber_frames)
+                {
+                    TimberFrame timber_frame = gh_timber_frame.Value;
+                    Mesh mesh = timber_frame.MeshfromTimberFrame(
+                        util_type,
+                        uls_dir,
+                        sls_options,
+                        loadcase_index,
+                        ref max_util,
+                        colors,
+                        "Utilization");
+                    meshes.Add(mesh);
+                    out_beams.Add(new GH_TimberFrame(timber_frame));
+                }
+
+                DA.SetDataList(0, gh_timber_frames);
+                DA.SetDataList(1, meshes);
+                DA.SetDataList(2, legend);
+                DA.SetDataList(3, colors);
+                DA.SetData(4, max_util);
             }
             else
             {
-                util_type = new_util_type;
-                if (Params.Input.Count == 4)
-                {
-                    if (util_type == UtilizationType.SLS)
-                    {
-                        DA.GetData(2, ref sls_type_string);
-                        SLSOptions new_sls_options = (SLSOptions)Enum.Parse(typeof(SLSOptions), sls_type_string, true);
-                        if (new_sls_options != sls_options) { sls_options = new_sls_options; update_field_3 = true; return; }
-                    }
-                    else
-                    {
-                        DA.GetData(2, ref uls_dir_string);
-                        ULSDirection new_uls_dir = (ULSDirection)Enum.Parse(typeof(ULSDirection), uls_dir_string, true);
-                        uls_dir = new_uls_dir;
-                    }
-                    DA.GetData(3, ref loadcase_string);
-                    try
-                    {
-                        loadcase_index = Int32.Parse(loadcase_string);
-                    }
-                    catch
-                    {
-                    }
-                }
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Your license was not found! Try running the BeaverLicense component");
+                return;
             }
-            double max_util = 0;
-            List<GH_TimberFrame> out_beams = new List<GH_TimberFrame>();
-            foreach (GH_TimberFrame gh_timber_frame in gh_timber_frames)
-            {
-                TimberFrame timber_frame = gh_timber_frame.Value;
-                Mesh mesh = timber_frame.MeshfromTimberFrame(
-                    util_type, 
-                    uls_dir, 
-                    sls_options, 
-                    loadcase_index, 
-                    ref max_util,
-                    colors,
-                    "Utilization");
-                meshes.Add(mesh);
-                out_beams.Add(new GH_TimberFrame(timber_frame));
-            }
-
-            DA.SetDataList(0, gh_timber_frames);
-            DA.SetDataList(1, meshes);
-            DA.SetDataList(2, legend);
-            DA.SetDataList(3, colors);
-            DA.SetData(4, max_util);
         }
 
         #region VARIABLE COMPONENT INTERFACE IMPLEMENTATION

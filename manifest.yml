@@ -1,0 +1,9 @@
+---
+name: Beaver
+version: v1.0.0
+authors:
+- Márcio Sartorelli
+- João Tavares Pini
+- Renan Prandini
+description: Beaver is a parametric engineering tool for verifying safety compliance of timber structures according to EN 1995-1-1
+url: https://beaver-structures.webflow.io/

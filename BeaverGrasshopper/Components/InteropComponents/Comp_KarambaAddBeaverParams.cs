@@ -38,14 +38,19 @@ namespace BeaverGrasshopper.Components.InteropComponents
                 "If no line is provided, SLS will consider a global displacement", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length Y" , "BklLenY", "Effective buckling length of element in local Y-direction if > 0. (for beams consider EC5 table 6.1)", GH_ParamAccess.list);
             pManager.AddNumberParameter("Buckling Length Z" , "BklLenZ", "Effective buckling length of element in local Z - direction if > 0. (for beams consider EC5 table 6.1)", GH_ParamAccess.list);
+            pManager.AddNumberParameter("Buckling Length LT", "BklLenLT", "Effective buckling length of element in lateral torsional buckling if > 0. (for beams consider EC5 table 6.1)", GH_ParamAccess.list);
             pManager.AddBooleanParameter("Cantilever", "Cantilever", "Boolean parameter describing whether the beam is cantilevered. By default is set to False", GH_ParamAccess.list, false);
             pManager.AddIntegerParameter("Service Class", "SC", "Service Class from 1 to 3 regarding the timber element. By default is set to 2", GH_ParamAccess.list,2);
             pManager.AddNumberParameter("Precamber", "Pcamber", "Precamber of beam elements in meters. Default is set to 0", GH_ParamAccess.list, 0);
             pManager.AddBooleanParameter("Local", "Local", "Boolean parameter describing whether the beam should be calculated using global or local SLS analysis. By default is set to False", GH_ParamAccess.list, false);
             pManager[1].Optional = true;
             pManager[2].Optional = true;
-            pManager[3].Optional = true;
+            pManager[3].Optional = true;    
             pManager[4].Optional = true;
+            pManager[5].Optional = true;
+            pManager[6].Optional = true;
+            pManager[7].Optional = true;
+            pManager[8].Optional = true;
         }
 
         /// <summary>
@@ -69,7 +74,8 @@ namespace BeaverGrasshopper.Components.InteropComponents
             List<bool> cantilevers = new List<bool>();
             List<double> bklY = new List<double>();
             List<double> bklZ = new List<double>();
-            List<int> serviceClasses = new List<int>();
+            List<double> bklLT = new List<double>();
+            List<int> serviceClasses = new List<int>(2);
             List<double> precambers = new List<double>();
             List<bool> local = new List<bool>();
 
@@ -77,10 +83,11 @@ namespace BeaverGrasshopper.Components.InteropComponents
             DA.GetDataList(1, spans);
             DA.GetDataList(2, bklY);
             DA.GetDataList(3, bklZ);
-            DA.GetDataList(4, cantilevers);
-            DA.GetDataList(5, serviceClasses);
-            DA.GetDataList(6, precambers);
-            DA.GetDataList(7, local);
+            DA.GetDataList(4, bklLT);
+            DA.GetDataList(5, cantilevers);
+            DA.GetDataList(6, serviceClasses);
+            DA.GetDataList(7, precambers);
+            DA.GetDataList(8, local);
 
             List<Polyline> polylines = new List<Polyline>();
             if (spans.Count > 0)
@@ -128,7 +135,8 @@ namespace BeaverGrasshopper.Components.InteropComponents
                 beam.UserData["Local"] = local[i];
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklY, bklY[i]);
                 beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklZ, bklZ[i]);
-                
+                beam.BucklingLength_Set(BuilderElementStraightLine.BucklingDir.bklLT, bklLT[i]);
+
                 out_beams.Add(new Karamba.GHopper.Elements.GH_Element(beam));
             }
 

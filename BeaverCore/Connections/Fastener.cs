@@ -22,7 +22,7 @@ namespace BeaverCore.Connections
         public double t;        // Thickness of the headside member
         public string type;
         public bool smooth;
-        public double alpha;
+        public double alpha = 90;
         public bool countersunk;// EC3 Section 3.9
 
         // Recently added properties
@@ -43,7 +43,7 @@ namespace BeaverCore.Connections
         // Fastener properties according to EN 14592
         public double faxk;     // characteristic pointside withdrawal strength
         public double fheadk;   // Characteristic headside pull-through strength
-        public double rhoa;     // 
+        public double rhoa=350; // characteristic associated timber density for the fastener test
         public double rhok;     // Characteristic timber density in kg/m³
 
 
@@ -59,7 +59,7 @@ namespace BeaverCore.Connections
 
         public Fastener(string fastenerType, double D=0 , double Ds = 0, double Dh = 0,
             double L = 0, double Fuk = 400, bool Smooth = true, double faxk= 0,
-            double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05, bool countersunk = false)
+            double fheadk=0, double offset =0 , double lth=0,double b1=0,double b2=0, double Ymsteel = 1.05, bool countersunk = false,double alpha = 90)
         {
             d = D;
             l = L;
@@ -140,10 +140,10 @@ namespace BeaverCore.Connections
         public Vector3D Fi_Mz = new Vector3D();
         public Vector3D Fi_Mt = new Vector3D();
         public Vector3D force_vector;
-        public double alpha = 0;
+        public double alpha = 90;
         public string duration;
 
-        public FastenerForce(double faxd=0, double fvd=0, double alpha=0, string duration ="")
+        public FastenerForce(double faxd=0, double fvd=0, double alpha=90, string duration ="")
         {
             Faxd = new Vector3D().Unit() * (faxd);
             Fvd = new Vector3D().Unit() * (fvd);

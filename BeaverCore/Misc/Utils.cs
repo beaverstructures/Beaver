@@ -141,6 +141,8 @@ namespace BeaverCore.Misc
         }
 
 
+        
+
     }
 
     public static class ExtensionMethods
@@ -155,6 +157,23 @@ namespace BeaverCore.Misc
                 stream.Position = 0;
                 return (T)formatter.Deserialize(stream);
             }
+        }
+
+        //formats double to string
+        static public string Format2digits(this double value)
+        {
+            return String.Format("{0:0.00}", value);
+        }
+
+        //formats stress to MPa
+        static public string FormatStress(this double value)
+        {
+            return String.Format("{0:0.00}", value * 0.000001);
+        }
+
+        static public double Convert_kNtoN(this double value)
+        {
+            return value * 1000;
         }
     }
 }

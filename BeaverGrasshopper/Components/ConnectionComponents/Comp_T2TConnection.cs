@@ -92,7 +92,7 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
                                                       ghmat2.Value,
                                                       alpha1,
                                                       alpha2,
-                                                      0,  // *** DOUBLE CHECK THIS INPUT LATER
+                                                      ghfastener.Value.alpha,  // *** DOUBLE CHECK THIS INPUT LATER
                                                       t1,
                                                       t2,
                                                       shearplanes,
@@ -114,6 +114,8 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             DA.SetData(1, new GH_Fastener(t2TCapacity.fastener));
             DA.SetDataList(2, shears);
             DA.SetDataList(3, axials);
+
+            if(ghfastener.Value.l > t1 + t2) AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Fastener length is bigger than t1 + t2");
         }
 
         /// <summary>

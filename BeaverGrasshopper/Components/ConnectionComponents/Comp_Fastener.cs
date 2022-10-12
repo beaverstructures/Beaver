@@ -33,7 +33,7 @@ namespace BeaverGrasshopper
         {
             pManager.AddTextParameter("FastenerType", "Ftype", "Fastener type", GH_ParamAccess.item);
             pManager.AddNumberParameter("Nominal Diameter", "D", "Fastener nominal diamater [mm]", GH_ParamAccess.item, 6);
-            pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter [mm]", GH_ParamAccess.item, 6); //screws
+            pManager.AddNumberParameter("Shank Diameter", "Ds", "Fastener shank diameter for screws [mm]", GH_ParamAccess.item, 6); //screws
             pManager.AddNumberParameter("Head Diameter", "Dh", "Fastener head diameter [mm]", GH_ParamAccess.item, 6);
             pManager.AddNumberParameter("Fastener Length", "L", "Fastener length [mm]", GH_ParamAccess.item, 50);
             pManager.AddBooleanParameter("Smooth Boolean", "Smooth", "True for smooth nails, false for other", GH_ParamAccess.item, false); //nails

@@ -57,13 +57,14 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         {
             pManager.AddTextParameter("Util", "Util", "Util", GH_ParamAccess.list);
             pManager.AddPointParameter("Points", "Points", "Points", GH_ParamAccess.list);
-            pManager.AddTextParameter("Report", "Report", "Report", GH_ParamAccess.list);
+            pManager.AddTextParameter("Report", "Report", "Report", GH_ParamAccess.tree);
         }
 
         
         string type = "";
         Color color = Color.DarkGray;
         double size = 1;
+        
 
         /// <summary>
         /// This is the method that actually does the work.
@@ -74,6 +75,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             List<GH_TimberFrame> tfs = new List<GH_TimberFrame>();
             _text.Clear();
             _point.Clear();
+            _report.Clear();
 
             DA.GetDataList(0, tfs);
             DA.GetData(1, ref type);
@@ -83,7 +85,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             for (int i = 0;i< tfs.Count; i++)
             {
                 TimberFrame timberFrame = tfs[i].Value;
-                foreach(TimberFramePoint tfPoint in timberFrame.TimberPointsMap.Values)
+                foreach (TimberFramePoint tfPoint in timberFrame.TimberPointsMap.Values)
                 {
                     switch (type)
                     {
@@ -92,13 +94,15 @@ namespace BeaverGrasshopper.Components.ResultsComponents
                         default: throw new ArgumentException("type not found.");
                     }
                     _point.Add(new Point3d(tfPoint.pt.x, tfPoint.pt.y, tfPoint.pt.z));
-
+                    _report.Add(tfPoint.UlsReport);
                 }
             }
+
             DA.SetDataList(0, _text);
             DA.SetDataList(1, _point);
-
+            DA.SetDataTree(2, ListOfListsToTree(_report));
         }
+        
 
         public override BoundingBox ClippingBox
         {
@@ -111,6 +115,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         #region text tags
         private List<string> _text = new List<string>();
         private List<Point3d> _point = new List<Point3d>();
+        List<List<string>> _report = new List<List<string>>();
 
         public override void DrawViewportWires(IGH_PreviewArgs args)
         {
@@ -132,6 +137,18 @@ namespace BeaverGrasshopper.Components.ResultsComponents
             }
         }
         #endregion
+
+        Grasshopper.DataTree<T> ListOfListsToTree<T>(List<List<T>> list)
+        {
+            Grasshopper.DataTree<T> tree = new Grasshopper.DataTree<T>();
+            int i = 0;
+            foreach (List<T> innerList in list)
+            {
+                tree.AddRange(innerList, new Grasshopper.Kernel.Data.GH_Path(new int[] { i }));
+                i++;
+            }
+            return tree;
+        }
 
         /// <summary>
         /// Provides an Icon for the component.

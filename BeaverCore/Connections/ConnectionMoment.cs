@@ -98,7 +98,7 @@ namespace BeaverCore.Connections
         {
             /// EC5 SECTION 8.3.8
             double d = fastener.d;
-            if (fastener.d > 6 || fastener.type == "Nail")
+            if (fastener.d >= 6 || fastener.type == "Nail")
             {
 
                 double kef = 0;
@@ -167,8 +167,8 @@ namespace BeaverCore.Connections
 
         private void SetConnectionStiffness()
         {
-            double kser = fastener.kser;
-            double kdef = fastener.kdef;
+            double kser = fastener.kser; // 1 N/mm = 1 kN/m
+            double kdef = fastener.kdef; 
             translationalStiffness = shearplanes * kser * FastenerList.Count / (1 + kdef);
             rotationalStiffness = shearplanes * kser * sumDsq / (1 + kdef);
         }

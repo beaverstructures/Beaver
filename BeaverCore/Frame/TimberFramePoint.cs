@@ -36,8 +36,10 @@ namespace BeaverCore.Frame
         public string parameters;
         public int sc;
 
+
         public double util;
         public int util_index;
+        public List<string> UlsReport = new List<string>();
 
         // calculated displacement average of end points of span line for each load case. 
         // For now it is the same for all timber frame. 
@@ -367,55 +369,168 @@ namespace BeaverCore.Frame
                 //List<string> RepsY = new List<string>() { Rep0, Rep1, RepY2, RepY3, Rep4, RepY5, RepY6, RepY7, RepY8, Rep9 };
                 //List<string> RepsZ = new List<string>() { Rep0, Rep1, RepZ2, RepZ3, Rep4, RepZ5, RepZ6, RepZ7, RepZ8, Rep9 };
 
-                List<string> ULSReports = new List<string>()
+                UlsReport = new List<string>()
                 {
                     //0
                     "Tension along the grain acc. to EC5 6.1.2 | " +
-                    "N = " + f.N.ToString() + "; sigN = " + sigN.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; ft0d = " + ft0d.ToString() +"; R0 = " + Util0.ToString(),
+                    "N = " + f.N.Format2digits() + 
+                    "; sigN = " + sigN.FormatStress() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() + 
+                    "; ft0d = " + ft0d.FormatStress() +
+                    "; R0 = " + Util0.Format2digits(),
                     //1
                     "Compression along the grain acc. to EC5 6.1.4 | " +
-                    "N = " + f.N.ToString() + "; sigN = " + sigN.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() + "; R1 = " + Util1.ToString(),
+                    "N = " + f.N.Format2digits() + 
+                    "; sigN = " + sigN.FormatStress() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() + 
+                    "; fc0d = " + fc0d.FormatStress() + 
+                    "; R1 = " + Util1.Format2digits(),
                     //2
                     "Bending acc. to EC5 6.1.6 | " + 
-                    "Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; fmk = " + fmk.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigMy = " + sigMy.ToString() + 
-                    "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fmd = " + fmd.ToString() + "; Km = " + Km.ToString() + "; R2y = " + UtilY2.ToString() + "&" + "R2z = " + UtilZ2.ToString(),
+                    "Wy = " + Wy.Format2digits() + 
+                    "; Wz = " + Wz.Format2digits() + 
+                    "; fmk = " + fmk.FormatStress() + 
+                    "; Myd = " + Myd.Format2digits() + 
+                    "; Mzd = " + Mzd.Format2digits() + 
+                    "; sigMy = " + sigMy.FormatStress() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() + 
+                    "; fmd = " + fmd.FormatStress() + 
+                    "; Km = " + Km.Format2digits() + 
+                    "; R2y = " + UtilY2.Format2digits() + 
+                    "&" + "R2z = " + UtilZ2.Format2digits(),
                     //3
                      "Shear acc. to EC5 6.1.7 | " +
-                     "kcrit = " + kcrit.ToString() + "; Vy = " + Vy.ToString() + "; Vz = " + Vz.ToString() + "; A = " + CS.A.ToString() + "; sigVy = " + Sigvy.ToString() + "; sigVz = " + Sigvz.ToString() + 
-                     "; R3y = " + UtilY3.ToString() + "&" +  "R3z = " + UtilZ3.ToString(),
+                     "kcrit = " + kcrit.Format2digits() + 
+                     "; Vy = " + Vy.Format2digits() + 
+                     "; Vz = " + Vz.Format2digits() + 
+                     "; A = " + CS.A.Format2digits() + 
+                     "; sigVy = " + Sigvy.FormatStress() + 
+                     "; sigVz = " + Sigvz.FormatStress() + 
+                     "; R3y = " + UtilY3.Format2digits() + 
+                     "&" +  "R3z = " + UtilZ3.Format2digits(),
                     //4
                     "Torsion acc. to EC5 6.1.8 | " +
-                    "; It = " + CS.It.ToString() + "; Kshape = " + kshape.ToString() + "; Mt = " + Mt.ToString() + "; SigMt = " + SigMt.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() +
-                    "; fvd = " + fvd.ToString() + "; R4 = " + Util4.ToString(),
+                    "; It = " + CS.It.Format2digits() + 
+                    "; Kshape = " + kshape.Format2digits() +
+                    "; Mt = " + Mt.Format2digits() + 
+                    "; SigMt = " + SigMt.FormatStress() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() +
+                    "; fvd = " + fvd.FormatStress() + 
+                    "; R4 = " + Util4.Format2digits(),
                     //5
                     "Combined Bending and Axial Tension acc. to EC5 6.2.3 | " +
-                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
-                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; ft0d = " + ft0d.ToString() + "; fmd = " + fmd.ToString() +  
-                    "; Km = " + Km.ToString() + "; R5y = " + UtilY5.ToString() + "&" + "R5z = " + UtilZ5.ToString(),
+                    "A = " + A.Format2digits() + 
+                    "; Wy = " + Wy.Format2digits() + 
+                    "; Wz = " + Wz.Format2digits() + 
+                    "; Nd = " + Nd.Format2digits() + 
+                    "; Myd = " + Myd.Format2digits() + 
+                    "; Mzd = " + Mzd.Format2digits() + 
+                    "; sigN = " + sigN.FormatStress() +
+                    "; sigMy = " + sigMy.FormatStress() +  
+                    "; sigMz = " + sigMz.FormatStress() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() + 
+                    "; ft0d = " + ft0d.FormatStress() + 
+                    "; fmd = " + fmd.FormatStress() +  
+                    "; Km = " + Km.Format2digits() + 
+                    "; R5y = " + UtilY5.Format2digits() + 
+                    "&" + "R5z = " + UtilZ5.Format2digits(),
                     //6
                     "Combined Bending and Axial Compression acc. to EC5 6.2.4 | " +
-                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
-                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() + "; fmd = " + fmd.ToString() +
-                    "; Km = " + Km.ToString() + "; R6y = " + UtilY6.ToString() + "&" + "R6z = " + UtilZ6.ToString(),
+                    "A = " + A.Format2digits() + 
+                    "; Wy = " + Wy.Format2digits() + 
+                    "; Wz = " + Wz.Format2digits() + 
+                    "; Nd = " + Nd.Format2digits() + 
+                    "; Myd = " + Myd.Format2digits() + 
+                    "; Mzd = " + Mzd.Format2digits() + 
+                    "; sigN = " + sigN.FormatStress() +
+                    "; sigMy = " + sigMy.FormatStress() +  
+                    "; sigMz = " + sigMz.FormatStress() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() + 
+                    "; fc0d = " + fc0d.FormatStress() + 
+                    "; fmd = " + fmd.FormatStress() +
+                    "; Km = " + Km.Format2digits() + 
+                    "; R6y = " + UtilY6.Format2digits() + 
+                    "&" + "R6z = " + UtilZ6.Format2digits(),
                     //7
                     "Compressed member subjected to either Compression or combined Compression and Bending acc. to EC5 6.3.2 (buckling about both axes considered) | " +
-                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
-                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; ly = " + ly.ToString() + "; lz = " + lz.ToString() + "; ry = " + ry.ToString() + "; rz = " + rz.ToString() +
-                    "; lampi = " + lampi.ToString() + "; lamy = " + lamy.ToString() + "; lamz = " + lamz.ToString() + "; lamyrel = " + lamyrel.ToString() + "; lamzrel = " + lamzrel.ToString() + "; ky = " + ky.ToString() +
-                    "; kz = " + kz.ToString() + "; kyc = " + kyc.ToString() + "; kzc = " + kzc.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() +
-                    "; fmd = " + fmd.ToString() +  "; Km = " + Km.ToString() + "; R7y = " + UtilY7.ToString() + "&" + "R7z = " + UtilZ7.ToString(),
+                    "A = " + A.Format2digits() + 
+                    "; Wy = " + Wy.Format2digits() + 
+                    "; Wz = " + Wz.Format2digits() + 
+                    "; Nd = " + Nd.Format2digits() + 
+                    "; Myd = " + Myd.Format2digits() +
+                    "; Mzd = " + Mzd.Format2digits() + 
+                    "; sigN = " + sigN.FormatStress() +
+                    "; sigMy = " + sigMy.FormatStress() + 
+                    "; sigMz = " + sigMz.FormatStress() + 
+                    "; ly = " + ly.Format2digits() +
+                    "; lz = " + lz.Format2digits() + 
+                    "; ry = " + ry.Format2digits() + 
+                    "; rz = " + rz.Format2digits() +
+                    "; lampi = " + lampi.Format2digits() + 
+                    "; lamy = " + lamy.Format2digits() + 
+                    "; lamz = " + lamz.Format2digits() + 
+                    "; lamyrel = " + lamyrel.Format2digits() + 
+                    "; lamzrel = " + lamzrel.Format2digits() + 
+                    "; ky = " + ky.Format2digits() +
+                    "; kz = " + kz.Format2digits() + 
+                    "; kyc = " + kyc.Format2digits() + 
+                    "; kzc = " + kzc.Format2digits() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() + 
+                    "; fc0d = " + fc0d.FormatStress() +
+                    "; fmd = " + fmd.FormatStress() +  
+                    "; Km = " + Km.Format2digits() + 
+                    "; R7y = " + UtilY7.Format2digits() + 
+                    "&" + "R7z = " + UtilZ7.Format2digits(),
                     //8
                     "Flexural member subjected to either Bending or combined Bending and Compression acc. to EC5 6.3.3 (lateral torsional buckling considered) | " +
-                    "A = " + A.ToString() + "; Wy = " + Wy.ToString() + "; Wz = " + Wz.ToString() + "; Nd = " + Nd.ToString() + "; Myd = " + Myd.ToString() + "; Mzd = " + Mzd.ToString() + "; sigN = " + sigN.ToString() +
-                    "; sigMy = " + sigMy.ToString() +  "; sigMz = " + sigMz.ToString() + "; ly = " + ly.ToString() + "; lz = " + lz.ToString() + "; ry = " + ry.ToString() + "; rz = " + rz.ToString() +
-                    "; lampi = " + lampi.ToString() + "; lamy = " + lamy.ToString() + "; lamz = " + lamz.ToString() + "; lamyrel = " + lamyrel.ToString() + "; lamzrel = " + lamzrel.ToString() + "; ky = " + ky.ToString() +
-                    "; kz = " + kz.ToString() + "; kyc = " + kyc.ToString() + "; kzc = " + kzc.ToString() + "; kflam = " + kflam.ToString() + "; lefy = " + lefy.ToString() + "; lefz = " + lefz.ToString() +  
-                    "; sigMcrity = " + sigMcrity.ToString() + "; sigMcritz = " + sigMcritz.ToString() + "; lammy = " + lammy.ToString() + "; lammz = " + lammz.ToString() + "; kcrity = " + kcrity.ToString() + 
-                    "; kcritz = " + kcritz.ToString() + "; Kmod = " + Kmod.ToString() + "; Ym = " + Ym.ToString() + "; fc0d = " + fc0d.ToString() + "; fmd = " + fmd.ToString() +  "; Km = " + Km.ToString() +
-                    "R8y = " + UtilY8.ToString() + "&" + "R8z = " + UtilZ8.ToString(),
+                    "A = " + A.Format2digits() + 
+                    "; Wy = " + Wy.Format2digits() + 
+                    "; Wz = " + Wz.Format2digits() + 
+                    "; Nd = " + Nd.Format2digits() + 
+                    "; Myd = " + Myd.Format2digits() + 
+                    "; Mzd = " + Mzd.Format2digits() + 
+                    "; sigN = " + sigN.FormatStress() +
+                    "; sigMy = " + sigMy.FormatStress() +  
+                    "; sigMz = " + sigMz.FormatStress() + 
+                    "; ly = " + ly.Format2digits() + 
+                    "; lz = " + lz.Format2digits() + 
+                    "; ry = " + ry.Format2digits() + 
+                    "; rz = " + rz.Format2digits() +
+                    "; lampi = " + lampi.Format2digits() + 
+                    "; lamy = " + lamy.Format2digits() + 
+                    "; lamz = " + lamz.Format2digits() + 
+                    "; lamyrel = " + lamyrel.Format2digits() + 
+                    "; lamzrel = " + lamzrel.Format2digits() + 
+                    "; ky = " + ky.Format2digits() +
+                    "; kz = " + kz.Format2digits() + 
+                    "; kyc = " + kyc.Format2digits() + 
+                    "; kzc = " + kzc.Format2digits() + 
+                    "; kflam = " + kflam.Format2digits() + 
+                    "; lefy = " + lefy.Format2digits() +
+                    "; lefz = " + lefz.Format2digits() +  
+                    "; sigMcrity = " + sigMcrity.FormatStress() +
+                    "; sigMcritz = " + sigMcritz.FormatStress() + 
+                    "; lammy = " + lammy.Format2digits() + 
+                    "; lammz = " + lammz.Format2digits() + 
+                    "; kcrity = " + kcrity.Format2digits() + 
+                    "; kcritz = " + kcritz.Format2digits() + 
+                    "; Kmod = " + Kmod.Format2digits() + 
+                    "; Ym = " + Ym.Format2digits() +
+                    "; fc0d = " + fc0d.FormatStress() +
+                    "; fmd = " + fmd.FormatStress() + 
+                    "; Km = " + Km.Format2digits() +
+                    "R8y = " + UtilY8.Format2digits() + 
+                    "&" + "R8z = " + UtilZ8.Format2digits(),
                     //9
                     "Combined Torsion and Shear - Not speciefied in EC5 (Maximum Shear Utilization Ratio + Torsion Utilization Ratio) | " +
-                    "R9 = R3max + R4 = " + Util9.ToString(),
+                    "R9 = R3max + R4 = " + Util9.Format2digits(),
                 };
 
                 AllUtilsY.Add(UtilsY.ToArray());
@@ -423,8 +538,8 @@ namespace BeaverCore.Frame
                 //AllRepsY.Add(RepsY.ToArray());
                 //AllRepsZ.Add(RepsZ.ToArray());
 
-                AllULSReports.Add(ULSReports.ToArray());
-
+                // AllULSReports.Add(ULSReports.ToArray());
+                
             }
 
 

@@ -99,13 +99,13 @@ namespace BeaverCore.Connections
             {
                 case "Dowel":
                 case "Bolt":
-                    return Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
+                    return Math.Pow(pm, 1.5) * fastener.d / 23;
                 case "Nail":
-                    return fastener.predrilled1 ?
-                        Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23
+                    return fastener.predrilled1 & fastener.predrilled2 ?
+                        Math.Pow(pm, 1.5) * fastener.d / 23
                         : Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 30;
                 case "Screw":
-                    return Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 23;
+                    return Math.Pow(pm, 1.5) * fastener.d / 23;
                 case "Staples":
                     return Math.Pow(pm, 1.5) * Math.Pow(fastener.d, 0.8) / 80;
                 default:
@@ -116,6 +116,7 @@ namespace BeaverCore.Connections
         public void SetCriticalCapacity()
         {
             /// Finds and updates the critical capacity from the shear_capacities variable
+            /// capacities are in kN
             Fv_Rk = 9999999;
             Fax_Rk = 9999999;
             foreach (var keyValuePair in shear_capacities)
@@ -196,6 +197,8 @@ namespace BeaverCore.Connections
             double fhk = 0;
             double f0hk;
             double k90 = 0;
+            double sin = Math.Sin(Math.PI / 180 * alpha);
+            double cos = Math.Cos(Math.PI / 180 * alpha);
 
             switch (fastener.type)
             {
@@ -235,7 +238,7 @@ namespace BeaverCore.Connections
                         if (k90 != 0)
                         {
                             f0hk = 0.082 * (1 - 0.01 * fastener.d) * pk;
-                            fhk = f0hk / (k90 * Math.Pow(Math.Sin(alpha), 2) + Math.Pow(Math.Cos(alpha), 2));
+                            fhk = f0hk / (k90 * Math.Pow(sin, 2) + Math.Pow(cos, 2));
                         }
                         break;
                     }
@@ -282,7 +285,7 @@ namespace BeaverCore.Connections
                         if (k90 != 0)
                         {
                             f0hk = 0.082 * (1 - 0.01 * fastener.d) * pk;
-                            fhk = f0hk / (k90 * Math.Pow(Math.Sin(alpha), 2) + Math.Pow(Math.Cos(alpha), 2));
+                            fhk = f0hk / (k90 * Math.Pow(sin, 2) + Math.Pow(cos, 2));
                         }
                         break;
                     }
@@ -319,7 +322,7 @@ namespace BeaverCore.Connections
                         if (k90 != 0)
                         {
                             f0hk = 0.082 * (1 - 0.01 * fastener.d) * pk;
-                            fhk = f0hk / (k90 * Math.Pow(Math.Sin(alpha), 2) + Math.Pow(Math.Cos(alpha), 2));
+                            fhk = f0hk / (k90 * Math.Pow(sin, 2) + Math.Pow(cos, 2));
                         }
                         break;
                     }
@@ -358,7 +361,7 @@ namespace BeaverCore.Connections
                             if (k90 != 0)
                             {
                                 f0hk = 0.082 * (1 - 0.01 * fastener.d) * pk;
-                                fhk = f0hk / (k90 * Math.Pow(Math.Sin(alpha), 2) + Math.Pow(Math.Cos(alpha), 2));
+                                fhk = f0hk / (k90 * Math.Pow(sin, 2) + Math.Pow(cos, 2));
                             }
                             break;
                         }
@@ -414,20 +417,30 @@ namespace BeaverCore.Connections
                     bool condition2 = f.d / f.ds > 0.6 || f.d / f.ds < 0.75;
                     bool SECTION_8_7_2_item4 = condition1 && condition2;
                     double nef = 1; // must be accounted later in AxialConnection.cs
+                    double sin = Math.Sin(Math.PI / 180 * alpha);
+                    double cos = Math.Cos(Math.PI / 180 * alpha);
 
                     if (SECTION_8_7_2_item4)
                     {
                         double l_ef2 = tpen <= f.lth ? (tpen - f.d) : (f.lth - f.d);
-                        double f_ax_k = 0.52 * Math.Pow(f.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);      // EQ 8.39
-                        double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2)); // EQ 8.40
-                        double F_1_ax_alpha_k = nef * f.d * l_ef2 * f_ax_alpha_k * Math.Min(f.d / 8, 1);        // EQ 8.38
+                        if(l_ef2 < 0)
+                        {
+                            throw new Exception("Dimensions not valid. Verify fastener penetration length");
+                        }
+                        double f_ax_k = 0.52 * Math.Pow(f.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);             // EQ 8.39
+                        double f_ax_alpha_k = f_ax_k / (Math.Pow(sin, 2) + 1.2 * Math.Pow(cos, 2)); // EQ 8.40
+                        double F_1_ax_alpha_k = nef * f.d * l_ef2 * f_ax_alpha_k * Math.Min(f.d / 8, 1);                    // EQ 8.38
                         return F_1_ax_alpha_k;
                     }
                     else
                     {
                         double l_ef2 = tpen <= f.lth ? (tpen - f.d) : (f.lth - f.d);
+                        if (l_ef2 < 0)
+                        {
+                            throw new Exception("Dimensions not valid. Verify fastener penetration length");
+                        }
                         double f_ax_k = 0.52 * Math.Pow(f.d, -0.5) * Math.Pow(l_ef2, -0.1) * Math.Pow(pk, 0.8);      // EQ 8.39
-                        double f_ax_alpha_k = f_ax_k / (Math.Pow(Math.Sin(alpha), 2) + 1.2 * Math.Pow(Math.Cos(alpha), 2)); // EQ 8.40
+                        double f_ax_alpha_k = f_ax_k / (Math.Pow(sin, 2) + 1.2 * Math.Pow(cos, 2)); // EQ 8.40
                         double F_1_ax_alpha_k = nef * f.d * l_ef2 * f_ax_alpha_k * Math.Pow(pk / 385, 0.8);               // EQ 8.40a // 385= rho a
                         return F_1_ax_alpha_k;
                     }
