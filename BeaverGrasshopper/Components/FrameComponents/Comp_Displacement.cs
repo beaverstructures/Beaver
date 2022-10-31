@@ -11,9 +11,9 @@ namespace BeaverGrasshopper {
         /// Initializes a new instance of the Comp_Displacement class.
         /// </summary>
         public Comp_Displacement()
-          : base("Comp_Displacement", "Disp",
-              "Description",
-              "Beaver", "1.Frame")
+          : base("Displamcements", "Disp",
+              "Creates a displacement object for assigning it to a TimberFrame Point",
+              "Beaver", "1. Frame")
         {
         }
 

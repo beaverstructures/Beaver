@@ -75,7 +75,7 @@ namespace BeaverGrasshopper
 
     public class Param_CroSec : GH_Param<GH_CroSec>
     {
-        public Param_CroSec() : base("Cross Section", "CroSec", "Timber Cross Section", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_CroSec() : base("Cross Section", "CroSec", "Timber Cross Section", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

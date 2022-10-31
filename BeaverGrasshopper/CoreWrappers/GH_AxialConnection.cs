@@ -63,7 +63,7 @@ namespace BeaverGrasshopper
 
     public class Param_ConnectionAxial : GH_Param<GH_CroSec>
     {
-        public Param_ConnectionAxial() : base("ConnectionAxial", "SConnection", "ConnectionAxial", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_ConnectionAxial() : base("ConnectionAxial", "SConnection", "ConnectionAxial", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

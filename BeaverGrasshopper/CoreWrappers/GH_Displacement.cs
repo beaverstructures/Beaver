@@ -58,7 +58,7 @@ namespace BeaverGrasshopper
 
     public class Param_Displacement : GH_Param<GH_Displacement>
     {
-        public Param_Displacement() : base("Displacement", "Displacement", "Nodal Displacement", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Displacement() : base("Displacement", "Displacement", "Nodal Displacement", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

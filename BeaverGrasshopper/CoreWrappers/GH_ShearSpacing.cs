@@ -58,7 +58,7 @@ namespace BeaverGrasshopper
 
     public class Param_ShearSpacing : GH_Param<GH_ShearSpacing>
     {
-        public Param_ShearSpacing() : base("Spacing", "Spacing", "Fastener Spacing", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_ShearSpacing() : base("Spacing", "Spacing", "Fastener Spacing", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

@@ -63,7 +63,7 @@ namespace BeaverGrasshopper
 
     public class Param_T2TCapacity : GH_Param<GH_T2TCapacity>
     {
-        public Param_T2TCapacity() : base("T2TCapacity", "SConnection", "T2TCapacity", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_T2TCapacity() : base("T2TCapacity", "SConnection", "T2TCapacity", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

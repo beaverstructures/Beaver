@@ -58,7 +58,7 @@ namespace BeaverGrasshopper
 
     public class Param_Fastener : GH_Param<GH_Fastener>
     {
-        public Param_Fastener() : base("Fastener", "Fastener", "Timber fastener", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Fastener() : base("Fastener", "Fastener", "Timber fastener", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

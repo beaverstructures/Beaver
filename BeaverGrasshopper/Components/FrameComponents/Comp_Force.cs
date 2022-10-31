@@ -14,8 +14,8 @@ namespace BeaverGrasshopper
         /// </summary>
         public Comp_Force()
           : base("Force", "Force",
-              "Description",
-              "Beaver", "1.Frame")
+              "Creates a force object for assigning it to a TimberFrame Point",
+              "Beaver", "1. Frame")
         {
         }
 

@@ -19,7 +19,7 @@ namespace BeaverGrasshopper
         public TimberFramePointComp()
           : base("TimberFramePoint", "FramePoint",
               "Definition of a single timber frame point",
-              "Beaver", "1.Frame")
+              "Beaver", "1. Frame")
         {
         }
 

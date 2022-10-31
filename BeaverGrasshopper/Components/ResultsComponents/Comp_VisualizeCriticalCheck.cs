@@ -22,7 +22,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         public VisualizeCriticalCheck()
           : base("VisualizeCriticalCheck", "CriticalCheck",
               "Displays the critical utilization of the timber frames based in colors",
-              "Beaver", "4.Results")
+              "Beaver", "4. Results")
         {
         }
 

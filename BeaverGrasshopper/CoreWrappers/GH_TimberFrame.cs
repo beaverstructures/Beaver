@@ -63,7 +63,7 @@ namespace BeaverGrasshopper
 
     public class Param_TimberFrame : GH_Param<GH_TimberFrame>
     {
-        public Param_TimberFrame() : base("TimberFrame", "TFrame", "TimberFrame to procede", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_TimberFrame() : base("TimberFrame", "TFrame", "TimberFrame to procede", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

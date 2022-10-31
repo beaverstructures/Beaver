@@ -23,7 +23,7 @@ namespace BeaverGrasshopper.Components.ResultsComponents
         public TimberFrameView()
           : base("TimberFrameView", "Nickname",
               "Description",
-              "Beaver", "4.Results")
+              "Beaver", "4. Results")
         {
         }
 

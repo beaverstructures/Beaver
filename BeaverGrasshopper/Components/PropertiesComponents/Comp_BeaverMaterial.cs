@@ -14,7 +14,7 @@ namespace BeaverGrasshopper
         public BeaverMaterial()
           : base("Material", "BMat",
               "Creates a Beaver Material with properties needed to ULS checks",
-              "Beaver", "Properties")
+              "Beaver", "1. Frame")
         {
         }
 

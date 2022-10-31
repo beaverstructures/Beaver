@@ -26,7 +26,8 @@ namespace Beaver_v0._1
             get
             {
                 //Return a short string describing the purpose of this GHA library.
-                return "";
+                return "Beaver is a collection of parametric tools for the design and analysis of timber structures according to the " +
+                    "Eurocode 5 - Design of Timber Structures.";
             }
         }
         public override Guid Id
@@ -51,6 +52,14 @@ namespace Beaver_v0._1
             {
                 //Return a string representing your preferred contact details.
                 return "beaver.structures@gmail.com";
+            }
+        }
+
+        public override string AssemblyVersion
+        {
+            get
+            {
+                return "1.0.2";
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using Grasshopper.Kernel;
+﻿/*using Grasshopper.Kernel;
 using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
@@ -58,4 +58,4 @@ namespace BeaverGrasshopper.Components.ConnectionComponents
             get { return new Guid("e16a0300-fc7d-4a5a-8e29-c081e39b3445"); }
         }
     }
-}
+}*/

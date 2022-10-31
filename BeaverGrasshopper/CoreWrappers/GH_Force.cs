@@ -58,7 +58,7 @@ namespace BeaverGrasshopper
 
     public class Param_Force : GH_Param<GH_Force>
     {
-        public Param_Force() : base("Force", "Force", "Nodal Force", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Force() : base("Force", "Force", "Nodal Force", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {

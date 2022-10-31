@@ -63,7 +63,7 @@ namespace BeaverGrasshopper
 
     public class Param_Material : GH_Param<GH_Material>
     {
-        public Param_Material() : base("Material", "Material", "Timber Material", "Beaver", "0.Parameters", GH_ParamAccess.item) { }
+        public Param_Material() : base("Material", "Material", "Timber Material", "Beaver", "0. Parameters", GH_ParamAccess.item) { }
 
         protected override System.Drawing.Bitmap Icon
         {
