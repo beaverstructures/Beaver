@@ -1,12 +1,12 @@
 name: "Deploy to NuGet"
 
-on:
+on:  
   push:
     tags:
     - 'v*'
   pull_request:
-  branches:
-    - master
+    branches:
+      - master
 
 env:
   PROJECT_PATH: 'BeaverCore/BeaverCore.csproj'
