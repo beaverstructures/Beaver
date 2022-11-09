@@ -5,7 +5,6 @@ using System.Text;
 using System.Linq;
 using BeaverCore.Misc;
 using BeaverCore.Materials;
-using Comb = Combinatorics.Collections;
 
 namespace BeaverCore.Actions
 {
