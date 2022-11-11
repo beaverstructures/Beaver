@@ -7,8 +7,8 @@ Beaver is a tool that allows parametric structural analysis and design of timber
 Beaver was conceived at the Polytechnic School of the University of São Paulo - Brazil, and developed by 
 
 * [João Tavares Pini](https://www.linkedin.com/in/joao-pini/)
-* [Márcio Sartorelli Venâncio de Souza](https://www.linkedin.com/in/cwensley/)
-* [Renan Prandini](https://www.linkedin.com/in/erikasantosr/)
+* [Márcio Sartorelli Venâncio de Souza](https://www.linkedin.com/in/marcio-sartorelli/)
+* [Renan Prandini](https://www.linkedin.com/in/renan-prandini/)
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
