@@ -2,11 +2,10 @@ name: "Deploy NuGet"
 
 on:  
   push:
+    branches:
+    - master
     tags:
     - 'v*'
-  pull_request:
-    branches:
-      - master
 
 env:
   PROJECT_PATH: 'BeaverCore/BeaverCore.csproj'
@@ -37,7 +36,13 @@ jobs:
       uses: battila7/get-version-action@v2
 
     - name: 'Pack project'
-      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols -p:PackageVersion='1.0.4' --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
+      run: dotnet pack ${{ env.PROJECT_PATH }} --no-restore --no-build --configuration Release --include-symbols -p:PackageVersion='1.0.2' --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
 
-    - name: 'Push package'
+    - name: 'Push to NuGet Packages'
       run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg -k ${{ secrets.NUGET_AUTH_TOKEN }} -s ${{ env.NUGET_SOURCE_URL }}
+
+    - name: 'Prep GitHub Packages'
+      run: dotnet nuget add source --username marciosarto --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/beaverstructures/index.json"
+      
+    - name: 'Publish to GitHub Packages' 
+      run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}\*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
