@@ -28,11 +28,11 @@ public void TestULSDesign()
             //Set displacement list
             List<Displacement> disps = new List<Displacement>() { dispQA, dispP };
             //Set permanent load internal forces
-            Force force = new Force(50, 5, 4, 2.2, 6.8, 1.8, "P"); //N,Vy,Vz,Mt,My,Mz
+            Force forceP = new Force(50, 5, 4, 2.2, 6.8, 1.8, "P"); //N,Vy,Vz,Mt,My,Mz
             //Set acidental load internal forces
-            Force force = new Force(28, 3, 2, 0.2, 1.5, 0.4, "QA"); //N,Vy,Vz,Mt,My,Mz
+            Force forceQA = new Force(28, 3, 2, 0.2, 1.5, 0.4, "QA"); //N,Vy,Vz,Mt,My,Mz
             Set internal force list
-            List<Force> forces = new List<Force>() { force };
+            List<Force> forces = new List<Force>() { forceP, forceQA };
 
                 
             //Set material and cross-section
@@ -50,7 +50,7 @@ public void TestULSDesign()
             TimberFrameULSResult result = element.ULSUtilization();
             
             //Retrieve the SLS results for all displacements combinations and checks
-            TimberFrameSLSResult result = element.ULSUtilization();
+            TimberFrameSLSResult result = element.SLSUtilization();
 
             /// extract results 
             List<double[]> UtilsY = result.UtilsY;
