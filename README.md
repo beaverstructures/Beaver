@@ -15,7 +15,7 @@ The active development branch is `develop`, the stable version is `master` and t
 
 <!-- GETTING STARTED -->
 ## :baby: Getting Started
-To make a simple analysis with BeaverCore, you can analyse a single TimberFramePoint providing the frame material, cross section, caracteristic displacements and internal forces. You can always reference the corresponding Eurocode sections of the analysis by navigating through the code. Better documentation for that matter is in the to-do list.
+To make a simple analysis with BeaverCore, you can analyse a single `TimberFramePoint` providing the frame material, cross section, caracteristic displacements and internal forces. You can always reference the corresponding Eurocode sections of the analysis by navigating through the code. Better documentation is in the to-do list.
 
 ``` C#
 public void TestULSDesign()
