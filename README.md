@@ -1,4 +1,4 @@
-# 🦫 BeaverCore
+# 🌲 BeaverCore
 
 
 <!-- ABOUT THE PROJECT -->
@@ -81,7 +81,7 @@ You can contribute to Beaver by either contributing to it's **Functionality**, *
 We are adding issues to the repo with the tags `Easy`, `Medium` and `Hard` so you can chose one with your wish of complexity to create a PR for it.
 Feel free to add new issues and also contributing with your ideas in a correspoding PR.
 
-### 🪵 Functionality
+### 🌱 Functionality
 - [ ] Model
   - [X] Actions (Forces/Displacement) Model
   - [X] Combinations Model
