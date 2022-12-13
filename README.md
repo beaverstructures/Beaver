@@ -1,8 +1,5 @@
 # 🌲 BeaverCore
-
-
 <!-- ABOUT THE PROJECT -->
-## 🧬 About The Project
 Beaver is a tool that allows parametric structural analysis and design of timber structures according to the European code “Eurocode5 - Design of Timber Structures”.
 Beaver was conceived at the Polytechnic School of the University of São Paulo - Brazil, and developed by 
 
