@@ -74,8 +74,8 @@ You will need the following libraries and/or software installed before getting t
 
 <!-- CONTRIBUTING -->
 ## ⛑️ Contributing
-You can contribute to Beaver by either contributing to it's **Functionality**, **CI/CD** and **Documentation**.
-**CI/CD** and **Documentation** are the prioritites for now since they are currently just the basics (or not even that).
+You can contribute to Beaver by either contributing to it's **Functionality**, **CI/CD**, **Documentation** and **Bugfixing**.
+**CI/CD**, **Documentation** and **Bugfixing** are the prioritites for now since they are currently just the basics (or not even that).
 We are adding issues to the repo with the tags `Easy`, `Medium` and `Hard` so you can chose one with your wish of complexity to create a PR for it.
 Feel free to add new issues and also contributing with your ideas in a correspoding PR.
 
@@ -101,6 +101,9 @@ Feel free to add new issues and also contributing with your ideas in a correspod
 - [ ] .NET documentation in every Beaver class, struct, enum, method and more you can imagine
 - [ ] A really nice Wiki detailing the functionality of the API. While the code documentation describes the methods and reference them to the considered design check, this wiki should describe the design checks and then reference to the corresponding methods and objects that handle them.
 - [ ] BeaverEducation project: This is a future project in our mind to use our documentation and API to create a timber structural design course, by direct use of the API for who's also learning how to code and the use of BeaverGrasshopper plugin for who's learning computational design with Grasshopper.
+
+### :bug: Bugfixing
+- [ ] We will put bugfixing issues and please be free to choose one to tackle. It can be a good way to get used to the code base :)
 
 <!-- LICENSE -->
 ## 📋 License
