@@ -5,7 +5,7 @@ Beaver was conceived at the Polytechnic School of the University of São Paulo -
 
 * [João Tavares Pini](https://www.linkedin.com/in/joao-pini/)
 * [Márcio Sartorelli Venâncio de Souza](https://www.linkedin.com/in/marcio-sartorelli/)
-* [Renan Prandini](https://www.linkedin.com/in/renan-prandini/)
+* [Renan Prandini](https://www.linkedin.com/in/renanprandini/)
 
 BeaverCore is the core library of Beaver project. It is a .NET Standard 2.0 library which contains all logic to define timber beams and connections and analyse them by automatically generating load combinations and design checks. The choice for .NET Standard is to make Beaver logic accessible to any application and platform in .NET
 
