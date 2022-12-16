@@ -66,12 +66,6 @@ public void TestULSDesign()
 You can also physically define an entire `TimberFrame` object which contains a sequence of the discretized analysed TimberFramePoints of the given frame.
 
 
-### 🛠️ Prerequisites
-You will need the following libraries and/or software installed before getting to the fun!
-* [Rhino 7.21+](https://www.rhino3d.com/download/)
-* [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
-
-
 <!-- CONTRIBUTING -->
 ## ⛑️ Contributing
 You can contribute to Beaver by either contributing to it's **Functionality**, **CI/CD**, **Documentation** and **Bugfixing**.
