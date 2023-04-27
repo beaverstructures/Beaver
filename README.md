@@ -14,6 +14,9 @@ BeaverCore is enhanced by [BeaverGrasshopper](https://www.food4rhino.com/en/app/
 
 The active development branch is `develop`, the stable version is `master` and the release branch is `release`. Please create all your PRs to `develop`.
 
+<!-- Disclaimer -->
+Although being tested thoroughly Beaver probably contains errors – therefore no guarantee can be given that Karamba3D computes correct results. Use of Beaver is entirely at your own risk.
+
 <!-- GETTING STARTED -->
 ## :baby: Getting Started
 To make a simple analysis with BeaverCore, you can analyse a single `TimberFramePoint` providing the frame material, cross section, caracteristic displacements and internal forces. You can always reference the corresponding Eurocode sections of the analysis by navigating through the code. Better documentation is in the to-do list.
