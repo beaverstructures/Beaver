@@ -14,7 +14,8 @@ BeaverCore is enhanced by [BeaverGrasshopper](https://www.food4rhino.com/en/app/
 
 The active development branch is `develop`, the stable version is `master` and the release branch is `release`. Please create all your PRs to `develop`.
 
-<!-- Disclaimer -->
+<!-- DISCLAIMER -->
+## ⚠️ Disclaimer
 Although being tested thoroughly Beaver probably contains errors – therefore no guarantee can be given that Karamba3D computes correct results. Use of Beaver is entirely at your own risk.
 
 <!-- GETTING STARTED -->
