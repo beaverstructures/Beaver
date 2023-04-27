@@ -16,7 +16,7 @@ The active development branch is `develop`, the stable version is `master` and t
 
 <!-- DISCLAIMER -->
 ## ⚠️ Disclaimer
-Although being tested thoroughly Beaver probably contains errors – therefore no guarantee can be given that Karamba3D computes correct results. Use of Beaver is entirely at your own risk.
+Although being tested thoroughly Beaver probably contains errors – therefore no guarantee can be given that Beaver computes correct results. Use of Beaver is entirely at your own risk.
 
 <!-- GETTING STARTED -->
 ## :baby: Getting Started
